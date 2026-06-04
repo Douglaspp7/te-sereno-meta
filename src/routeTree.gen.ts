@@ -19,6 +19,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecetasIdRouteImport } from './routes/recetas.$id'
 import { Route as AuthenticatedProgresoRouteImport } from './routes/_authenticated/progreso'
 import { Route as AuthenticatedProgramaRouteImport } from './routes/_authenticated/programa'
+import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
+import { Route as AuthenticatedAlimentacionRouteImport } from './routes/_authenticated/alimentacion'
 import { Route as AuthenticatedProgramaDiaRouteImport } from './routes/_authenticated/programa.$dia'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -70,6 +72,17 @@ const AuthenticatedProgramaRoute = AuthenticatedProgramaRouteImport.update({
   path: '/programa',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEjerciciosRoute = AuthenticatedEjerciciosRouteImport.update({
+  id: '/ejercicios',
+  path: '/ejercicios',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAlimentacionRoute =
+  AuthenticatedAlimentacionRouteImport.update({
+    id: '/alimentacion',
+    path: '/alimentacion',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProgramaDiaRoute =
   AuthenticatedProgramaDiaRouteImport.update({
     id: '/$dia',
@@ -84,6 +97,8 @@ export interface FileRoutesByFullPath {
   '/premium': typeof PremiumRoute
   '/recetas': typeof RecetasRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/alimentacion': typeof AuthenticatedAlimentacionRoute
+  '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/programa': typeof AuthenticatedProgramaRouteWithChildren
   '/progreso': typeof AuthenticatedProgresoRoute
   '/recetas/$id': typeof RecetasIdRoute
@@ -96,6 +111,8 @@ export interface FileRoutesByTo {
   '/premium': typeof PremiumRoute
   '/recetas': typeof RecetasRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/alimentacion': typeof AuthenticatedAlimentacionRoute
+  '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/programa': typeof AuthenticatedProgramaRouteWithChildren
   '/progreso': typeof AuthenticatedProgresoRoute
   '/recetas/$id': typeof RecetasIdRoute
@@ -110,6 +127,8 @@ export interface FileRoutesById {
   '/premium': typeof PremiumRoute
   '/recetas': typeof RecetasRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/alimentacion': typeof AuthenticatedAlimentacionRoute
+  '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/_authenticated/programa': typeof AuthenticatedProgramaRouteWithChildren
   '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
   '/recetas/$id': typeof RecetasIdRoute
@@ -124,6 +143,8 @@ export interface FileRouteTypes {
     | '/premium'
     | '/recetas'
     | '/reset-password'
+    | '/alimentacion'
+    | '/ejercicios'
     | '/programa'
     | '/progreso'
     | '/recetas/$id'
@@ -136,6 +157,8 @@ export interface FileRouteTypes {
     | '/premium'
     | '/recetas'
     | '/reset-password'
+    | '/alimentacion'
+    | '/ejercicios'
     | '/programa'
     | '/progreso'
     | '/recetas/$id'
@@ -149,6 +172,8 @@ export interface FileRouteTypes {
     | '/premium'
     | '/recetas'
     | '/reset-password'
+    | '/_authenticated/alimentacion'
+    | '/_authenticated/ejercicios'
     | '/_authenticated/programa'
     | '/_authenticated/progreso'
     | '/recetas/$id'
@@ -237,6 +262,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProgramaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ejercicios': {
+      id: '/_authenticated/ejercicios'
+      path: '/ejercicios'
+      fullPath: '/ejercicios'
+      preLoaderRoute: typeof AuthenticatedEjerciciosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/alimentacion': {
+      id: '/_authenticated/alimentacion'
+      path: '/alimentacion'
+      fullPath: '/alimentacion'
+      preLoaderRoute: typeof AuthenticatedAlimentacionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/programa/$dia': {
       id: '/_authenticated/programa/$dia'
       path: '/$dia'
@@ -261,11 +300,15 @@ const AuthenticatedProgramaRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAlimentacionRoute: typeof AuthenticatedAlimentacionRoute
+  AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
   AuthenticatedProgramaRoute: typeof AuthenticatedProgramaRouteWithChildren
   AuthenticatedProgresoRoute: typeof AuthenticatedProgresoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAlimentacionRoute: AuthenticatedAlimentacionRoute,
+  AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
   AuthenticatedProgramaRoute: AuthenticatedProgramaRouteWithChildren,
   AuthenticatedProgresoRoute: AuthenticatedProgresoRoute,
 }
