@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Clock, Heart, AlertTriangle, Check, Sparkles } from "lucide-react";
-import { getRecipe, getCategory } from "@/data/recipes";
+import { getRecipe, getCategory, type Recipe } from "@/data/recipes";
 import { useStore, today, type DayLog } from "@/lib/store";
 import teaImg from "@/assets/tea-generic.jpg";
 
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/recetas/$id")({
 });
 
 function RecipeDetail() {
-  const { recipe } = Route.useLoaderData();
+  const { recipe } = Route.useLoaderData() as { recipe: Recipe };
   const cat = getCategory(recipe.category);
   const [favs, setFavs] = useStore<string[]>("favorites", []);
   const [logs, setLogs] = useStore<DayLog[]>("logs", []);
