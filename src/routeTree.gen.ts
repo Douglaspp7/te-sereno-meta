@@ -9,14 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecetasRouteImport } from './routes/recetas'
 import { Route as PremiumRouteImport } from './routes/premium'
-import { Route as PlanRouteImport } from './routes/plan'
 import { Route as PerfilRouteImport } from './routes/perfil'
-import { Route as FavoritosRouteImport } from './routes/favoritos'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecetasIdRouteImport } from './routes/recetas.$id'
+import { Route as AuthenticatedProgresoRouteImport } from './routes/_authenticated/progreso'
+import { Route as AuthenticatedProgramaRouteImport } from './routes/_authenticated/programa'
+import { Route as AuthenticatedProgramaDiaRouteImport } from './routes/_authenticated/programa.$dia'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecetasRoute = RecetasRouteImport.update({
   id: '/recetas',
   path: '/recetas',
@@ -27,19 +36,18 @@ const PremiumRoute = PremiumRouteImport.update({
   path: '/premium',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlanRoute = PlanRouteImport.update({
-  id: '/plan',
-  path: '/plan',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PerfilRoute = PerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FavoritosRoute = FavoritosRouteImport.update({
-  id: '/favoritos',
-  path: '/favoritos',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -52,76 +60,120 @@ const RecetasIdRoute = RecetasIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => RecetasRoute,
 } as any)
+const AuthenticatedProgresoRoute = AuthenticatedProgresoRouteImport.update({
+  id: '/progreso',
+  path: '/progreso',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProgramaRoute = AuthenticatedProgramaRouteImport.update({
+  id: '/programa',
+  path: '/programa',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProgramaDiaRoute =
+  AuthenticatedProgramaDiaRouteImport.update({
+    id: '/$dia',
+    path: '/$dia',
+    getParentRoute: () => AuthenticatedProgramaRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/favoritos': typeof FavoritosRoute
+  '/auth': typeof AuthRoute
   '/perfil': typeof PerfilRoute
-  '/plan': typeof PlanRoute
   '/premium': typeof PremiumRoute
   '/recetas': typeof RecetasRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
+  '/programa': typeof AuthenticatedProgramaRouteWithChildren
+  '/progreso': typeof AuthenticatedProgresoRoute
   '/recetas/$id': typeof RecetasIdRoute
+  '/programa/$dia': typeof AuthenticatedProgramaDiaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/favoritos': typeof FavoritosRoute
+  '/auth': typeof AuthRoute
   '/perfil': typeof PerfilRoute
-  '/plan': typeof PlanRoute
   '/premium': typeof PremiumRoute
   '/recetas': typeof RecetasRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
+  '/programa': typeof AuthenticatedProgramaRouteWithChildren
+  '/progreso': typeof AuthenticatedProgresoRoute
   '/recetas/$id': typeof RecetasIdRoute
+  '/programa/$dia': typeof AuthenticatedProgramaDiaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/favoritos': typeof FavoritosRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/perfil': typeof PerfilRoute
-  '/plan': typeof PlanRoute
   '/premium': typeof PremiumRoute
   '/recetas': typeof RecetasRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/programa': typeof AuthenticatedProgramaRouteWithChildren
+  '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
   '/recetas/$id': typeof RecetasIdRoute
+  '/_authenticated/programa/$dia': typeof AuthenticatedProgramaDiaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/favoritos'
+    | '/auth'
     | '/perfil'
-    | '/plan'
     | '/premium'
     | '/recetas'
+    | '/reset-password'
+    | '/programa'
+    | '/progreso'
     | '/recetas/$id'
+    | '/programa/$dia'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/favoritos'
+    | '/auth'
     | '/perfil'
-    | '/plan'
     | '/premium'
     | '/recetas'
+    | '/reset-password'
+    | '/programa'
+    | '/progreso'
     | '/recetas/$id'
+    | '/programa/$dia'
   id:
     | '__root__'
     | '/'
-    | '/favoritos'
+    | '/_authenticated'
+    | '/auth'
     | '/perfil'
-    | '/plan'
     | '/premium'
     | '/recetas'
+    | '/reset-password'
+    | '/_authenticated/programa'
+    | '/_authenticated/progreso'
     | '/recetas/$id'
+    | '/_authenticated/programa/$dia'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  FavoritosRoute: typeof FavoritosRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   PerfilRoute: typeof PerfilRoute
-  PlanRoute: typeof PlanRoute
   PremiumRoute: typeof PremiumRoute
   RecetasRoute: typeof RecetasRouteWithChildren
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recetas': {
       id: '/recetas'
       path: '/recetas'
@@ -136,13 +188,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PremiumRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plan': {
-      id: '/plan'
-      path: '/plan'
-      fullPath: '/plan'
-      preLoaderRoute: typeof PlanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/perfil': {
       id: '/perfil'
       path: '/perfil'
@@ -150,11 +195,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfilRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/favoritos': {
-      id: '/favoritos'
-      path: '/favoritos'
-      fullPath: '/favoritos'
-      preLoaderRoute: typeof FavoritosRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -171,8 +223,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecetasIdRouteImport
       parentRoute: typeof RecetasRoute
     }
+    '/_authenticated/progreso': {
+      id: '/_authenticated/progreso'
+      path: '/progreso'
+      fullPath: '/progreso'
+      preLoaderRoute: typeof AuthenticatedProgresoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/programa': {
+      id: '/_authenticated/programa'
+      path: '/programa'
+      fullPath: '/programa'
+      preLoaderRoute: typeof AuthenticatedProgramaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/programa/$dia': {
+      id: '/_authenticated/programa/$dia'
+      path: '/$dia'
+      fullPath: '/programa/$dia'
+      preLoaderRoute: typeof AuthenticatedProgramaDiaRouteImport
+      parentRoute: typeof AuthenticatedProgramaRoute
+    }
   }
 }
+
+interface AuthenticatedProgramaRouteChildren {
+  AuthenticatedProgramaDiaRoute: typeof AuthenticatedProgramaDiaRoute
+}
+
+const AuthenticatedProgramaRouteChildren: AuthenticatedProgramaRouteChildren = {
+  AuthenticatedProgramaDiaRoute: AuthenticatedProgramaDiaRoute,
+}
+
+const AuthenticatedProgramaRouteWithChildren =
+  AuthenticatedProgramaRoute._addFileChildren(
+    AuthenticatedProgramaRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedProgramaRoute: typeof AuthenticatedProgramaRouteWithChildren
+  AuthenticatedProgresoRoute: typeof AuthenticatedProgresoRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedProgramaRoute: AuthenticatedProgramaRouteWithChildren,
+  AuthenticatedProgresoRoute: AuthenticatedProgresoRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface RecetasRouteChildren {
   RecetasIdRoute: typeof RecetasIdRoute
@@ -187,22 +286,13 @@ const RecetasRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  FavoritosRoute: FavoritosRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   PerfilRoute: PerfilRoute,
-  PlanRoute: PlanRoute,
   PremiumRoute: PremiumRoute,
   RecetasRoute: RecetasRouteWithChildren,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

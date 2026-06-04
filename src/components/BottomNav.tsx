@@ -1,12 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Search, Heart, Calendar, User } from "lucide-react";
+import { Home, Search, Calendar, TrendingDown, User } from "lucide-react";
 
 const items = [
-  { to: "/", label: "Inicio", icon: Home },
-  { to: "/recetas", label: "Recetas", icon: Search },
-  { to: "/favoritos", label: "Favoritos", icon: Heart },
-  { to: "/plan", label: "Plan", icon: Calendar },
-  { to: "/perfil", label: "Perfil", icon: User },
+  { to: "/", label: "Inicio", icon: Home, match: (p: string) => p === "/" },
+  { to: "/_authenticated/programa", label: "Programa", icon: Calendar, match: (p: string) => p.startsWith("/programa") },
+  { to: "/recetas", label: "Recetas", icon: Search, match: (p: string) => p.startsWith("/recetas") || p.startsWith("/favoritos") },
+  { to: "/_authenticated/progreso", label: "Progreso", icon: TrendingDown, match: (p: string) => p.startsWith("/progreso") },
+  { to: "/perfil", label: "Perfil", icon: User, match: (p: string) => p.startsWith("/perfil") },
 ] as const;
 
 export function BottomNav() {
@@ -16,7 +16,7 @@ export function BottomNav() {
       <ul className="mx-auto flex max-w-md items-stretch justify-around px-2 py-2">
         {items.map((it) => {
           const Icon = it.icon;
-          const active = it.to === "/" ? path === "/" : path.startsWith(it.to);
+          const active = it.match(path);
           return (
             <li key={it.to} className="flex-1">
               <Link
