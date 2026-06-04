@@ -1,12 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Search, Calendar, TrendingDown, User } from "lucide-react";
+import { Home, Apple, Dumbbell, BookOpen, TrendingDown } from "lucide-react";
 
 const items = [
   { to: "/", label: "Inicio", icon: Home, match: (p: string) => p === "/" },
-  { to: "/_authenticated/programa", label: "Programa", icon: Calendar, match: (p: string) => p.startsWith("/programa") },
-  { to: "/recetas", label: "Recetas", icon: Search, match: (p: string) => p.startsWith("/recetas") || p.startsWith("/favoritos") },
+  { to: "/_authenticated/alimentacion", label: "Comida", icon: Apple, match: (p: string) => p.startsWith("/alimentacion") },
+  { to: "/_authenticated/ejercicios", label: "Ejercicio", icon: Dumbbell, match: (p: string) => p.startsWith("/ejercicios") },
+  { to: "/recetas", label: "Recetas", icon: BookOpen, match: (p: string) => p.startsWith("/recetas") },
   { to: "/_authenticated/progreso", label: "Progreso", icon: TrendingDown, match: (p: string) => p.startsWith("/progreso") },
-  { to: "/perfil", label: "Perfil", icon: User, match: (p: string) => p.startsWith("/perfil") },
 ] as const;
 
 export function BottomNav() {

@@ -1,7 +1,7 @@
 {
-  "name": "Tés para Bajar de Peso",
-  "short_name": "Tés",
-  "description": "Más de 100 recetas naturales de tés e infusiones para complementar una vida saludable.",
+  "name": "Reset 21 — Transforma tu cuerpo en 21 días",
+  "short_name": "Reset 21",
+  "description": "Programa de 21 días para perder peso de forma natural: alimentación, ejercicios, recetas y seguimiento de progreso.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fbfaf5",
