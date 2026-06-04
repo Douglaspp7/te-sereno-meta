@@ -11,7 +11,6 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -82,9 +81,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Tés para Bajar de Peso" },
       { name: "description", content: "Más de 100 recetas naturales de tés e infusiones para complementar una vida saludable y alcanzar tu peso ideal." },
       { property: "og:title", content: "Tés para Bajar de Peso" },
-      { property: "og:description", content: "Más de 100 recetas naturales para complementar una vida saludable." },
+      { property: "og:description", content: "Más de 100 recetas naturales de tés e infusiones para complementar una vida saludable y alcanzar tu peso ideal." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Tés para Bajar de Peso" },
+      { name: "twitter:description", content: "Más de 100 recetas naturales de tés e infusiones para complementar una vida saludable y alcanzar tu peso ideal." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c42c1bf2-8087-47e4-a3a7-8bf4950249ff/id-preview-d791df13--12dc416c-4585-4458-958e-da24b96c7c78.lovable.app-1780615222484.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c42c1bf2-8087-47e4-a3a7-8bf4950249ff/id-preview-d791df13--12dc416c-4585-4458-958e-da24b96c7c78.lovable.app-1780615222484.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -118,15 +121,10 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
-  useEffect(() => {
-    void import("../lib/register-sw").then((m) => m.registerServiceWorker());
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
 }
-
