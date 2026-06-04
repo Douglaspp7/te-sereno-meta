@@ -10,10 +10,10 @@ import heroImg from "@/assets/hero-tea.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Programa de 21 Días para Perder Peso con Tés y Hábitos Saludables" },
-      { name: "description", content: "Transforma tus hábitos en 21 días con recetas naturales de tés, seguimiento de peso y rutinas saludables." },
-      { property: "og:title", content: "Programa de 21 Días — Tés y Hábitos Saludables" },
-      { property: "og:description", content: "Transforma tu cuerpo en 21 días con tés naturales y hábitos saludables." },
+      { title: "Reset 21 — Transforma tu cuerpo en 21 días" },
+      { name: "description", content: "Programa holístico de 21 días: alimentación, ejercicios, recetas naturales y seguimiento de progreso." },
+      { property: "og:title", content: "Reset 21 — Transforma tu cuerpo en 21 días" },
+      { property: "og:description", content: "Alimentación, ejercicios, recetas y progreso. Todo lo que necesitas en un solo lugar." },
     ],
   }),
   component: Home,
@@ -49,12 +49,12 @@ function Home() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 gradient-hero" />
         <div className="relative px-5 pt-10 pb-6">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">Bienestar natural · 21 días</p>
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">Reset 21 · Programa holístico</p>
           <h1 className="mt-3 font-display text-4xl leading-[1.05] text-foreground">
-            Programa de 21 días para <em className="not-italic text-primary">perder peso</em>
+            Transforma tu cuerpo en <em className="not-italic text-primary">21 días</em>
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Transforma tus hábitos, disfruta recetas naturales y acompaña tu proceso de forma saludable.
+            Alimentación, ejercicios, recetas y seguimiento. Todo lo que necesitas para tu reset, en un solo lugar.
           </p>
 
           <div className="mt-6 overflow-hidden rounded-3xl shadow-float">
