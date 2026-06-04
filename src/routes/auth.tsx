@@ -7,8 +7,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Acceder — Programa de 21 Días" },
-      { name: "description", content: "Inicia sesión con tu correo para empezar tu transformación de 21 días." },
+      { title: "Acceder — Reset 21" },
+      { name: "description", content: "Inicia sesión con tu correo para empezar tu Reset 21." },
     ],
   }),
   component: AuthPage,
