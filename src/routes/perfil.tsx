@@ -92,7 +92,7 @@ function Perfil() {
     { id: "complete", label: "21 días", got: (stats?.completedDays ?? 0) >= 21, icon: "🏆" },
   ];
 
-  const updateProfile = async (patch: Record<string, unknown>) => {
+  const updateProfile = async (patch: { display_name?: string; start_weight?: number; current_weight?: number; goal_weight?: number }) => {
     await supabase.from("profiles").update(patch).eq("id", user.id);
     qc.invalidateQueries({ queryKey: ["profile"] });
   };

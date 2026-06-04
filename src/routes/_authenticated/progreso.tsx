@@ -86,9 +86,11 @@ function Progreso() {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) return;
     await supabase.from("weight_logs").insert({ user_id: user.user.id, weight: w });
-    const update: Record<string, number> = { current_weight: w };
-    if (!profile?.start_weight) update.start_weight = w;
-    await supabase.from("profiles").update(update).eq("id", user.user.id);
+    if (!profile?.start_weight) {
+      await supabase.from("profiles").update({ current_weight: w, start_weight: w }).eq("id", user.user.id);
+    } else {
+      await supabase.from("profiles").update({ current_weight: w }).eq("id", user.user.id);
+    }
     setNewWeight("");
     qc.invalidateQueries({ queryKey: ["weight_logs"] });
     qc.invalidateQueries({ queryKey: ["profile"] });
