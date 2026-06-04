@@ -14,7 +14,165 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      day_progress: {
+        Row: {
+          checklist: Json
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          day_number: number
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          checklist?: Json
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          day_number: number
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          checklist?: Json
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          day_number?: number
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          recipe_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          recipe_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          recipe_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      habit_logs: {
+        Row: {
+          created_at: string
+          drank_tea: boolean
+          drank_water: boolean
+          id: string
+          log_date: string
+          no_sugar: boolean
+          slept_well: boolean
+          updated_at: string
+          user_id: string
+          walked: boolean
+        }
+        Insert: {
+          created_at?: string
+          drank_tea?: boolean
+          drank_water?: boolean
+          id?: string
+          log_date?: string
+          no_sugar?: boolean
+          slept_well?: boolean
+          updated_at?: string
+          user_id: string
+          walked?: boolean
+        }
+        Update: {
+          created_at?: string
+          drank_tea?: boolean
+          drank_water?: boolean
+          id?: string
+          log_date?: string
+          no_sugar?: boolean
+          slept_well?: boolean
+          updated_at?: string
+          user_id?: string
+          walked?: boolean
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          current_weight: number | null
+          display_name: string | null
+          email: string | null
+          goal_weight: number | null
+          id: string
+          points: number
+          premium_access: boolean
+          start_date: string
+          start_weight: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_weight?: number | null
+          display_name?: string | null
+          email?: string | null
+          goal_weight?: number | null
+          id: string
+          points?: number
+          premium_access?: boolean
+          start_date?: string
+          start_weight?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_weight?: number | null
+          display_name?: string | null
+          email?: string | null
+          goal_weight?: number | null
+          id?: string
+          points?: number
+          premium_access?: boolean
+          start_date?: string
+          start_weight?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      weight_logs: {
+        Row: {
+          created_at: string
+          id: string
+          logged_at: string
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logged_at?: string
+          user_id: string
+          weight: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logged_at?: string
+          user_id?: string
+          weight?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
