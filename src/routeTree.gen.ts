@@ -9,38 +9,154 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RecetasRouteImport } from './routes/recetas'
+import { Route as PremiumRouteImport } from './routes/premium'
+import { Route as PlanRouteImport } from './routes/plan'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RecetasIdRouteImport } from './routes/recetas.$id'
 
+const RecetasRoute = RecetasRouteImport.update({
+  id: '/recetas',
+  path: '/recetas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PremiumRoute = PremiumRouteImport.update({
+  id: '/premium',
+  path: '/premium',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanRoute = PlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritosRoute = FavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecetasIdRoute = RecetasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => RecetasRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/favoritos': typeof FavoritosRoute
+  '/perfil': typeof PerfilRoute
+  '/plan': typeof PlanRoute
+  '/premium': typeof PremiumRoute
+  '/recetas': typeof RecetasRouteWithChildren
+  '/recetas/$id': typeof RecetasIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/favoritos': typeof FavoritosRoute
+  '/perfil': typeof PerfilRoute
+  '/plan': typeof PlanRoute
+  '/premium': typeof PremiumRoute
+  '/recetas': typeof RecetasRouteWithChildren
+  '/recetas/$id': typeof RecetasIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/favoritos': typeof FavoritosRoute
+  '/perfil': typeof PerfilRoute
+  '/plan': typeof PlanRoute
+  '/premium': typeof PremiumRoute
+  '/recetas': typeof RecetasRouteWithChildren
+  '/recetas/$id': typeof RecetasIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/favoritos'
+    | '/perfil'
+    | '/plan'
+    | '/premium'
+    | '/recetas'
+    | '/recetas/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/favoritos'
+    | '/perfil'
+    | '/plan'
+    | '/premium'
+    | '/recetas'
+    | '/recetas/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/favoritos'
+    | '/perfil'
+    | '/plan'
+    | '/premium'
+    | '/recetas'
+    | '/recetas/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FavoritosRoute: typeof FavoritosRoute
+  PerfilRoute: typeof PerfilRoute
+  PlanRoute: typeof PlanRoute
+  PremiumRoute: typeof PremiumRoute
+  RecetasRoute: typeof RecetasRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/recetas': {
+      id: '/recetas'
+      path: '/recetas'
+      fullPath: '/recetas'
+      preLoaderRoute: typeof RecetasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/premium': {
+      id: '/premium'
+      path: '/premium'
+      fullPath: '/premium'
+      preLoaderRoute: typeof PremiumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan': {
+      id: '/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof PlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoritos': {
+      id: '/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof FavoritosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +164,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recetas/$id': {
+      id: '/recetas/$id'
+      path: '/$id'
+      fullPath: '/recetas/$id'
+      preLoaderRoute: typeof RecetasIdRouteImport
+      parentRoute: typeof RecetasRoute
+    }
   }
 }
 
+interface RecetasRouteChildren {
+  RecetasIdRoute: typeof RecetasIdRoute
+}
+
+const RecetasRouteChildren: RecetasRouteChildren = {
+  RecetasIdRoute: RecetasIdRoute,
+}
+
+const RecetasRouteWithChildren =
+  RecetasRoute._addFileChildren(RecetasRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FavoritosRoute: FavoritosRoute,
+  PerfilRoute: PerfilRoute,
+  PlanRoute: PlanRoute,
+  PremiumRoute: PremiumRoute,
+  RecetasRoute: RecetasRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
