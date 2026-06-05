@@ -1,9 +1,12 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Check, Sparkles, UtensilsCrossed, Dumbbell, BookOpen, ShoppingCart, Droplet, TrendingUp, Camera, User as UserIcon, Flame } from "lucide-react";
+import { Check, Sparkles, User as UserIcon, Flame, Target, ChevronRight, Activity, Droplet, Dumbbell, Utensils, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
+import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 type Profile = {
   display_name: string | null;
@@ -15,6 +18,8 @@ type Profile = {
 
 export function Dashboard({ userId, profile }: { userId: string; profile: Profile }) {
   const qc = useQueryClient();
+  const [weightInput, setWeightInput] = useState("");
+  const [isWeightModalOpen, setIsWeightModalOpen] = useState(false);
 
   const currentDay = useMemo(() => {
     if (!profile.plan_started_at) return 1;
@@ -24,19 +29,30 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
     return Math.min(21, Math.max(1, diff + 1));
   }, [profile.plan_started_at]);
 
-  const { data: progress } = useQuery({
-    queryKey: ["daily_progress", userId, currentDay],
+  // Fetch all progress for stats and chart
+  const { data: allProgress } = useQuery({
+    queryKey: ["daily_progress", userId],
     queryFn: async () => {
       const { data } = await supabase
         .from("daily_progress")
         .select("*")
         .eq("user_id", userId)
-        .eq("day_number", currentDay)
-        .maybeSingle();
-      return data;
+        .order("day_number", { ascending: true });
+      return data || [];
     },
   });
 
+  const progress = allProgress?.find(p => p.day_number === currentDay);
+
+  const { data: dayData } = useQuery({
+    queryKey: ["day", currentDay],
+    queryFn: async () => {
+      const { data } = await supabase.from('days').select('*').eq('day_number', currentDay).maybeSingle();
+      return data;
+    }
+  });
+
+  // Mutations
   const upsertProgress = useMutation({
     mutationFn: async (patch: Record<string, unknown>) => {
       const { error } = await supabase.from("daily_progress").upsert(
@@ -56,94 +72,354 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       );
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["daily_progress", userId, currentDay] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["daily_progress", userId] }),
   });
 
+  const updateWeight = useMutation({
+    mutationFn: async (newWeight: number) => {
+      // 1. Update Profile
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ current_weight: newWeight })
+        .eq("id", userId);
+      if (profileError) throw profileError;
+
+      // 2. Add to Daily Progress
+      const { error: progressError } = await supabase.from("daily_progress").upsert(
+        {
+          user_id: userId,
+          day_number: currentDay,
+          log_date: new Date().toISOString().slice(0, 10),
+          weight: newWeight,
+        },
+        { onConflict: "user_id,day_number" }
+      );
+      if (progressError) throw progressError;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["daily_progress", userId] });
+      qc.invalidateQueries({ queryKey: ["profile"] }); // Assuming you have a profile query in the router
+      setIsWeightModalOpen(false);
+      setWeightInput("");
+    },
+  });
+
+  // Computations
   const planPct = Math.round((currentDay / 21) * 100);
-  const firstName = profile.display_name?.split(" ")[0] ?? "";
-  const { data: dayData } = useQuery({
-    queryKey: ["day", currentDay],
-    queryFn: async () => {
-      const { data } = await supabase.from('days').select('*').eq('day_number', currentDay).maybeSingle();
-      return data;
-    }
-  });
-
+  const firstName = profile.display_name?.split(" ")[0] ?? "Usuario";
   const missionText = dayData?.mission?.replace(/^[^\w\s]+\s/, "") || "Cargando misión...";
-  const lostKg =
-    profile.start_weight && profile.current_weight
-      ? Math.max(0, profile.start_weight - profile.current_weight)
-      : 0;
+  
+  const lostKg = profile.start_weight && profile.current_weight
+    ? Math.max(0, profile.start_weight - profile.current_weight)
+    : 0;
+  
+  const remainingKg = profile.current_weight && profile.goal_weight
+    ? Math.max(0, profile.current_weight - profile.goal_weight)
+    : 0;
+
+  // Chart Data preparation
+  const chartData = useMemo(() => {
+    let data = [];
+    if (profile.start_weight) {
+      data.push({ name: "Inicio", peso: profile.start_weight });
+    }
+    if (allProgress) {
+      const logs = allProgress.filter(p => p.weight !== null).map(p => ({
+        name: `Día ${p.day_number}`,
+        peso: p.weight
+      }));
+      data = [...data, ...logs];
+    }
+    return data;
+  }, [profile.start_weight, allProgress]);
+
+  // Quick Stats computations
+  const stats = useMemo(() => {
+    if (!allProgress || allProgress.length === 0) return { streak: 0, water: 0, exercise: 0, meals: 0 };
+    
+    let streak = 0;
+    for (let i = allProgress.length - 1; i >= 0; i--) {
+      const p = allProgress[i];
+      if (p.mission_done || p.exercise_done || p.breakfast_done) streak++;
+      else break;
+    }
+
+    const totalDays = allProgress.length;
+    const waterDays = allProgress.filter(p => (p.water_glasses ?? 0) >= 8).length;
+    const exerciseDays = allProgress.filter(p => p.exercise_done).length;
+    const mealsDays = allProgress.filter(p => p.breakfast_done && p.lunch_done && p.dinner_done).length;
+
+    return {
+      streak,
+      water: Math.round((waterDays / totalDays) * 100) || 0,
+      exercise: Math.round((exerciseDays / totalDays) * 100) || 0,
+      meals: Math.round((mealsDays / totalDays) * 100) || 0,
+    };
+  }, [allProgress]);
+
+  // Circular Progress values
+  const radius = 38;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (planPct / 100) * circumference;
 
   return (
     <AppShell>
-      {/* HEADER */}
-      <header className="px-5 pt-10 pb-4 flex items-center justify-between">
+      {/* HEADER: Modern & Clean */}
+      <header className="px-5 pt-10 pb-2 flex items-center justify-between bg-background z-10 sticky top-0 bg-opacity-90 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-full bg-primary text-white">
-            <span className="text-sm font-bold">{(firstName[0] || "U").toUpperCase()}</span>
+          <div className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-tr from-primary to-green-400 text-white shadow-sm ring-2 ring-background">
+            <span className="text-base font-bold">{firstName[0].toUpperCase()}</span>
           </div>
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Hola</p>
-            <p className="text-base font-bold text-foreground leading-tight">{firstName || "amig@"} 👋</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Bienvenido de vuelta</p>
+            <p className="text-xl font-display font-extrabold text-foreground leading-tight">{firstName} 👋</p>
           </div>
         </div>
-        <Link to="/auth" className="grid h-10 w-10 place-items-center rounded-full border border-border bg-white">
-          <UserIcon className="h-4 w-4 text-foreground" />
+        <Link to="/auth" className="grid h-10 w-10 place-items-center rounded-full bg-secondary/50 text-foreground transition-transform active:scale-95">
+          <UserIcon className="h-4 w-4" />
         </Link>
       </header>
 
-      {/* PROGRESS CARD */}
-      <section className="px-5">
-        <div className="rounded-[1.75rem] bg-primary text-white p-5 shadow-float">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-white/70">Tu Reto</p>
-              <p className="mt-1 font-display text-3xl font-extrabold leading-none">
-                Día {currentDay} <span className="text-base font-semibold text-white/70">de 21</span>
-              </p>
-            </div>
-            <div className="rounded-full bg-white/15 px-3 py-1.5 backdrop-blur-sm">
-              <span className="text-xs font-bold">{planPct}%</span>
-            </div>
-          </div>
-          <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-white/20">
-            <div
-              className="h-full rounded-full bg-white transition-all duration-700"
-              style={{ width: `${planPct}%` }}
-            />
-          </div>
-          <div className="mt-5 grid grid-cols-3 gap-3 text-center">
-            <MiniStat label="Inicial" value={profile.start_weight ? `${profile.start_weight}` : "—"} unit="kg" />
-            <MiniStat label="Actual" value={profile.current_weight ? `${profile.current_weight}` : "—"} unit="kg" big />
-            <MiniStat label="Meta" value={profile.goal_weight ? `${profile.goal_weight}` : "—"} unit="kg" />
-          </div>
-        </div>
+      {/* HORIZONTAL DAY NAV */}
+      <section className="mt-4 px-5">
+        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide snap-x">
+          {Array.from({ length: 21 }).map((_, i) => {
+            const dayNum = i + 1;
+            const isPast = dayNum < currentDay;
+            const isCurrent = dayNum === currentDay;
+            const pd = allProgress?.find(p => p.day_number === dayNum);
+            const isSuccess = pd?.mission_done || pd?.exercise_done;
 
-        {lostKg > 0 && (
-          <div className="mt-3 flex items-center justify-center gap-1.5 rounded-full bg-secondary/15 px-3 py-2 text-xs font-bold text-primary border border-border/40">
-            <Flame className="h-4 w-4" /> Has perdido {lostKg.toFixed(1)} kg
-          </div>
-        )}
+            return (
+              <div 
+                key={dayNum} 
+                className={`snap-center shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-2xl border transition-all ${
+                  isCurrent 
+                    ? "bg-primary border-primary text-white shadow-md transform scale-105" 
+                    : isPast 
+                      ? "bg-white border-border/60 text-muted-foreground" 
+                      : "bg-background border-dashed border-border/50 text-muted-foreground opacity-50"
+                }`}
+              >
+                <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">Día</span>
+                <span className="text-lg font-display font-bold leading-none mt-0.5">{dayNum}</span>
+                {isPast && isSuccess && (
+                  <div className="absolute -bottom-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white grid place-items-center">
+                    <Check className="h-2 w-2 text-white" strokeWidth={4} />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </section>
 
-      {/* MISSION CARD */}
+      {/* MAIN PROGRESS DASHBOARD */}
+      <section className="px-5 mt-2">
+        <div className="rounded-[2rem] bg-slate-900 text-white p-6 shadow-xl relative overflow-hidden group">
+          {/* Decorative background glow */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary rounded-full mix-blend-screen filter blur-[80px] opacity-40 group-hover:opacity-60 transition-opacity duration-700" />
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-500 rounded-full mix-blend-screen filter blur-[80px] opacity-20" />
+          
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">Objetivo 21 Días</p>
+              <h2 className="mt-1 font-display text-3xl font-extrabold leading-tight">Tu Progreso</h2>
+              <div className="mt-3 flex items-center gap-2">
+                <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-md border border-white/5">
+                  <Flame className="h-3.5 w-3.5 text-orange-400" />
+                  <span className="text-xs font-bold text-white/90">-{lostKg.toFixed(1)} kg</span>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-md border border-white/5">
+                  <Target className="h-3.5 w-3.5 text-blue-400" />
+                  <span className="text-xs font-bold text-white/90">{remainingKg.toFixed(1)} kg left</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Circular Progress */}
+            <div className="relative w-[100px] h-[100px] shrink-0 drop-shadow-lg">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r={radius} stroke="rgba(255,255,255,0.1)" strokeWidth="10" fill="none" />
+                <circle
+                  cx="50" cy="50" r={radius} 
+                  stroke="currentColor" 
+                  strokeWidth="10" 
+                  fill="none"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                  className="text-emerald-400 transition-all duration-1000 ease-out"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-2xl font-display font-black leading-none">{planPct}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 border-t border-white/10 pt-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-white/80 flex items-center gap-2">
+                <Activity className="h-4 w-4 text-emerald-400" /> Evolución de Peso
+              </h3>
+              
+              <Dialog open={isWeightModalOpen} onOpenChange={setIsWeightModalOpen}>
+                <DialogTrigger asChild>
+                  <button className="flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full hover:bg-emerald-400/20 transition-colors">
+                    <Plus className="h-3 w-3" /> Actualizar
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md rounded-[2rem] p-6 border-0 shadow-2xl">
+                  <DialogHeader>
+                    <DialogTitle className="font-display text-2xl">Registrar Peso</DialogTitle>
+                    <p className="text-sm text-muted-foreground mt-1">Ingresa tu peso actual para actualizar tu gráfico de progreso.</p>
+                  </DialogHeader>
+                  <div className="my-6">
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        placeholder="00.0"
+                        value={weightInput}
+                        onChange={(e) => setWeightInput(e.target.value)}
+                        className="text-center font-display text-4xl h-20 rounded-2xl bg-secondary/30 border-0 focus-visible:ring-primary focus-visible:ring-2"
+                      />
+                      <span className="absolute right-6 top-1/2 -translate-y-1/2 font-bold text-muted-foreground">kg</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <DialogClose asChild>
+                      <button className="flex-1 rounded-xl bg-secondary py-3.5 font-bold text-foreground">Cancelar</button>
+                    </DialogClose>
+                    <button
+                      disabled={!weightInput || updateWeight.isPending}
+                      onClick={() => updateWeight.mutate(parseFloat(weightInput))}
+                      className="flex-1 rounded-xl bg-primary py-3.5 font-bold text-white shadow-lg shadow-primary/30 disabled:opacity-50 transition-active"
+                    >
+                      {updateWeight.isPending ? "Guardando..." : "Guardar Peso"}
+                    </button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {/* WEIGHT CHART */}
+            <div className="h-[120px] w-full">
+              {chartData.length > 1 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#34d399" stopOpacity={0.5}/>
+                        <stop offset="95%" stopColor="#34d399" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <RechartsTooltip 
+                      contentStyle={{ borderRadius: '12px', border: 'none', background: 'rgba(15, 23, 42, 0.9)', color: '#fff', fontWeight: 'bold' }}
+                      itemStyle={{ color: '#34d399' }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="peso" 
+                      stroke="#34d399" 
+                      strokeWidth={3}
+                      fillOpacity={1} 
+                      fill="url(#colorWeight)" 
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full w-full flex items-center justify-center border-2 border-dashed border-white/10 rounded-2xl">
+                  <p className="text-xs font-semibold text-white/50 text-center">
+                    Actualiza tu peso para<br/>ver tu curva de progreso.
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            {/* WEIGHT STATS ROW */}
+            <div className="mt-4 flex justify-between px-2">
+              <div className="text-left">
+                <p className="text-[10px] uppercase font-bold text-white/50 tracking-wider">Inicial</p>
+                <p className="text-lg font-bold">{profile.start_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Actual</p>
+                <p className="text-xl font-bold text-white">{profile.current_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] uppercase font-bold text-white/50 tracking-wider">Meta</p>
+                <p className="text-lg font-bold">{profile.goal_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* QUICK STATS (GLASSMORPHISM) */}
+      <section className="px-5 mt-4">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-[1.5rem] bg-white border border-border/40 p-4 shadow-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-orange-100 text-orange-500 grid place-items-center shrink-0">
+              <Flame className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Racha</p>
+              <p className="text-xl font-display font-black leading-none text-foreground">{stats.streak} <span className="text-sm font-bold text-muted-foreground">días</span></p>
+            </div>
+          </div>
+          
+          <div className="rounded-[1.5rem] bg-white border border-border/40 p-4 shadow-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-blue-100 text-blue-500 grid place-items-center shrink-0">
+              <Droplet className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Água</p>
+              <p className="text-xl font-display font-black leading-none text-foreground">{stats.water}<span className="text-sm font-bold text-muted-foreground">%</span></p>
+            </div>
+          </div>
+          
+          <div className="rounded-[1.5rem] bg-white border border-border/40 p-4 shadow-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-indigo-100 text-indigo-500 grid place-items-center shrink-0">
+              <Dumbbell className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Treino</p>
+              <p className="text-xl font-display font-black leading-none text-foreground">{stats.exercise}<span className="text-sm font-bold text-muted-foreground">%</span></p>
+            </div>
+          </div>
+
+          <div className="rounded-[1.5rem] bg-white border border-border/40 p-4 shadow-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-green-100 text-green-500 grid place-items-center shrink-0">
+              <Utensils className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Dieta</p>
+              <p className="text-xl font-display font-black leading-none text-foreground">{stats.meals}<span className="text-sm font-bold text-muted-foreground">%</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* MISSION CARD (Refined) */}
       <section className="mt-5 px-5">
+        <div className="flex items-center justify-between mb-3 px-1">
+          <h3 className="text-sm font-bold text-foreground">Tu Misión de Hoy</h3>
+        </div>
         <button
           onClick={() => upsertProgress.mutate({ mission_done: !progress?.mission_done })}
-          className={`relative w-full overflow-hidden rounded-[1.5rem] border border-border/50 bg-white p-5 text-left shadow-sm transition active:scale-[0.99]`}
+          className={`relative w-full overflow-hidden rounded-[1.5rem] border ${progress?.mission_done ? 'border-primary/30 bg-primary/5' : 'border-border/50 bg-white'} p-5 text-left shadow-sm transition-all duration-300 active:scale-[0.98] group`}
         >
           <div className="flex items-center gap-4">
-            <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${progress?.mission_done ? "bg-muted text-muted-foreground" : "bg-secondary/15 text-primary"}`}>
+            <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-colors ${progress?.mission_done ? "bg-primary text-white" : "bg-secondary/20 text-primary"}`}>
               <Sparkles className="h-6 w-6" />
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Misión de hoy</p>
-              <p className={`text-[15px] font-bold leading-snug ${progress?.mission_done ? "text-muted-foreground line-through opacity-60" : "text-foreground"}`}>
+              <p className={`text-[15px] font-bold leading-snug transition-colors ${progress?.mission_done ? "text-primary line-through opacity-80" : "text-foreground group-hover:text-primary"}`}>
                 {missionText}
               </p>
             </div>
-            <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 transition-all ${progress?.mission_done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
+            <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 transition-all ${progress?.mission_done ? "border-primary bg-primary text-white scale-110" : "border-border bg-background"}`}>
               {progress?.mission_done && <Check className="h-4 w-4" strokeWidth={3} />}
             </span>
           </div>
@@ -151,14 +427,17 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       </section>
 
       {/* MEGA GRID */}
-      <section className="mt-6 px-5">
+      <section className="mt-8 px-5 mb-8">
+        <div className="flex items-center justify-between mb-3 px-1">
+          <h3 className="text-sm font-bold text-foreground">Acciones Rápidas</h3>
+        </div>
         <div className="grid grid-cols-2 gap-3">
-          <MegaCard to="/plan" image="/mi_plan_real.png" title="Mi Plan" subtitle="Opciones de hoy" tint="primary" />
-          <MegaCard to="/ejercicios" image="/ejercicios_real.png" title="Ejercicios" subtitle="Tu rutina diaria" tint="accent" />
-          <MegaCard to="/compras" image="/compras_real.png" title="Compras" subtitle="Por semana" tint="accent" />
-          <MegaCard to="/agua" image="/agua_real.png" title="Agua" subtitle={`${progress?.water_glasses ?? 0}/8 vasos`} tint="accent" />
-          <MegaCard to="/progreso" image="/progreso_real.png" title="Progreso" subtitle="Tu evolución" tint="primary" />
-          <MegaCard to="/analizar" image="/calorias_ia_real.png" title="Calorías IA" subtitle="Analizar comida" tint="accent" />
+          <MegaCard to="/plan" image="/mi_plan_real.png" title="Mi Plan" subtitle="Opciones de hoy" />
+          <MegaCard to="/ejercicios" image="/ejercicios_real.png" title="Ejercicios" subtitle="Tu rutina diaria" />
+          <MegaCard to="/compras" image="/compras_real.png" title="Compras" subtitle="Por semana" />
+          <MegaCard to="/agua" image="/agua_real.png" title="Agua" subtitle={`${progress?.water_glasses ?? 0}/8 vasos`} />
+          <MegaCard to="/progreso" image="/progreso_real.png" title="Progreso" subtitle="Tu evolución" />
+          <MegaCard to="/analizar" image="/calorias_ia_real.png" title="Calorías IA" subtitle="Analizar comida" />
         </div>
       </section>
 
@@ -167,46 +446,27 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
   );
 }
 
-function MiniStat({ label, value, unit, big = false }: { label: string; value: string; unit?: string; big?: boolean }) {
-  return (
-    <div className={`rounded-2xl p-2.5 ${big ? "bg-white/15" : ""}`}>
-      <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">{label}</p>
-      <p className="mt-0.5 font-display text-lg font-bold leading-none">
-        {value}<span className="ml-0.5 text-[10px] font-semibold text-white/70">{unit}</span>
-      </p>
-    </div>
-  );
-}
-
 function MegaCard({
-  to, icon, image, title, subtitle, tint,
-}: { to: string; icon?: React.ReactNode; image?: string; title: string; subtitle: string; tint: "primary" | "accent" }) {
-  const iconBg = tint === "primary" ? "bg-secondary/15 text-primary" : "bg-accent/10 text-accent";
+  to, image, title, subtitle
+}: { to: string; image: string; title: string; subtitle: string; }) {
   return (
     <Link
       to={to}
-      className="group flex flex-col overflow-hidden rounded-[1.5rem] border border-border/50 bg-white shadow-sm transition active:scale-[0.98]"
-      style={{ minHeight: '140px' }}
+      className="group relative flex flex-col overflow-hidden rounded-[1.5rem] bg-white shadow-sm transition-all duration-300 hover:shadow-md active:scale-[0.98] border border-border/40"
+      style={{ minHeight: '130px' }}
     >
-      {image ? (
-        <div className="relative h-[84px] w-full shrink-0 overflow-hidden bg-muted">
-          <img src={image} alt={title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      <div className="absolute inset-0 z-0">
+        <img src={image} alt={title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      </div>
+      <div className="relative z-10 mt-auto p-4 flex justify-between items-end">
+        <div>
+          <p className="text-white font-display text-lg font-bold leading-tight">{title}</p>
+          <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider">{subtitle}</p>
         </div>
-      ) : (
-        <div className="flex h-[84px] shrink-0 items-center px-4 pt-4">
-          <span className={`grid h-12 w-12 place-items-center rounded-2xl ${iconBg}`}>
-            {icon}
-          </span>
+        <div className="h-6 w-6 rounded-full bg-white/20 backdrop-blur-md grid place-items-center text-white">
+          <ChevronRight className="h-3 w-3" />
         </div>
-      )}
-
-      <div className="flex flex-1 flex-col justify-end p-4 pt-3">
-        <p className="text-[16px] font-bold leading-tight text-foreground">
-          {title}
-        </p>
-        <p className="mt-0.5 text-[12px] text-muted-foreground font-medium">
-          {subtitle}
-        </p>
       </div>
     </Link>
   );
