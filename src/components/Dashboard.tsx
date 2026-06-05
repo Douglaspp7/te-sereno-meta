@@ -192,20 +192,33 @@ function MegaCard({
   return (
     <Link
       to={to}
-      className="group flex min-h-[130px] flex-col justify-between rounded-[1.5rem] border border-border/50 bg-white p-4 shadow-sm transition active:scale-[0.98] overflow-hidden relative"
+      className={`group flex min-h-[130px] flex-col justify-between rounded-[1.5rem] border p-4 shadow-sm transition active:scale-[0.98] overflow-hidden relative ${
+        image ? "border-transparent" : "border-border/50 bg-white"
+      }`}
     >
-      {image ? (
-        <div className="absolute right-[-10px] top-[-5px] h-20 w-20 opacity-90 transition-transform group-hover:scale-105">
-           <img src={image} alt={title} className="h-full w-full object-cover" />
-        </div>
-      ) : (
-        <span className={`grid h-12 w-12 place-items-center rounded-2xl ${iconBg}`}>
-          {icon}
-        </span>
+      {image && (
+        <>
+          <div className="absolute inset-0 z-0">
+            <img src={image} alt={title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          </div>
+          <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        </>
       )}
-      <div className="relative mt-8">
-        <p className="text-[16px] font-bold text-foreground leading-tight">{title}</p>
-        <p className="mt-0.5 text-[12px] text-muted-foreground">{subtitle}</p>
+
+      <div className="relative z-10">
+        {!image && icon && (
+          <span className={`grid h-12 w-12 place-items-center rounded-2xl ${iconBg}`}>
+            {icon}
+          </span>
+        )}
+      </div>
+      <div className={`relative z-10 ${image ? "mt-12" : ""}`}>
+        <p className={`text-[16px] font-bold leading-tight ${image ? "text-white" : "text-foreground"}`}>
+          {title}
+        </p>
+        <p className={`mt-0.5 text-[12px] ${image ? "text-white/80 font-medium" : "text-muted-foreground"}`}>
+          {subtitle}
+        </p>
       </div>
     </Link>
   );
