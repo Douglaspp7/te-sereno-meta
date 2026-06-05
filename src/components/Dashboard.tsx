@@ -370,11 +370,11 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           </div>
           
           <div className="rounded-[1.5rem] bg-white border border-border/40 p-4 shadow-sm flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-blue-100 text-blue-500 grid place-items-center shrink-0">
-              <Droplet className="h-5 w-5" />
+            <div className="h-10 w-10 rounded-full bg-cyan-100 text-cyan-500 grid place-items-center shrink-0">
+              <span className="text-xl">🍵</span>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Água</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Té</p>
               <p className="text-xl font-display font-black leading-none text-foreground">{stats.water}<span className="text-sm font-bold text-muted-foreground">%</span></p>
             </div>
           </div>
@@ -435,7 +435,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           <MegaCard to="/plan" image="/mi_plan_real.png" title="Mi Plan" subtitle="Opciones de hoy" />
           <MegaCard to="/ejercicios" image="/ejercicios_real.png" title="Ejercicios" subtitle="Tu rutina diaria" />
           <MegaCard to="/compras" image="/compras_real.png" title="Compras" subtitle="Por semana" />
-          <MegaCard to="/agua" image="/agua_real.png" title="Agua" subtitle={`${progress?.water_glasses ?? 0}/8 vasos`} />
+          <MegaCard to="/te" image="https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=1000&auto=format&fit=crop" title="Té del Día" subtitle={(progress?.water_glasses ?? 0) > 0 ? "Consumido" : "Pendiente"} />
           <MegaCard to="/progreso" image="/progreso_real.png" title="Progreso" subtitle="Tu evolución" />
           <MegaCard to="/analizar" image="/calorias_ia_real.png" title="Calorías IA" subtitle="Analizar comida" />
         </div>
