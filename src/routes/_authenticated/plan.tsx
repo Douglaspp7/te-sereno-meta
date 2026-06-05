@@ -307,7 +307,10 @@ function PlanPage() {
           log_date: new Date().toISOString().split("T")[0],
           ...updates,
         }).eq('id', progress.id);
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase update error:", error);
+          throw error;
+        }
       } else {
         const { error } = await supabase.from("daily_progress").insert({
           user_id: userId,
@@ -321,10 +324,31 @@ function PlanPage() {
           exercise_done: progress?.exercise_done || false,
           ...updates,
         });
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase insert error:", error);
+          throw error;
+        }
       }
     },
-    onSuccess: () => {
+    onMutate: async (updates) => {
+      await qc.cancelQueries({ queryKey: ["daily_progress", userId, selectedDayNum] });
+      const previousProgress = qc.getQueryData(["daily_progress", userId, selectedDayNum]);
+      
+      qc.setQueryData(["daily_progress", userId, selectedDayNum], (old: any) => {
+        return {
+          ...old,
+          ...updates
+        };
+      });
+      
+      return { previousProgress };
+    },
+    onError: (err, newProgress, context) => {
+      console.error("Mutation failed:", err);
+      alert("Error al guardar el progreso. Por favor, intenta de nuevo.");
+      qc.setQueryData(["daily_progress", userId, selectedDayNum], context?.previousProgress);
+    },
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["daily_progress", userId, selectedDayNum] });
       qc.invalidateQueries({ queryKey: ["daily_progress", userId] }); // Global invalidate for Dashboard
     }
