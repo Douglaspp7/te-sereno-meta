@@ -22,6 +22,7 @@ import { Route as AuthenticatedProgramaRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
 import { Route as AuthenticatedAlimentacionRouteImport } from './routes/_authenticated/alimentacion'
 import { Route as AuthenticatedProgramaDiaRouteImport } from './routes/_authenticated/programa.$dia'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -89,6 +90,12 @@ const AuthenticatedProgramaDiaRoute =
     path: '/$dia',
     getParentRoute: () => AuthenticatedProgramaRoute,
   } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/progreso': typeof AuthenticatedProgresoRoute
   '/recetas/$id': typeof RecetasIdRoute
   '/programa/$dia': typeof AuthenticatedProgramaDiaRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,6 +125,7 @@ export interface FileRoutesByTo {
   '/progreso': typeof AuthenticatedProgresoRoute
   '/recetas/$id': typeof RecetasIdRoute
   '/programa/$dia': typeof AuthenticatedProgramaDiaRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -133,6 +142,7 @@ export interface FileRoutesById {
   '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
   '/recetas/$id': typeof RecetasIdRoute
   '/_authenticated/programa/$dia': typeof AuthenticatedProgramaDiaRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/progreso'
     | '/recetas/$id'
     | '/programa/$dia'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/progreso'
     | '/recetas/$id'
     | '/programa/$dia'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -178,6 +190,7 @@ export interface FileRouteTypes {
     | '/_authenticated/progreso'
     | '/recetas/$id'
     | '/_authenticated/programa/$dia'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -188,6 +201,7 @@ export interface RootRouteChildren {
   PremiumRoute: typeof PremiumRoute
   RecetasRoute: typeof RecetasRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -283,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProgramaDiaRouteImport
       parentRoute: typeof AuthenticatedProgramaRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -335,6 +356,7 @@ const rootRouteChildren: RootRouteChildren = {
   PremiumRoute: PremiumRoute,
   RecetasRoute: RecetasRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
