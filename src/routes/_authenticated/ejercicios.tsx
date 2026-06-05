@@ -102,7 +102,7 @@ function EjerciciosPage() {
         .eq("day_number", selectedDayNum)
         .single();
 
-      if (error) throw error;
+      if (error && error.code !== "PGRST116") throw error;
       return data;
     },
     enabled: !!selectedDayNum,
