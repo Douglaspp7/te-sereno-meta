@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, PageHeader } from "@/components/AppShell";
-import { PlayCircle, Clock, Flame, Check } from "lucide-react";
+import { PlayCircle, Clock, Flame, Check, Lock, CheckCircle2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/lib/auth";
@@ -216,6 +216,42 @@ function EjerciciosPage() {
                     "Marcar como completado"
                   )}
                 </button>
+              </div>
+
+              {/* 21 Days Timeline */}
+              <div className="mt-10 mb-2">
+                <h4 className="font-display font-bold text-lg mb-4 text-foreground flex items-center justify-between">
+                  <span>Tu Ruta de 21 Días</span>
+                  <span className="text-sm font-normal text-muted-foreground">{dayNumber}/21</span>
+                </h4>
+                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  {Array.from({ length: 21 }, (_, i) => i + 1).map((d) => {
+                    const isPast = d < dayNumber || (d === dayNumber && isDone);
+                    const isCurrent = d === dayNumber && !isDone;
+                    const isLocked = d > dayNumber;
+                    
+                    return (
+                      <div 
+                        key={d} 
+                        className={`shrink-0 w-20 h-24 rounded-2xl flex flex-col items-center justify-center snap-center border transition-all ${
+                          isCurrent 
+                            ? 'bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105' 
+                            : isPast 
+                              ? 'bg-secondary/50 border-border text-foreground' 
+                              : 'bg-secondary/20 border-border/50 text-muted-foreground opacity-60'
+                        }`}
+                      >
+                        <span className="text-xs font-medium mb-1 opacity-80">Día</span>
+                        <span className={`text-2xl font-black ${isLocked ? 'opacity-50' : ''}`}>{d}</span>
+                        <div className="mt-2">
+                          {isCurrent && <PlayCircle className="h-5 w-5 fill-white text-primary" />}
+                          {isPast && <CheckCircle2 className="h-5 w-5 text-green-500" />}
+                          {isLocked && <Lock className="h-4 w-4 opacity-50" />}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </>
           ) : (
