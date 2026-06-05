@@ -174,7 +174,7 @@ function EjerciciosPage() {
 
   return (
     <AppShell>
-      <PageHeader title="Ejercicios" subtitle={`Rutina del Día ${dayNumber}`} />
+      <PageHeader title="Ejercicios" subtitle={`Rutina del Día ${selectedDayNum}`} />
       
       <div className="px-5 mt-2 pb-10 space-y-6">
         <div className="rounded-[2rem] border border-border/40 bg-white p-5 shadow-sm overflow-hidden relative">
