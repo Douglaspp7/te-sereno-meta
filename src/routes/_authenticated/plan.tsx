@@ -23,7 +23,7 @@ function FullScreenRecipeModal({
   recipe: any | null, 
   onClose: () => void,
   isPrepared: boolean,
-  onMarkPrepared: () => void
+  onTogglePrepared: (newState: boolean) => void
 }) {
   if (!recipe) return null;
 
@@ -195,19 +195,19 @@ function FullScreenRecipeModal({
           <button 
             onClick={() => {
               if (!isPrepared) {
-                onMarkPrepared();
                 confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#34d399', '#10b981', '#ffffff'] });
               }
+              onTogglePrepared(!isPrepared);
               onClose();
             }}
             className={`w-full flex items-center justify-center gap-2 py-5 rounded-[1.5rem] font-bold text-lg active:scale-[0.98] transition-all shadow-lg ${
               isPrepared 
-                ? "bg-secondary text-muted-foreground shadow-none" 
+                ? "bg-secondary text-muted-foreground shadow-none hover:bg-secondary/80" 
                 : "bg-primary text-white shadow-primary/40 hover:bg-primary/90"
             }`}
           >
             {isPrepared ? (
-              <><CheckCircle2 className="h-6 w-6" /> Completada</>
+              <><CheckCircle2 className="h-6 w-6" /> Completada (Desmarcar)</>
             ) : (
               <><CheckCircle2 className="h-6 w-6" /> Marcar como Completada</>
             )}
@@ -549,10 +549,10 @@ function PlanPage() {
             (selectedMealType === 'lunch' && !!progress?.lunch_done) ||
             (selectedMealType === 'dinner' && !!progress?.dinner_done)
           }
-          onMarkPrepared={() => {
-            if (selectedMealType === 'breakfast') updateProgress.mutate({ breakfast_done: true });
-            if (selectedMealType === 'lunch') updateProgress.mutate({ lunch_done: true });
-            if (selectedMealType === 'dinner') updateProgress.mutate({ dinner_done: true });
+          onTogglePrepared={(newState: boolean) => {
+            if (selectedMealType === 'breakfast') updateProgress.mutate({ breakfast_done: newState });
+            if (selectedMealType === 'lunch') updateProgress.mutate({ lunch_done: newState });
+            if (selectedMealType === 'dinner') updateProgress.mutate({ dinner_done: newState });
           }}
           onClose={() => setSelectedRecipe(null)} 
         />
