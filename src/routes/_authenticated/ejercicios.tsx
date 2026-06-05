@@ -115,6 +115,22 @@ function EjerciciosPage() {
   const exercise = dayData?.exercises;
   const isDone = progress?.exercise_done;
   let videoUrl = exercise?.video_url;
+
+  // Helper para converter URL do YouTube em Embed URL seguro
+  const getEmbedUrl = (url: string | undefined) => {
+    if (!url) return "";
+    let videoId = "";
+    if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1]?.split("?")[0];
+    } else if (url.includes("youtube.com/watch?v=")) {
+      videoId = url.split("v=")[1]?.split("&")[0];
+    }
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
+    }
+    return url;
+  };
+  
   
   // Forçar os URLs de vídeo independentemente do banco de dados (para Dias 1 e 2)
   if (dayNumber === 1) {
@@ -126,6 +142,7 @@ function EjerciciosPage() {
 
   // Se o URL não for youtube/vimeo e parecer um path de imagem (ex: /images/caminar_20.png)
   const isImageUrl = videoUrl && (videoUrl.endsWith('.png') || videoUrl.endsWith('.jpg') || videoUrl.endsWith('.jpeg'));
+  const embedUrl = getEmbedUrl(videoUrl);
 
   return (
     <AppShell>
