@@ -77,12 +77,6 @@ const AuthenticatedAnalizarRoute = AuthenticatedAnalizarRouteImport.update({
   path: '/analizar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAlimentacionRoute =
-  AuthenticatedAlimentacionRouteImport.update({
-    id: '/alimentacion',
-    path: '/alimentacion',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedAguaRoute = AuthenticatedAguaRouteImport.update({
   id: '/agua',
   path: '/agua',
@@ -100,7 +94,6 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/agua': typeof AuthenticatedAguaRoute
-  '/alimentacion': typeof AuthenticatedAlimentacionRoute
   '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -108,7 +101,6 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
-  '/recetas': typeof AuthenticatedRecetasRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -116,7 +108,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/agua': typeof AuthenticatedAguaRoute
-  '/alimentacion': typeof AuthenticatedAlimentacionRoute
   '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -124,7 +115,6 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
-  '/recetas': typeof AuthenticatedRecetasRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -134,7 +124,6 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/agua': typeof AuthenticatedAguaRoute
-  '/_authenticated/alimentacion': typeof AuthenticatedAlimentacionRoute
   '/_authenticated/analizar': typeof AuthenticatedAnalizarRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -142,7 +131,6 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
-  '/_authenticated/recetas': typeof AuthenticatedRecetasRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
