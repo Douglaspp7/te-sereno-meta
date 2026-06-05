@@ -4,7 +4,7 @@ import { PlayCircle, Clock, Flame, Check, Lock, CheckCircle2 } from "lucide-reac
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/lib/auth";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import confetti from "canvas-confetti";
 
 export const Route = createFileRoute("/_authenticated/ejercicios")({
@@ -16,6 +16,7 @@ function EjerciciosPage() {
   const queryClient = useQueryClient();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const timelineRef = useRef<HTMLDivElement>(null);
 
   // Evitar hydration errors com react-player
   useEffect(() => {
@@ -61,6 +62,16 @@ function EjerciciosPage() {
       setSelectedDayNum(unlockedDay);
     }
   }, [unlockedDay]);
+
+  // Auto-scroll timeline to active day
+  useEffect(() => {
+    if (timelineRef.current) {
+      const activeElement = timelineRef.current.children[selectedDayNum - 1] as HTMLElement;
+      if (activeElement) {
+        activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }, [selectedDayNum]);
 
   const currentProgress = allProgress?.find(p => p.day_number === selectedDayNum);
   const isDone = currentProgress?.exercise_done || false;
@@ -252,7 +263,7 @@ function EjerciciosPage() {
                   <span>Tu Ruta de 21 Días</span>
                   <span className="text-sm font-normal text-muted-foreground">{selectedDayNum}/21</span>
                 </h4>
-                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div ref={timelineRef} className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {Array.from({ length: 21 }, (_, i) => i + 1).map((d) => {
                     const isPast = d < unlockedDay;
                     const isCurrent = d === selectedDayNum;
