@@ -113,10 +113,16 @@ function EjerciciosPage() {
     }
   };
 
-  const exercise = dayData?.exercises;
-  const isDone = progress?.exercise_done;
-  const videoUrl = exercise?.video_url;
+  let videoUrl = exercise?.video_url;
   
+  // Fallbacks diretos caso o banco de dados demore para processar a migração
+  if (dayNumber === 1 && (!videoUrl || videoUrl.includes('.png'))) {
+    videoUrl = 'https://youtu.be/YFAuNBwvugY';
+  }
+  if (dayNumber === 2 && (!videoUrl || videoUrl.includes('.png'))) {
+    videoUrl = 'https://youtu.be/21C7hlYOnwE';
+  }
+
   // Se o URL não for youtube/vimeo e parecer um path de imagem (ex: /images/caminar_20.png)
   const isImageUrl = videoUrl && (videoUrl.endsWith('.png') || videoUrl.endsWith('.jpg') || videoUrl.endsWith('.jpeg'));
 
