@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Sparkles, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/generando")({
   component: GeneratingPage,
@@ -21,52 +21,70 @@ function GeneratingPage() {
 
   useEffect(() => {
     if (done >= tasks.length) {
-      const t = setTimeout(() => navigate({ to: "/", replace: true }), 800);
+      const t = setTimeout(() => navigate({ to: "/", replace: true }), 900);
       return () => clearTimeout(t);
     }
-    const t = setTimeout(() => setDone((d) => d + 1), 900);
+    const t = setTimeout(() => setDone((d) => d + 1), 850);
     return () => clearTimeout(t);
   }, [done, navigate]);
 
-  return (
-    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center bg-background px-6 text-center">
-      <div className="grid h-20 w-20 place-items-center rounded-3xl bg-primary/10 text-primary shadow-soft">
-        <Sparkles className="h-10 w-10 animate-pulse" />
-      </div>
-      <h1 className="mt-8 font-display text-3xl text-foreground">Creando tu plan personalizado…</h1>
-      <p className="mt-2 text-sm text-muted-foreground">La IA está diseñando tu reto de 21 días.</p>
+  const pct = Math.round((done / tasks.length) * 100);
 
-      <ul className="mt-10 w-full space-y-3 text-left">
+  return (
+    <div className="gradient-hero relative mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-6 text-center">
+      <div className="relative">
+        <div className="absolute inset-0 -m-6 animate-pulse rounded-full bg-primary/20 blur-2xl" />
+        <div className="relative grid h-24 w-24 place-items-center rounded-full gradient-ai shadow-float animate-float">
+          <Sparkles className="h-10 w-10 text-white" strokeWidth={2} />
+        </div>
+      </div>
+
+      <h1 className="mt-10 font-display text-[28px] leading-tight text-foreground">
+        Creando tu plan<br />personalizado…
+      </h1>
+      <p className="mt-2 text-sm text-muted-foreground">La IA está diseñando tu reto de 21 días</p>
+
+      <div className="mt-6 w-full">
+        <div className="flex items-center justify-between text-[11px] font-semibold">
+          <span className="text-muted-foreground">Procesando</span>
+          <span className="text-primary">{pct}%</span>
+        </div>
+        <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full gradient-ai transition-all duration-700" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+
+      <ul className="mt-8 w-full space-y-2.5 text-left">
         {tasks.map((t, i) => {
           const isDone = i < done;
           const isCurrent = i === done;
           return (
             <li
               key={t}
-              className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
+              className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-all ${
                 isDone
-                  ? "border-primary/30 bg-primary/5 text-foreground"
+                  ? "bg-card text-foreground shadow-soft"
                   : isCurrent
-                  ? "border-border bg-card text-foreground shadow-soft"
-                  : "border-border bg-card/50 text-muted-foreground"
+                  ? "bg-card text-foreground shadow-float scale-[1.02]"
+                  : "bg-card/40 text-muted-foreground"
               }`}
             >
               <span
-                className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${
+                className={`grid h-7 w-7 shrink-0 place-items-center rounded-full ${
                   isDone
-                    ? "bg-primary text-primary-foreground"
+                    ? "gradient-ai text-white"
                     : isCurrent
-                    ? "bg-primary/15 text-primary"
+                    ? "bg-accent text-primary"
                     : "bg-muted text-muted-foreground"
                 }`}
               >
                 {isDone ? (
                   <Check className="h-3.5 w-3.5" strokeWidth={3} />
                 ) : isCurrent ? (
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 ) : null}
               </span>
-              {t}
+              <span className={isCurrent ? "font-semibold" : isDone ? "font-medium" : ""}>{t}</span>
             </li>
           );
         })}
