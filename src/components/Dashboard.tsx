@@ -5,6 +5,8 @@ import { Check, Droplet, Plus, Minus, Dumbbell, Flame, Sparkles, User as UserIco
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
 import { RecipeModal, RecipeData } from "./RecipeModal";
+import { WorkoutPlayer } from "./WorkoutPlayer";
+import { WeightChartModal } from "./WeightChartModal";
 
 type Profile = {
   display_name: string | null;
@@ -99,6 +101,8 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
   ];
 
   const [openRecipeId, setOpenRecipeId] = useState<string | null>(null);
+  const [showWorkout, setShowWorkout] = useState(false);
+  const [showWeight, setShowWeight] = useState(false);
   const activeRecipe = meals.find(m => m.id === openRecipeId) || null;
 
   const consumedKcal = meals.filter(m => m.done).reduce((acc, m) => acc + m.kcal, 0);
@@ -190,7 +194,9 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       {/* WEIGHT STATS */}
       <section className="-mt-4 grid grid-cols-3 gap-3 px-6">
         <Stat label="Inicial" value={profile.start_weight ? `${profile.start_weight}` : "—"} unit="kg" />
-        <Stat label="Actual" value={profile.current_weight ? `${profile.current_weight}` : "—"} unit="kg" highlight />
+        <button onClick={() => setShowWeight(true)} className="outline-none active:scale-95 transition-transform text-left">
+          <Stat label="Actual" value={profile.current_weight ? `${profile.current_weight}` : "—"} unit="kg" highlight />
+        </button>
         <Stat label="Meta" value={profile.goal_weight ? `${profile.goal_weight}` : "—"} unit="kg" />
       </section>
       {lostKg > 0 && (
@@ -271,7 +277,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           title="Caminar 20 minutos"
           subtitle="A paso ligero · ~120 kcal"
           done={!!progress?.exercise_done}
-          onToggle={() => upsertProgress.mutate({ exercise_done: !progress?.exercise_done })}
+          onToggle={() => setShowWorkout(true)}
         />
       </section>
 
@@ -291,7 +297,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
                 m.id === "lunch" ? <UtensilsCrossed className="h-5 w-5" /> :
                 <Moon className="h-5 w-5" />
               }
-              done={m.done}
+              done={!!m.done}
               onOpen={() => setOpenRecipeId(m.id)}
               onToggle={() => upsertProgress.mutate({ [`${m.id}_done`]: !m.done })}
             />
@@ -307,8 +313,29 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
         recipe={activeRecipe} 
         open={!!openRecipeId} 
         onOpenChange={(o) => !o && setOpenRecipeId(null)}
-        done={activeRecipe ? activeRecipe.done : false}
+        done={activeRecipe ? !!activeRecipe.done : false}
         onToggle={() => activeRecipe && upsertProgress.mutate({ [`${activeRecipe.id}_done`]: !activeRecipe.done })}
+      />
+      
+      <WorkoutPlayer 
+        open={showWorkout} 
+        onClose={() => setShowWorkout(false)} 
+        onComplete={() => upsertProgress.mutate({ exercise_done: true })} 
+      />
+
+      <WeightChartModal
+        open={showWeight}
+        onClose={() => setShowWeight(false)}
+        currentWeight={profile.current_weight}
+        startWeight={profile.start_weight}
+        goalWeight={profile.goal_weight}
+        onSaveWeight={(w) => {
+          // Here we would typically update profile.current_weight in the db
+          supabase.from("profiles").update({ current_weight: w }).eq("id", userId).then(() => {
+            qc.invalidateQueries({ queryKey: ["daily_progress", userId, currentDay] });
+            // In a real app we might also invalidate profile queries
+          });
+        }}
       />
     </AppShell>
   );
