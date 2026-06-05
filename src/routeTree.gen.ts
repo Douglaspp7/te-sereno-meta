@@ -18,7 +18,7 @@ import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/p
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedGenerandoRouteImport } from './routes/_authenticated/generando'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
-import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
+import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -65,9 +65,9 @@ const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
   path: '/compras',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedCoachRoute = AuthenticatedCoachRouteImport.update({
-  id: '/coach',
-  path: '/coach',
+const AuthenticatedEjerciciosRoute = AuthenticatedEjerciciosRouteImport.update({
+  id: '/ejercicios',
+  path: '/ejercicios',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const LovableEmailQueueProcessRoute =
@@ -81,7 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/coach': typeof AuthenticatedCoachRoute
+  '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/generando': typeof AuthenticatedGenerandoRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -93,7 +93,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/coach': typeof AuthenticatedCoachRoute
+  '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/generando': typeof AuthenticatedGenerandoRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -107,7 +107,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/coach': typeof AuthenticatedCoachRoute
+  '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/generando': typeof AuthenticatedGenerandoRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -121,7 +121,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/coach'
+    | '/ejercicios'
     | '/compras'
     | '/generando'
     | '/onboarding'
@@ -133,7 +133,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/coach'
+    | '/ejercicios'
     | '/compras'
     | '/generando'
     | '/onboarding'
@@ -146,7 +146,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
-    | '/_authenticated/coach'
+    | '/_authenticated/ejercicios'
     | '/_authenticated/compras'
     | '/_authenticated/generando'
     | '/_authenticated/onboarding'
@@ -228,11 +228,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedComprasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/coach': {
-      id: '/_authenticated/coach'
-      path: '/coach'
-      fullPath: '/coach'
-      preLoaderRoute: typeof AuthenticatedCoachRouteImport
+    '/_authenticated/ejercicios': {
+      id: '/_authenticated/ejercicios'
+      path: '/ejercicios'
+      fullPath: '/ejercicios'
+      preLoaderRoute: typeof AuthenticatedEjerciciosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/lovable/email/queue/process': {
@@ -246,7 +246,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
+  AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedGenerandoRoute: typeof AuthenticatedGenerandoRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
@@ -255,7 +255,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedCoachRoute: AuthenticatedCoachRoute,
+  AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedGenerandoRoute: AuthenticatedGenerandoRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
