@@ -111,12 +111,12 @@ function EjerciciosPage() {
   }, [selectedDayNum, isLoadingExercise]);
 
   const upsertProgress = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (newValue: boolean) => {
       const { error } = await supabase.from("daily_progress").upsert({
         user_id: user?.id || "",
         day_number: selectedDayNum,
         log_date: currentLogDate,
-        exercise_done: true,
+        exercise_done: newValue,
         ...(currentProgress?.id ? { id: currentProgress.id } : {})
       });
       if (error) throw error;
@@ -128,8 +128,9 @@ function EjerciciosPage() {
   });
 
   const handleComplete = () => {
-    if (!isDone) {
-      upsertProgress.mutate();
+    const newValue = !isDone;
+    upsertProgress.mutate(newValue);
+    if (newValue) {
       confetti({
         particleCount: 150,
         spread: 70,
@@ -255,7 +256,7 @@ function EjerciciosPage() {
                     "Guardando..."
                   ) : isDone ? (
                     <>
-                      <Check className="h-5 w-5" strokeWidth={3} /> Completado
+                      <Check className="h-5 w-5" strokeWidth={3} /> Desmarcar como completado
                     </>
                   ) : (
                     "Marcar como completado"
