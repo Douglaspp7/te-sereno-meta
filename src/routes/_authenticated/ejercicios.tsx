@@ -5,7 +5,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/lib/auth";
 import { useState, useEffect } from "react";
-import ReactPlayer from "react-player";
 import confetti from "canvas-confetti";
 
 export const Route = createFileRoute("/_authenticated/ejercicios")({
@@ -143,18 +142,16 @@ function EjerciciosPage() {
               {/* Video Player Area */}
               <div className="aspect-video w-full rounded-2xl bg-black/5 flex items-center justify-center relative overflow-hidden mb-5 border border-border/50 shadow-inner group">
                 {isClient && videoUrl && !isImageUrl ? (
-                   <div className="absolute inset-0 w-full h-full">
-                     <ReactPlayer
-                        url={videoUrl}
-                        width="100%"
-                        height="100%"
-                        playing={isPlaying}
-                        controls={true}
-                        onPlay={() => setIsPlaying(true)}
-                        onPause={() => setIsPlaying(false)}
-                        style={{ position: 'absolute', top: 0, left: 0 }}
-                      />
-                   </div>
+                  <div className="absolute inset-0 z-10 w-full h-full bg-black/90">
+                    <iframe
+                      className="w-full h-full"
+                      src={embedUrl}
+                      title="Video Player"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
                 ) : (
                   <>
                     {/* Fallback image / Mockup when there's no real video URL */}
