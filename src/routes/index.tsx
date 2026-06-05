@@ -51,7 +51,7 @@ function Home() {
         <div className="relative px-5 pt-10 pb-6">
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">Reset 21 · Programa holístico</p>
           <h1 className="mt-3 font-display text-4xl leading-[1.05] text-foreground">
-            Tô Testanu <em className="not-italic text-primary">21 días</em>
+            è Nóis na fita  <em className="not-italic text-primary">21 días</em>
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Alimentación, ejercicios, recetas y seguimiento. Todo lo que necesitas para tu reset, en un solo lugar.
