@@ -34,7 +34,7 @@ function FullScreenRecipeModal({
   const nutritionalBenefits = (recipe.nutritional_benefits as string[]) || [];
   const weightLossBenefits = (recipe.weight_loss_benefits as string[]) || [];
 
-  const imageUrl = recipe.image_url || `/images/recipes/${recipe.id}.jpg`;
+  const imageUrl = `/images/recipes/${recipe.id}.jpg`;
 
   return (
     <div className="fixed inset-0 z-[100] bg-background overflow-y-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
