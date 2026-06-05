@@ -6,6 +6,11 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    build: {
+      rollupOptions: {
+        external: ['canvas'],
+      },
+    },
     plugins: [
       VitePWA({
         registerType: "autoUpdate",
