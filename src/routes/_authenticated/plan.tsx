@@ -463,10 +463,11 @@ function PlanPage() {
             {day.exercise && (
                <button
                  onClick={() => {
-                   if(!progress?.exercise_done) {
+                   const isDone = !!progress?.exercise_done;
+                   if(!isDone) {
                      confetti({ particleCount: 100, origin: { y: 0.6 } });
-                     updateProgress.mutate({ exercise_done: true });
                    }
+                   updateProgress.mutate({ exercise_done: !isDone });
                  }}
                  className={`w-full text-left p-5 rounded-[1.5rem] border flex items-center gap-4 transition-all ${
                    progress?.exercise_done 
