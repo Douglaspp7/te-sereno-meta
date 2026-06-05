@@ -10,7 +10,7 @@ import heroImg from "@/assets/hero-tea.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Reset 21 — Transforma tu cuerpo en 21 días" },
+      { title: "To testando peão" },
       { name: "description", content: "Programa holístico de 21 días: alimentación, ejercicios, recetas naturales y seguimiento de progreso." },
       { property: "og:title", content: "Reset 21 — Transforma tu cuerpo en 21 días" },
       { property: "og:description", content: "Alimentación, ejercicios, recetas y progreso. Todo lo que necesitas en un solo lugar." },
