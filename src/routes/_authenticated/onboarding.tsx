@@ -84,6 +84,7 @@ const steps: ReadonlyArray<Step> = [
 
 function OnboardingPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = Route.useRouteContext();
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Data>(empty);
