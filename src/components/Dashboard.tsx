@@ -88,28 +88,28 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
 
   return (
     <AppShell>
-      {/* HEADER */}
-      <header className="gradient-hero px-5 pt-10 pb-6">
+      {/* HEADER PREMIUM */}
+      <header className="bg-background px-6 pt-12 pb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-full gradient-ai text-white shadow-soft">
+            <div className="grid h-12 w-12 place-items-center rounded-full bg-primary text-white shadow-sm">
               <span className="text-sm font-bold">{(firstName[0] || "U").toUpperCase()}</span>
             </div>
             <div>
-              <p className="text-[11px] text-muted-foreground">Hola{firstName ? `,` : ""}</p>
-              <p className="text-sm font-semibold text-foreground">{firstName || "amig@"} 👋</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Tu progreso</p>
+              <p className="text-base font-bold text-foreground">Hola, {firstName || "amig@"} 👋</p>
             </div>
           </div>
-          <Link to="/auth" className="grid h-10 w-10 place-items-center rounded-full bg-card shadow-soft">
-            <UserIcon className="h-4 w-4 text-muted-foreground" />
+          <Link to="/auth" className="grid h-10 w-10 place-items-center rounded-full border border-border/50 bg-white shadow-sm">
+            <UserIcon className="h-4 w-4 text-foreground" />
           </Link>
         </div>
 
-        {/* Day ring + plan stat */}
-        <div className="mt-6 flex items-center gap-4 rounded-3xl bg-card p-4 shadow-float">
+        {/* Day ring + plan stat - PWA VIBE */}
+        <div className="mt-8 flex items-center gap-5 rounded-[2rem] border border-border/50 bg-white p-5 shadow-float">
           <div className="relative shrink-0" style={{ width: ringSize, height: ringSize }}>
             <svg width={ringSize} height={ringSize} className="-rotate-90">
-              <circle cx={ringSize/2} cy={ringSize/2} r={ringRadius} stroke="oklch(0.94 0.01 150)" strokeWidth={ringStroke} fill="none" />
+              <circle cx={ringSize/2} cy={ringSize/2} r={ringRadius} stroke="#E5E7EB" strokeWidth={ringStroke} fill="none" />
               <circle
                 cx={ringSize/2} cy={ringSize/2} r={ringRadius}
                 stroke="url(#ringGrad)" strokeWidth={ringStroke} fill="none"
@@ -120,65 +120,65 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
               />
               <defs>
                 <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="oklch(0.56 0.1 150)" />
-                  <stop offset="100%" stopColor="oklch(0.5 0.12 200)" />
+                  <stop offset="0%" stopColor="#4F8A5B" />
+                  <stop offset="100%" stopColor="#7DBE8A" />
                 </linearGradient>
               </defs>
             </svg>
             <div className="absolute inset-0 grid place-items-center text-center">
               <div>
-                <p className="font-display text-2xl leading-none text-foreground">{currentDay}</p>
-                <p className="text-[9px] uppercase tracking-widest text-muted-foreground">de 21</p>
+                <p className="font-display text-3xl font-extrabold leading-none text-foreground">{currentDay}</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">de 21</p>
               </div>
             </div>
           </div>
           <div className="flex-1">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Tu reto</p>
-            <p className="font-display text-lg text-foreground">{completedCount}/{totalTasks} tareas hoy</p>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full gradient-ai transition-all" style={{ width: `${planProgressPct}%` }} />
+            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Hoy</p>
+            <p className="font-display text-lg font-bold text-foreground">{completedCount} de {totalTasks} tareas</p>
+            <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${planProgressPct}%` }} />
             </div>
-            <p className="mt-1 text-[10px] text-muted-foreground">Progreso del programa · {planProgressPct}%</p>
+            <p className="mt-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Programa · {planProgressPct}%</p>
           </div>
         </div>
       </header>
 
       {/* WEIGHT STATS */}
-      <section className="-mt-2 grid grid-cols-3 gap-2 px-5">
+      <section className="-mt-4 grid grid-cols-3 gap-3 px-6">
         <Stat label="Inicial" value={profile.start_weight ? `${profile.start_weight}` : "—"} unit="kg" />
         <Stat label="Actual" value={profile.current_weight ? `${profile.current_weight}` : "—"} unit="kg" highlight />
         <Stat label="Meta" value={profile.goal_weight ? `${profile.goal_weight}` : "—"} unit="kg" />
       </section>
       {lostKg > 0 && (
-        <div className="mx-5 mt-3 flex items-center justify-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-primary">
-          <Flame className="h-3.5 w-3.5" /> Has perdido {lostKg.toFixed(1)} kg
+        <div className="mx-6 mt-4 flex items-center justify-center gap-1.5 rounded-full bg-secondary/15 px-3 py-2 text-xs font-bold text-primary shadow-sm border border-border/40">
+          <Flame className="h-4 w-4" /> Has perdido {lostKg.toFixed(1)} kg
         </div>
       )}
 
       {/* MISSION */}
-      <section className="mt-7 px-5">
+      <section className="mt-8 px-6">
         <SectionLabel>Misión del día</SectionLabel>
         <button
           onClick={() => upsertProgress.mutate({ mission_done: !progress?.mission_done })}
-          className={`relative w-full overflow-hidden rounded-3xl p-5 text-left shadow-float transition active:scale-[0.99] ${
-            progress?.mission_done ? "bg-card" : "gradient-ai text-white"
+          className={`relative w-full overflow-hidden rounded-[1.5rem] border p-5 text-left shadow-sm transition active:scale-[0.99] ${
+            progress?.mission_done ? "bg-background border-border/50" : "bg-white border-border/50"
           }`}
         >
           {!progress?.mission_done && (
-            <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-white/15 blur-2xl" />
+            <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-primary/5 blur-2xl" />
           )}
           <div className="relative flex items-center gap-4">
-            <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${progress?.mission_done ? "bg-accent text-primary" : "bg-white/20 text-white"}`}>
+            <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${progress?.mission_done ? "bg-muted text-muted-foreground" : "bg-secondary/15 text-primary"}`}>
               <Sparkles className="h-6 w-6" />
             </span>
             <div className="flex-1">
-              <p className={`text-[10px] font-semibold uppercase tracking-widest ${progress?.mission_done ? "text-muted-foreground" : "text-white/80"}`}>Reto IA</p>
-              <p className={`text-base font-bold ${progress?.mission_done ? "text-foreground line-through opacity-60" : ""}`}>
+              <p className={`text-[10px] font-bold uppercase tracking-widest ${progress?.mission_done ? "text-muted-foreground/50" : "text-primary"}`}>Reto IA</p>
+              <p className={`text-[15px] font-bold ${progress?.mission_done ? "text-muted-foreground line-through opacity-60" : "text-foreground"}`}>
                 No tomar refrescos hoy
               </p>
-              <p className={`text-xs ${progress?.mission_done ? "text-muted-foreground" : "text-white/80"}`}>Sustituye por agua o té sin azúcar</p>
+              <p className={`text-[13px] ${progress?.mission_done ? "text-muted-foreground/50" : "text-muted-foreground"}`}>Sustituye por agua o té sin azúcar</p>
             </div>
-            <span className={`grid h-9 w-9 place-items-center rounded-full border-2 ${progress?.mission_done ? "border-primary bg-primary text-white" : "border-white/40 bg-white/10"}`}>
+            <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 transition-all ${progress?.mission_done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
               {progress?.mission_done && <Check className="h-4 w-4" strokeWidth={3} />}
             </span>
           </div>
@@ -186,34 +186,33 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       </section>
 
       {/* WATER */}
-      <section className="mt-7 px-5">
+      <section className="mt-8 px-6">
         <SectionLabel>Hidratación</SectionLabel>
-        <div className="rounded-3xl bg-card p-5 shadow-soft">
+        <div className="rounded-[1.5rem] border border-border/40 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-10 w-10 place-items-center rounded-2xl" style={{ backgroundColor: "oklch(0.65 0.16 250 / 0.12)", color: "oklch(0.55 0.16 250)" }}>
-                <Droplet className="h-5 w-5" />
+            <div className="flex items-center gap-3">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-accent/10 text-accent">
+                <Droplet className="h-6 w-6" />
               </span>
               <div>
-                <p className="text-sm font-bold text-foreground">{water} / {waterGoal} vasos</p>
-                <p className="text-[11px] text-muted-foreground">{water * 250} ml de {waterGoal * 250} ml</p>
+                <p className="text-[15px] font-bold text-foreground">{water} / {waterGoal} vasos</p>
+                <p className="text-[13px] text-muted-foreground">{water * 250} ml de {waterGoal * 250} ml</p>
               </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <button onClick={() => upsertProgress.mutate({ water_glasses: Math.max(0, water - 1) })} className="grid h-9 w-9 place-items-center rounded-full bg-muted text-foreground">
+            <div className="flex items-center gap-2">
+              <button onClick={() => upsertProgress.mutate({ water_glasses: Math.max(0, water - 1) })} className="grid h-10 w-10 place-items-center rounded-full bg-background border border-border text-foreground transition active:scale-95">
                 <Minus className="h-4 w-4" />
               </button>
-              <button onClick={() => upsertProgress.mutate({ water_glasses: Math.min(waterGoal, water + 1) })} className="grid h-9 w-9 place-items-center rounded-full gradient-ai text-white shadow-soft">
+              <button onClick={() => upsertProgress.mutate({ water_glasses: Math.min(waterGoal, water + 1) })} className="grid h-10 w-10 place-items-center rounded-full bg-accent text-white shadow-sm transition active:scale-95">
                 <Plus className="h-4 w-4" />
               </button>
             </div>
           </div>
-          <div className="mt-4 flex gap-1">
+          <div className="mt-5 flex gap-1.5">
             {Array.from({ length: waterGoal }).map((_, i) => (
               <div
                 key={i}
-                className={`h-9 flex-1 rounded-lg transition ${i < water ? "" : "bg-muted"}`}
-                style={i < water ? { background: "linear-gradient(180deg, oklch(0.7 0.16 250 / 0.7), oklch(0.55 0.16 250))" } : undefined}
+                className={`h-10 flex-1 rounded-lg transition-all duration-300 ${i < water ? "bg-accent" : "bg-background border border-border/50"}`}
               />
             ))}
           </div>
@@ -221,10 +220,10 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       </section>
 
       {/* EXERCISE */}
-      <section className="mt-7 px-5">
+      <section className="mt-8 px-6">
         <SectionLabel>Ejercicio</SectionLabel>
         <TaskCard
-          icon={<Dumbbell className="h-5 w-5" />}
+          icon={<Dumbbell className="h-6 w-6 text-primary" />}
           title="Caminar 20 minutos"
           subtitle="A paso ligero · ~120 kcal"
           done={!!progress?.exercise_done}
@@ -233,15 +232,15 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       </section>
 
       {/* MEALS */}
-      <section className="mt-7 px-5">
+      <section className="mt-8 px-6">
         <SectionLabel>Comidas de hoy</SectionLabel>
-        <div className="space-y-2">
+        <div className="space-y-3">
           <MealCard label="Desayuno" name="Avena con frutos rojos" kcal={320} icon={<Coffee className="h-5 w-5" />} done={!!progress?.breakfast_done} onToggle={() => upsertProgress.mutate({ breakfast_done: !progress?.breakfast_done })} />
           <MealCard label="Almuerzo" name="Pollo a la plancha con ensalada" kcal={480} icon={<UtensilsCrossed className="h-5 w-5" />} done={!!progress?.lunch_done} onToggle={() => upsertProgress.mutate({ lunch_done: !progress?.lunch_done })} />
           <MealCard label="Cena" name="Tortilla de espinacas" kcal={350} icon={<Moon className="h-5 w-5" />} done={!!progress?.dinner_done} onToggle={() => upsertProgress.mutate({ dinner_done: !progress?.dinner_done })} />
         </div>
-        <div className="mt-4 flex items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border bg-card/50 py-3 text-[11px] text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-primary" /> Recetas personalizadas con IA llegan en breve
+        <div className="mt-5 flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-white py-4 text-[13px] font-medium text-muted-foreground shadow-sm">
+          <Bot className="h-4 w-4 text-primary" /> Recetas personalizadas con IA en breve
         </div>
       </section>
 
@@ -252,17 +251,17 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
 
 function Stat({ label, value, unit, highlight = false }: { label: string; value: string; unit?: string; highlight?: boolean }) {
   return (
-    <div className={`rounded-2xl p-3 text-center shadow-soft ${highlight ? "gradient-ai text-white" : "bg-card"}`}>
-      <p className={`text-[9px] uppercase tracking-widest ${highlight ? "opacity-80" : "text-muted-foreground"}`}>{label}</p>
-      <p className="mt-1 font-display text-xl leading-none">
-        {value}<span className={`ml-0.5 text-[10px] font-medium ${highlight ? "opacity-80" : "text-muted-foreground"}`}>{unit}</span>
+    <div className={`rounded-[1.5rem] p-4 text-center border border-border/40 shadow-sm ${highlight ? "bg-primary text-white" : "bg-white"}`}>
+      <p className={`text-[10px] font-bold uppercase tracking-widest ${highlight ? "text-white/80" : "text-muted-foreground"}`}>{label}</p>
+      <p className={`mt-1 font-display text-xl font-bold leading-none ${highlight ? "" : "text-foreground"}`}>
+        {value}<span className={`ml-0.5 text-xs font-semibold ${highlight ? "text-white/80" : "text-muted-foreground"}`}>{unit}</span>
       </p>
     </div>
   );
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <p className="mb-2.5 px-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{children}</p>;
+  return <p className="mb-3 px-1 text-[12px] font-bold uppercase tracking-widest text-muted-foreground">{children}</p>;
 }
 
 function TaskCard({
@@ -271,20 +270,18 @@ function TaskCard({
   return (
     <button
       onClick={onToggle}
-      className={`flex w-full items-center gap-3 rounded-3xl p-4 text-left shadow-soft transition active:scale-[0.99] ${
-        done ? "bg-card" : "bg-card"
-      }`}
+      className="flex w-full items-center gap-4 rounded-[1.5rem] border border-border/40 bg-white p-5 text-left shadow-sm transition active:scale-[0.99]"
     >
       {icon && (
-        <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${done ? "bg-muted text-muted-foreground" : "bg-accent text-primary"}`}>
+        <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-colors ${done ? "bg-background text-muted-foreground" : "bg-secondary/15"}`}>
           {icon}
         </span>
       )}
       <div className="flex-1">
-        <p className={`text-[15px] font-bold ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>{title}</p>
-        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+        <p className={`text-[16px] font-bold ${done ? "text-muted-foreground line-through opacity-60" : "text-foreground"}`}>{title}</p>
+        {subtitle && <p className={`mt-0.5 text-[13px] ${done ? "text-muted-foreground/60" : "text-muted-foreground"}`}>{subtitle}</p>}
       </div>
-      <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 transition ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
+      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 transition-all ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
         {done && <Check className="h-4 w-4" strokeWidth={3} />}
       </span>
     </button>
@@ -297,18 +294,18 @@ function MealCard({
   return (
     <button
       onClick={onToggle}
-      className="flex w-full items-center gap-3 rounded-2xl bg-card p-3.5 text-left shadow-soft transition active:scale-[0.99]"
+      className="flex w-full items-center gap-4 rounded-[1.5rem] border border-border/40 bg-white p-4 text-left shadow-sm transition active:scale-[0.99]"
     >
-      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${done ? "bg-muted text-muted-foreground" : "bg-accent text-primary"}`}>
+      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-colors ${done ? "bg-background text-muted-foreground" : "bg-secondary/15 text-primary"}`}>
         {icon}
       </span>
       <div className="flex-1">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{label}</p>
-        <p className={`text-sm font-semibold ${done ? "line-through opacity-50" : "text-foreground"}`}>{name}</p>
-        <p className="text-[11px] text-muted-foreground">{kcal} kcal</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
+        <p className={`text-[15px] font-bold ${done ? "line-through opacity-50 text-muted-foreground" : "text-foreground"}`}>{name}</p>
+        <p className="mt-0.5 text-[12px] text-muted-foreground">{kcal} kcal</p>
       </div>
-      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 transition ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
-        {done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 transition-all ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
+        {done && <Check className="h-4 w-4" strokeWidth={3} />}
       </span>
     </button>
   );
