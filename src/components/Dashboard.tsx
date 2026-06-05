@@ -147,7 +147,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       {/* MEGA GRID */}
       <section className="mt-6 px-5">
         <div className="grid grid-cols-2 gap-3">
-          <MegaCard to="/alimentacion" icon={<UtensilsCrossed className="h-7 w-7" />} title="Alimentación" subtitle="Comidas del día" tint="primary" />
+          <MegaCard to="/alimentacion" image="/alimentacion_3d.png" title="Alimentación" subtitle="Comidas del día" tint="primary" />
           <MegaCard to="/ejercicios" icon={<Dumbbell className="h-7 w-7" />} title="Ejercicios" subtitle="Tu rutina diaria" tint="accent" />
           <MegaCard to="/recetas" icon={<BookOpen className="h-7 w-7" />} title="Recetas" subtitle="Paso a paso" tint="primary" />
           <MegaCard to="/compras" icon={<ShoppingCart className="h-7 w-7" />} title="Compras" subtitle="Por semana" tint="accent" />
@@ -186,18 +186,24 @@ function MiniStat({ label, value, unit, big = false }: { label: string; value: s
 }
 
 function MegaCard({
-  to, icon, title, subtitle, tint,
-}: { to: string; icon: React.ReactNode; title: string; subtitle: string; tint: "primary" | "accent" }) {
+  to, icon, image, title, subtitle, tint,
+}: { to: string; icon?: React.ReactNode; image?: string; title: string; subtitle: string; tint: "primary" | "accent" }) {
   const iconBg = tint === "primary" ? "bg-secondary/15 text-primary" : "bg-accent/10 text-accent";
   return (
     <Link
       to={to}
-      className="group flex min-h-[130px] flex-col justify-between rounded-[1.5rem] border border-border/50 bg-white p-4 shadow-sm transition active:scale-[0.98]"
+      className="group flex min-h-[130px] flex-col justify-between rounded-[1.5rem] border border-border/50 bg-white p-4 shadow-sm transition active:scale-[0.98] overflow-hidden relative"
     >
-      <span className={`grid h-12 w-12 place-items-center rounded-2xl ${iconBg}`}>
-        {icon}
-      </span>
-      <div>
+      {image ? (
+        <div className="absolute right-[-10px] top-[-5px] h-20 w-20 opacity-90 transition-transform group-hover:scale-105">
+           <img src={image} alt={title} className="h-full w-full object-cover" />
+        </div>
+      ) : (
+        <span className={`grid h-12 w-12 place-items-center rounded-2xl ${iconBg}`}>
+          {icon}
+        </span>
+      )}
+      <div className="relative mt-8">
         <p className="text-[16px] font-bold text-foreground leading-tight">{title}</p>
         <p className="mt-0.5 text-[12px] text-muted-foreground">{subtitle}</p>
       </div>
