@@ -79,24 +79,42 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
 
   const firstName = profile.display_name?.split(" ")[0] ?? "";
 
-  // SVG ring
-  const ringSize = 96;
-  const ringStroke = 9;
+  const meals = [
+    { id: "breakfast", label: "Desayuno", name: "Avena con frutos rojos", kcal: 320, p: 12, c: 45, f: 8, done: !!progress?.breakfast_done },
+    { id: "lunch", label: "Almuerzo", name: "Pollo a la plancha", kcal: 480, p: 35, c: 40, f: 15, done: !!progress?.lunch_done },
+    { id: "dinner", label: "Cena", name: "Tortilla de espinacas", kcal: 350, p: 20, c: 15, f: 18, done: !!progress?.dinner_done },
+  ];
+
+  const consumedKcal = meals.filter(m => m.done).reduce((acc, m) => acc + m.kcal, 0);
+  const consumedP = meals.filter(m => m.done).reduce((acc, m) => acc + m.p, 0);
+  const consumedC = meals.filter(m => m.done).reduce((acc, m) => acc + m.c, 0);
+  const consumedF = meals.filter(m => m.done).reduce((acc, m) => acc + m.f, 0);
+
+  // Mock Goals based on user profile or fixed for now
+  const goalKcal = 1500;
+  const goalP = 110;
+  const goalC = 150;
+  const goalF = 50;
+  const remainingKcal = Math.max(0, goalKcal - consumedKcal);
+
+  // SVG ring (Arise Style)
+  const ringSize = 180;
+  const ringStroke = 14;
   const ringRadius = (ringSize - ringStroke) / 2;
   const ringCirc = 2 * Math.PI * ringRadius;
-  const ringOffset = ringCirc - (dayProgressPct / 100) * ringCirc;
+  const ringOffset = ringCirc - (consumedKcal / goalKcal) * ringCirc;
 
   return (
     <AppShell>
-      {/* HEADER PREMIUM */}
-      <header className="bg-background px-6 pt-12 pb-8">
+      {/* HEADER PREMIUM - ARISE STYLE */}
+      <header className="bg-background px-6 pt-12 pb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="grid h-12 w-12 place-items-center rounded-full bg-primary text-white shadow-sm">
               <span className="text-sm font-bold">{(firstName[0] || "U").toUpperCase()}</span>
             </div>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Tu progreso</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Día {currentDay}</p>
               <p className="text-base font-bold text-foreground">Hola, {firstName || "amig@"} 👋</p>
             </div>
           </div>
@@ -105,18 +123,18 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           </Link>
         </div>
 
-        {/* Day ring + plan stat - PWA VIBE */}
-        <div className="mt-8 flex items-center gap-5 rounded-[2rem] border border-border/50 bg-white p-5 shadow-float">
+        {/* ARISE CALORIE RING */}
+        <div className="mt-8 flex flex-col items-center rounded-[2rem] border border-border/50 bg-white p-6 shadow-float">
           <div className="relative shrink-0" style={{ width: ringSize, height: ringSize }}>
             <svg width={ringSize} height={ringSize} className="-rotate-90">
-              <circle cx={ringSize/2} cy={ringSize/2} r={ringRadius} stroke="#E5E7EB" strokeWidth={ringStroke} fill="none" />
+              <circle cx={ringSize/2} cy={ringSize/2} r={ringRadius} stroke="#F3F4F6" strokeWidth={ringStroke} fill="none" />
               <circle
                 cx={ringSize/2} cy={ringSize/2} r={ringRadius}
                 stroke="url(#ringGrad)" strokeWidth={ringStroke} fill="none"
                 strokeLinecap="round"
                 strokeDasharray={ringCirc}
                 strokeDashoffset={ringOffset}
-                style={{ transition: "stroke-dashoffset 600ms ease" }}
+                style={{ transition: "stroke-dashoffset 800ms cubic-bezier(0.4, 0, 0.2, 1)" }}
               />
               <defs>
                 <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
@@ -125,21 +143,31 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
                 </linearGradient>
               </defs>
             </svg>
-            <div className="absolute inset-0 grid place-items-center text-center">
-              <div>
-                <p className="font-display text-3xl font-extrabold leading-none text-foreground">{currentDay}</p>
-                <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">de 21</p>
-              </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">Restantes</p>
+              <p className="font-display text-4xl font-extrabold leading-none text-foreground my-1">{remainingKcal}</p>
+              <p className="text-[12px] font-semibold text-muted-foreground">kcal</p>
             </div>
           </div>
-          <div className="flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Hoy</p>
-            <p className="font-display text-lg font-bold text-foreground">{completedCount} de {totalTasks} tareas</p>
-            <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${planProgressPct}%` }} />
-            </div>
-            <p className="mt-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Programa · {planProgressPct}%</p>
+
+          <div className="mt-6 flex w-full items-center justify-between text-center text-sm">
+             <div>
+               <p className="text-[11px] font-bold text-muted-foreground uppercase">Consumido</p>
+               <p className="font-bold">{consumedKcal} kcal</p>
+             </div>
+             <div className="h-8 w-px bg-border/60" />
+             <div>
+               <p className="text-[11px] font-bold text-muted-foreground uppercase">Objetivo</p>
+               <p className="font-bold">{goalKcal} kcal</p>
+             </div>
           </div>
+        </div>
+
+        {/* MACROS - ARISE STYLE */}
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          <MacroBar label="Proteínas" current={consumedP} max={goalP} color="bg-blue-500" />
+          <MacroBar label="Carbos" current={consumedC} max={goalC} color="bg-amber-500" />
+          <MacroBar label="Grasas" current={consumedF} max={goalF} color="bg-rose-500" />
         </div>
       </header>
 
@@ -235,9 +263,22 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       <section className="mt-8 px-6">
         <SectionLabel>Comidas de hoy</SectionLabel>
         <div className="space-y-3">
-          <MealCard label="Desayuno" name="Avena con frutos rojos" kcal={320} icon={<Coffee className="h-5 w-5" />} done={!!progress?.breakfast_done} onToggle={() => upsertProgress.mutate({ breakfast_done: !progress?.breakfast_done })} />
-          <MealCard label="Almuerzo" name="Pollo a la plancha con ensalada" kcal={480} icon={<UtensilsCrossed className="h-5 w-5" />} done={!!progress?.lunch_done} onToggle={() => upsertProgress.mutate({ lunch_done: !progress?.lunch_done })} />
-          <MealCard label="Cena" name="Tortilla de espinacas" kcal={350} icon={<Moon className="h-5 w-5" />} done={!!progress?.dinner_done} onToggle={() => upsertProgress.mutate({ dinner_done: !progress?.dinner_done })} />
+          {meals.map((m) => (
+            <MealCard
+              key={m.id}
+              label={m.label}
+              name={m.name}
+              kcal={m.kcal}
+              macros={{ p: m.p, c: m.c, f: m.f }}
+              icon={
+                m.id === "breakfast" ? <Coffee className="h-5 w-5" /> :
+                m.id === "lunch" ? <UtensilsCrossed className="h-5 w-5" /> :
+                <Moon className="h-5 w-5" />
+              }
+              done={m.done}
+              onToggle={() => upsertProgress.mutate({ [`${m.id}_done`]: !m.done })}
+            />
+          ))}
         </div>
         <div className="mt-5 flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-white py-4 text-[13px] font-medium text-muted-foreground shadow-sm">
           <Bot className="h-4 w-4 text-primary" /> Recetas personalizadas con IA en breve
@@ -288,24 +329,49 @@ function TaskCard({
   );
 }
 
+function MacroBar({ label, current, max, color }: { label: string; current: number; max: number; color: string }) {
+  const pct = Math.min(100, Math.max(0, (current / max) * 100));
+  return (
+    <div className="rounded-2xl border border-border/40 bg-white p-3 shadow-sm">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
+      </div>
+      <div className="mt-1 flex items-baseline gap-1">
+        <span className="text-sm font-bold text-foreground">{current}</span>
+        <span className="text-[10px] font-medium text-muted-foreground">/ {max}g</span>
+      </div>
+      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div className={`h-full rounded-full transition-all duration-700 ${color}`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
 function MealCard({
-  label, name, kcal, done, onToggle, icon,
-}: { label: string; name: string; kcal: number; done: boolean; onToggle: () => void; icon: React.ReactNode }) {
+  label, name, kcal, macros, done, onToggle, icon,
+}: { label: string; name: string; kcal: number; macros: {p:number, c:number, f:number}; done: boolean; onToggle: () => void; icon: React.ReactNode }) {
   return (
     <button
       onClick={onToggle}
       className="flex w-full items-center gap-4 rounded-[1.5rem] border border-border/40 bg-white p-4 text-left shadow-sm transition active:scale-[0.99]"
     >
-      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-colors ${done ? "bg-background text-muted-foreground" : "bg-secondary/15 text-primary"}`}>
+      <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-2xl transition-colors ${done ? "bg-background text-muted-foreground" : "bg-secondary/15 text-primary"}`}>
         {icon}
       </span>
       <div className="flex-1">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
-        <p className={`text-[15px] font-bold ${done ? "line-through opacity-50 text-muted-foreground" : "text-foreground"}`}>{name}</p>
-        <p className="mt-0.5 text-[12px] text-muted-foreground">{kcal} kcal</p>
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
+          <span className={`text-[11px] font-bold ${done ? "text-muted-foreground opacity-50" : "text-primary"}`}>{kcal} kcal</span>
+        </div>
+        <p className={`mt-0.5 text-[15px] font-bold leading-snug ${done ? "line-through opacity-50 text-muted-foreground" : "text-foreground"}`}>{name}</p>
+        <div className={`mt-1.5 flex gap-2 text-[11px] font-medium ${done ? "text-muted-foreground/50" : "text-muted-foreground"}`}>
+          <span><strong className={done ? "" : "text-blue-500"}>{macros.p}g</strong> P</span>
+          <span><strong className={done ? "" : "text-amber-500"}>{macros.c}g</strong> C</span>
+          <span><strong className={done ? "" : "text-rose-500"}>{macros.f}g</strong> G</span>
+        </div>
       </div>
-      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 transition-all ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
-        {done && <Check className="h-4 w-4" strokeWidth={3} />}
+      <span className={`ml-1 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 transition-all ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
+        {done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
       </span>
     </button>
   );
