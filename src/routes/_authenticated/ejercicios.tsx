@@ -31,25 +31,39 @@ function EjerciciosPage() {
   };
   const currentLogDate = getLocalDateString();
 
-  // 1. Fetch Daily Progress
-  const { data: progress, isLoading: isLoadingProgress } = useQuery({
-    queryKey: ["daily_progress", user?.id, currentLogDate],
-    queryRefetchInterval: false,
+  // 1. Fetch ALL Daily Progress to calculate unlocked day
+  const { data: allProgress, isLoading: isLoadingProgress } = useQuery({
+    queryKey: ["all_daily_progress", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("daily_progress")
-        .select("*")
-        .eq("user_id", user?.id)
-        .eq("log_date", currentLogDate)
-        .maybeSingle();
+        .select("id, day_number, exercise_done")
+        .eq("user_id", user?.id);
 
-      if (error && error.code !== "PGRST116") throw error;
-      return data;
+      if (error) throw error;
+      return data || [];
     },
     enabled: !!user?.id,
   });
 
-  const dayNumber = progress?.day_number ?? 1;
+  const unlockedDay = React.useMemo(() => {
+    if (!allProgress || allProgress.length === 0) return 1;
+    const completedDays = allProgress.filter(p => p.exercise_done).map(p => p.day_number || 1);
+    if (completedDays.length === 0) return 1;
+    return Math.min(21, Math.max(...completedDays) + 1);
+  }, [allProgress]);
+
+  const [selectedDayNum, setSelectedDayNum] = useState<number>(1);
+
+  // Sync automatically to the highest unlocked day when loaded or updated
+  useEffect(() => {
+    if (unlockedDay > selectedDayNum) {
+      setSelectedDayNum(unlockedDay);
+    }
+  }, [unlockedDay]);
+
+  const currentProgress = allProgress?.find(p => p.day_number === selectedDayNum);
+  const isDone = currentProgress?.exercise_done || false;
 
   // 2. Fetch Exercise for the Day
   const { data: dayData, isLoading: isLoadingExercise } = useQuery({
@@ -68,52 +82,46 @@ function EjerciciosPage() {
             video_url
           )
         `)
-        .eq("day_number", dayNumber)
+        .eq("day_number", selectedDayNum)
         .single();
 
       if (error) throw error;
       return data;
     },
-    enabled: !!dayNumber,
+    enabled: !!selectedDayNum,
   });
 
+  const exercise = dayData?.exercises?.[0];
+
   const upsertProgress = useMutation({
-    mutationFn: async (updates: any) => {
-      if (progress?.id) {
-        const { error } = await supabase
-          .from("daily_progress")
-          .update(updates)
-          .eq("id", progress.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("daily_progress")
-          .insert([{ user_id: user?.id, log_date: currentLogDate, day_number: 1, ...updates }]);
-        if (error) throw error;
-      }
+    mutationFn: async () => {
+      const { error } = await supabase.from("daily_progress").upsert({
+        user_id: user?.id,
+        day_number: selectedDayNum,
+        log_date: currentLogDate,
+        exercise_done: true,
+        ...(currentProgress?.id ? { id: currentProgress.id } : {})
+      });
+      if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["daily_progress", user?.id, currentLogDate] });
+      queryClient.invalidateQueries({ queryKey: ["all_daily_progress", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["dashboard_stats"] });
     },
   });
 
   const handleComplete = () => {
-    if (!progress?.exercise_done) {
+    if (!isDone) {
+      upsertProgress.mutate();
       confetti({
-        particleCount: 100,
+        particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ["#34d399", "#10b981", "#059669"],
+        colors: ["#6366f1", "#a855f7", "#ec4899", "#10b981"],
       });
-      upsertProgress.mutate({ exercise_done: true });
-    } else {
-      upsertProgress.mutate({ exercise_done: false });
     }
   };
 
-  const exercise = dayData?.exercises;
-  const isDone = progress?.exercise_done;
   let videoUrl = exercise?.video_url;
 
   // Helper para converter URL do YouTube em Embed URL seguro
@@ -133,10 +141,10 @@ function EjerciciosPage() {
   
   
   // Forçar os URLs de vídeo independentemente do banco de dados (para Dias 1 e 2)
-  if (dayNumber === 1) {
+  if (selectedDayNum === 1) {
     videoUrl = 'https://youtu.be/YFAuNBwvugY';
   }
-  if (dayNumber === 2) {
+  if (selectedDayNum === 2) {
     videoUrl = 'https://youtu.be/21C7hlYOnwE';
   }
 
@@ -186,7 +194,7 @@ function EjerciciosPage() {
 
               {/* Info Area */}
               <div className="relative z-10">
-                <h3 className="font-display font-bold text-2xl text-foreground leading-tight">Día {dayNumber}</h3>
+                <h3 className="font-display font-bold text-2xl text-foreground leading-tight">Día {selectedDayNum}</h3>
                 
                 <div className="flex gap-3 mt-4 mb-6">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-foreground bg-secondary/50 rounded-xl px-4 py-2 border border-border/50 backdrop-blur-sm">
@@ -222,20 +230,25 @@ function EjerciciosPage() {
               <div className="mt-10 mb-2">
                 <h4 className="font-display font-bold text-lg mb-4 text-foreground flex items-center justify-between">
                   <span>Tu Ruta de 21 Días</span>
-                  <span className="text-sm font-normal text-muted-foreground">{dayNumber}/21</span>
+                  <span className="text-sm font-normal text-muted-foreground">{selectedDayNum}/21</span>
                 </h4>
                 <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {Array.from({ length: 21 }, (_, i) => i + 1).map((d) => {
-                    const isPast = d < dayNumber || (d === dayNumber && isDone);
-                    const isCurrent = d === dayNumber && !isDone;
-                    const isLocked = d > dayNumber;
+                    const isPast = d < unlockedDay;
+                    const isCurrent = d === selectedDayNum;
+                    const isLocked = d > unlockedDay;
                     
                     return (
                       <div 
                         key={d} 
+                        onClick={() => {
+                          if (!isLocked) setSelectedDayNum(d);
+                        }}
                         className={`shrink-0 w-20 h-24 rounded-2xl flex flex-col items-center justify-center snap-center border transition-all ${
+                          !isLocked ? 'cursor-pointer hover:bg-secondary/80' : ''
+                        } ${
                           isCurrent 
-                            ? 'bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105' 
+                            ? 'bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105 hover:bg-primary/90' 
                             : isPast 
                               ? 'bg-secondary/50 border-border text-foreground' 
                               : 'bg-secondary/20 border-border/50 text-muted-foreground opacity-60'
