@@ -147,26 +147,13 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       {/* MEGA GRID */}
       <section className="mt-6 px-5">
         <div className="grid grid-cols-2 gap-3">
-          <MegaCard to="/alimentacion" image="/alimentacion_3d.png" title="Alimentación" subtitle="Comidas del día" tint="primary" />
+          <MegaCard to="/plan" image="/mi_plan_real.png" title="Mi Plan" subtitle="Opciones de hoy" tint="primary" />
           <MegaCard to="/ejercicios" image="/ejercicios_real.png" title="Ejercicios" subtitle="Tu rutina diaria" tint="accent" />
-          <MegaCard to="/recetas" image="/recetas_real.png" title="Recetas" subtitle="Paso a paso" tint="primary" />
           <MegaCard to="/compras" image="/compras_real.png" title="Compras" subtitle="Por semana" tint="accent" />
           <MegaCard to="/agua" image="/agua_real.png" title="Agua" subtitle={`${progress?.water_glasses ?? 0}/8 vasos`} tint="accent" />
           <MegaCard to="/progreso" image="/progreso_real.png" title="Progreso" subtitle="Tu evolución" tint="primary" />
+          <MegaCard to="/analizar" image="/calorias_ia_real.png" title="Calorías IA" subtitle="Analizar comida" tint="accent" />
         </div>
-
-        <Link
-          to="/analizar"
-          className="mt-3 flex h-[88px] w-full items-center justify-center gap-3 rounded-[1.5rem] bg-foreground text-background shadow-float transition active:scale-[0.99]"
-        >
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-background/10">
-            <Camera className="h-6 w-6" />
-          </span>
-          <div className="text-left">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-background/60">Premium IA</p>
-            <p className="text-[17px] font-bold leading-tight">Analizar Comida</p>
-          </div>
-        </Link>
       </section>
 
       <div className="h-10" />
@@ -192,31 +179,26 @@ function MegaCard({
   return (
     <Link
       to={to}
-      className={`group flex min-h-[130px] flex-col justify-between rounded-[1.5rem] border p-4 shadow-sm transition active:scale-[0.98] overflow-hidden relative ${
-        image ? "border-transparent" : "border-border/50 bg-white"
-      }`}
+      className="group flex flex-col overflow-hidden rounded-[1.5rem] border border-border/50 bg-white shadow-sm transition active:scale-[0.98]"
+      style={{ minHeight: '140px' }}
     >
-      {image && (
-        <>
-          <div className="absolute inset-0 z-0">
-            <img src={image} alt={title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-          </div>
-          <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        </>
-      )}
-
-      <div className="relative z-10">
-        {!image && icon && (
+      {image ? (
+        <div className="relative h-[84px] w-full shrink-0 overflow-hidden bg-muted">
+          <img src={image} alt={title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        </div>
+      ) : (
+        <div className="flex h-[84px] shrink-0 items-center px-4 pt-4">
           <span className={`grid h-12 w-12 place-items-center rounded-2xl ${iconBg}`}>
             {icon}
           </span>
-        )}
-      </div>
-      <div className={`relative z-10 ${image ? "mt-12" : ""}`}>
-        <p className={`text-[16px] font-bold leading-tight ${image ? "text-white" : "text-foreground"}`}>
+        </div>
+      )}
+
+      <div className="flex flex-1 flex-col justify-end p-4 pt-3">
+        <p className="text-[16px] font-bold leading-tight text-foreground">
           {title}
         </p>
-        <p className={`mt-0.5 text-[12px] ${image ? "text-white/80 font-medium" : "text-muted-foreground"}`}>
+        <p className="mt-0.5 text-[12px] text-muted-foreground font-medium">
           {subtitle}
         </p>
       </div>

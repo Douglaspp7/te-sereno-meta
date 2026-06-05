@@ -13,7 +13,6 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRecetasRouteImport } from './routes/_authenticated/recetas'
 import { Route as AuthenticatedProgresoRouteImport } from './routes/_authenticated/progreso'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -21,7 +20,6 @@ import { Route as AuthenticatedGenerandoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedAnalizarRouteImport } from './routes/_authenticated/analizar'
-import { Route as AuthenticatedAlimentacionRouteImport } from './routes/_authenticated/alimentacion'
 import { Route as AuthenticatedAguaRouteImport } from './routes/_authenticated/agua'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
@@ -43,11 +41,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRecetasRoute = AuthenticatedRecetasRouteImport.update({
-  id: '/recetas',
-  path: '/recetas',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProgresoRoute = AuthenticatedProgresoRouteImport.update({
   id: '/progreso',
@@ -159,7 +152,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/agua'
-    | '/alimentacion'
     | '/analizar'
     | '/compras'
     | '/ejercicios'
@@ -167,7 +159,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/progreso'
-    | '/recetas'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -175,7 +166,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/agua'
-    | '/alimentacion'
     | '/analizar'
     | '/compras'
     | '/ejercicios'
@@ -183,7 +173,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/progreso'
-    | '/recetas'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -192,7 +181,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/_authenticated/agua'
-    | '/_authenticated/alimentacion'
     | '/_authenticated/analizar'
     | '/_authenticated/compras'
     | '/_authenticated/ejercicios'
@@ -200,7 +188,6 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/plan'
     | '/_authenticated/progreso'
-    | '/_authenticated/recetas'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -241,13 +228,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/recetas': {
-      id: '/_authenticated/recetas'
-      path: '/recetas'
-      fullPath: '/recetas'
-      preLoaderRoute: typeof AuthenticatedRecetasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/progreso': {
       id: '/_authenticated/progreso'
@@ -298,13 +278,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnalizarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/alimentacion': {
-      id: '/_authenticated/alimentacion'
-      path: '/alimentacion'
-      fullPath: '/alimentacion'
-      preLoaderRoute: typeof AuthenticatedAlimentacionRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/agua': {
       id: '/_authenticated/agua'
       path: '/agua'
@@ -324,7 +297,6 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAguaRoute: typeof AuthenticatedAguaRoute
-  AuthenticatedAlimentacionRoute: typeof AuthenticatedAlimentacionRoute
   AuthenticatedAnalizarRoute: typeof AuthenticatedAnalizarRoute
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
@@ -332,12 +304,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedProgresoRoute: typeof AuthenticatedProgresoRoute
-  AuthenticatedRecetasRoute: typeof AuthenticatedRecetasRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAguaRoute: AuthenticatedAguaRoute,
-  AuthenticatedAlimentacionRoute: AuthenticatedAlimentacionRoute,
   AuthenticatedAnalizarRoute: AuthenticatedAnalizarRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
@@ -345,7 +315,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedProgresoRoute: AuthenticatedProgresoRoute,
-  AuthenticatedRecetasRoute: AuthenticatedRecetasRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

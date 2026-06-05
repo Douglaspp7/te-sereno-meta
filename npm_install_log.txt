@@ -1,0 +1,15 @@
+npm verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+npm info using npm@10.7.0
+npm info using node@v20.14.0
+npm verbose title npm install
+npm verbose argv "install" "--no-audit" "--no-fund" "--loglevel" "verbose"
+npm verbose logfile logs-max:10 dir:C:\Users\dougl\AppData\Local\npm-cache\_logs\2026-06-05T04_43_32_643Z-
+npm verbose logfile C:\Users\dougl\AppData\Local\npm-cache\_logs\2026-06-05T04_43_32_643Z-debug-0.log
+npm http fetch GET https://registry.npmjs.org/@hookform%2fresolvers attempt 1 failed with UNABLE_TO_VERIFY_LEAF_SIGNATURE
+npm http fetch GET https://registry.npmjs.org/@hookform%2fresolvers attempt 2 failed with UNABLE_TO_VERIFY_LEAF_SIGNATURE
+npm http fetch GET https://registry.npmjs.org/@hookform%2fresolvers attempt 3 failed with UNABLE_TO_VERIFY_LEAF_SIGNATURE
+npm http fetch GET https://registry.npmjs.org/@lovable.dev%2femail-js attempt 1 failed with UNABLE_TO_VERIFY_LEAF_SIGNATURE
+npm http fetch GET https://registry.npmjs.org/@lovable.dev%2femail-js attempt 2 failed with UNABLE_TO_VERIFY_LEAF_SIGNATURE
+npm http fetch GET https://registry.npmjs.org/@lovable.dev%2femail-js attempt 3 failed with UNABLE_TO_VERIFY_LEAF_SIGNATURE
+npm http fetch GET https://registry.npmjs.org/@lovable.dev%2fwebhooks-js attempt 1 failed with UNABLE_TO_VERIFY_LEAF_SIGNATURE
+npm http fetch GET https://registry.npmjs.org/@lovable.dev%2fwebhooks-js attempt 2 failed with UNABLE_TO_VERIFY_LEAF_SIGNATURE
