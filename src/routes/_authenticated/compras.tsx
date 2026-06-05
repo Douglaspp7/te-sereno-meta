@@ -54,9 +54,9 @@ function ComprasPage() {
         .from("days")
         .select(`
           day_number,
-          breakfast:recipes!days_breakfast_id_fkey(name, ingredients),
-          lunch:recipes!days_lunch_id_fkey(name, ingredients),
-          dinner:recipes!days_dinner_id_fkey(name, ingredients)
+          breakfast:recipes!days_breakfast_recipe_id_fkey(name, ingredients),
+          lunch:recipes!days_lunch_recipe_id_fkey(name, ingredients),
+          dinner:recipes!days_dinner_recipe_id_fkey(name, ingredients)
         `)
         .gte("day_number", startDay)
         .lte("day_number", endDay);
