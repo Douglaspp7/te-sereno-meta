@@ -9,6 +9,7 @@ export type RecipeDef = {
   name: string;
   label: string;
   kcal: number;
+  prepTimeMin: number;
   macros: MacroData;
   ingredients: string[];
   instructions: string[];
@@ -56,6 +57,7 @@ export const programDays: Record<number, DayContent> = {
       name: "Avena con frutos rojos",
       label: "Desayuno",
       kcal: 280,
+      prepTimeMin: 10,
       macros: { p: 10, c: 45, f: 8 },
       ingredients: ["40g de avena", "100ml de leche de almendras", "1 puñado de frutos rojos", "Canela al gusto"],
       instructions: ["Calentar la leche.", "Añadir la avena y cocinar a fuego lento 5 min.", "Servir con frutos rojos y canela."],
@@ -66,6 +68,7 @@ export const programDays: Record<number, DayContent> = {
       name: "Pollo a la plancha con quinoa",
       label: "Almuerzo",
       kcal: 420,
+      prepTimeMin: 20,
       macros: { p: 40, c: 45, f: 12 },
       ingredients: ["150g de pechuga de pollo", "50g de quinoa (peso en crudo)", "Ensalada mixta", "1 cda de aceite de oliva"],
       instructions: ["Hacer el pollo a la plancha.", "Hervir la quinoa por 15 min.", "Servir con la ensalada y el aceite crudo."],
@@ -76,6 +79,7 @@ export const programDays: Record<number, DayContent> = {
       name: "Salmón al horno con espárragos",
       label: "Cena",
       kcal: 350,
+      prepTimeMin: 25,
       macros: { p: 35, c: 10, f: 18 },
       ingredients: ["150g de salmón", "1 manojo de espárragos", "Medio limón", "Sal y pimienta"],
       instructions: ["Precalentar el horno a 200°C.", "Hornear salmón y espárragos por 15-20 min.", "Añadir jugo de limón al sacar."],
@@ -101,6 +105,7 @@ export const programDays: Record<number, DayContent> = {
       name: "Huevos revueltos con espinacas",
       label: "Desayuno",
       kcal: 250,
+      prepTimeMin: 10,
       macros: { p: 18, c: 5, f: 15 },
       ingredients: ["2 huevos", "1 puñado grande de espinacas", "1 tostada integral"],
       instructions: ["Saltear espinacas brevemente.", "Añadir huevos batidos.", "Servir con la tostada."],
@@ -111,6 +116,7 @@ export const programDays: Record<number, DayContent> = {
       name: "Ensalada de Atún",
       label: "Almuerzo",
       kcal: 380,
+      prepTimeMin: 15,
       macros: { p: 30, c: 20, f: 15 },
       ingredients: ["1 lata de atún al natural", "Lechuga y tomate", "1/2 aguacate", "Limón"],
       instructions: ["Mezclar todos los ingredientes.", "Aliñar con limón y sal."],
@@ -121,6 +127,7 @@ export const programDays: Record<number, DayContent> = {
       name: "Sopa de verduras y pollo",
       label: "Cena",
       kcal: 290,
+      prepTimeMin: 30,
       macros: { p: 25, c: 30, f: 8 },
       ingredients: ["100g de pollo desmenuzado", "Caldo casero", "Zanahoria, apio, calabacín"],
       instructions: ["Hervir verduras en el caldo.", "Añadir el pollo desmenuzado.", "Servir caliente."],
