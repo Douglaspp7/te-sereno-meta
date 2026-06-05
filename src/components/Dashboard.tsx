@@ -435,7 +435,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           <MegaCard to="/plan" image="/mi_plan_real.png" title="Mi Plan" subtitle="Opciones de hoy" />
           <MegaCard to="/ejercicios" image="/ejercicios_real.png" title="Ejercicios" subtitle="Tu rutina diaria" />
           <MegaCard to="/compras" image="/compras_real.png" title="Compras" subtitle="Por semana" />
-          <MegaCard to="/te" image="https://images.unsplash.com/photo-1563822249548-9a72b6353cd1?q=80&w=1000&auto=format&fit=crop" title="Té del Día" subtitle={(progress?.water_glasses ?? 0) > 0 ? "Consumido" : "Pendiente"} />
+          <MegaCard to="/te" image="/te_real.png" title="Té del Día" subtitle={(progress?.water_glasses ?? 0) > 0 ? "Consumido" : "Pendiente"} />
           <MegaCard to="/progreso" image="/progreso_real.png" title="Progreso" subtitle="Tu evolución" />
           <MegaCard to="/analizar" image="/calorias_ia_real.png" title="Calorías IA" subtitle="Analizar comida" />
         </div>
