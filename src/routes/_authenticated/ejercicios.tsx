@@ -1,39 +1,207 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, PageHeader } from "@/components/AppShell";
-import { PlayCircle, Clock, Flame } from "lucide-react";
+import { PlayCircle, Clock, Flame, Check } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
+import { useState, useEffect } from "react";
+import ReactPlayer from "react-player";
+import confetti from "canvas-confetti";
 
 export const Route = createFileRoute("/_authenticated/ejercicios")({
   component: EjerciciosPage,
 });
 
 function EjerciciosPage() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Evitar hydration errors com react-player
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const getLocalDateString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  const currentLogDate = getLocalDateString();
+
+  // 1. Fetch Daily Progress
+  const { data: progress, isLoading: isLoadingProgress } = useQuery({
+    queryKey: ["daily_progress", user?.id, currentLogDate],
+    queryRefetchInterval: false,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("daily_progress")
+        .select("*")
+        .eq("user_id", user?.id)
+        .eq("log_date", currentLogDate)
+        .maybeSingle();
+
+      if (error && error.code !== "PGRST116") throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const dayNumber = progress?.day_number ?? 1;
+
+  // 2. Fetch Exercise for the Day
+  const { data: dayData, isLoading: isLoadingExercise } = useQuery({
+    queryKey: ["day_exercise", dayNumber],
+    queryRefetchInterval: false,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("days")
+        .select(`
+          day_number,
+          exercises (
+            id,
+            name,
+            description,
+            duration,
+            video_url
+          )
+        `)
+        .eq("day_number", dayNumber)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!dayNumber,
+  });
+
+  const upsertProgress = useMutation({
+    mutationFn: async (updates: any) => {
+      if (progress?.id) {
+        const { error } = await supabase
+          .from("daily_progress")
+          .update(updates)
+          .eq("id", progress.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("daily_progress")
+          .insert([{ user_id: user?.id, log_date: currentLogDate, day_number: 1, ...updates }]);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["daily_progress", user?.id, currentLogDate] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard_stats"] });
+    },
+  });
+
+  const handleComplete = () => {
+    if (!progress?.exercise_done) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ["#34d399", "#10b981", "#059669"],
+      });
+      upsertProgress.mutate({ exercise_done: true });
+    } else {
+      upsertProgress.mutate({ exercise_done: false });
+    }
+  };
+
+  const exercise = dayData?.exercises;
+  const isDone = progress?.exercise_done;
+  const videoUrl = exercise?.video_url;
+  
+  // Se o URL não for youtube/vimeo e parecer um path de imagem (ex: /images/caminar_20.png)
+  const isImageUrl = videoUrl && (videoUrl.endsWith('.png') || videoUrl.endsWith('.jpg') || videoUrl.endsWith('.jpeg'));
+
   return (
     <AppShell>
-      <PageHeader title="Ejercicios" subtitle="Tu rutina de hoy." />
-      <div className="px-5 mt-2 space-y-6">
+      <PageHeader title="Ejercicios" subtitle={`Rutina del Día ${dayNumber}`} />
+      
+      <div className="px-5 mt-2 pb-10 space-y-6">
         <div className="rounded-[2rem] border border-border/40 bg-white p-5 shadow-sm overflow-hidden relative">
           <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
-          <div className="aspect-video w-full rounded-2xl bg-black/5 flex items-center justify-center relative overflow-hidden mb-4 border border-border/50">
-             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2070')] bg-cover bg-center opacity-80" />
-             <div className="absolute inset-0 bg-black/40" />
-             <button className="h-16 w-16 rounded-full bg-primary text-white flex items-center justify-center relative z-10 hover:scale-105 active:scale-95 transition-transform shadow-xl shadow-primary/30">
-                <PlayCircle className="h-8 w-8" />
-             </button>
-          </div>
-          <h3 className="font-bold text-lg text-foreground">Entrenamiento Full Body</h3>
-          <p className="text-sm text-muted-foreground mt-1 mb-4">Nivel principiante. Sin equipamiento.</p>
-          <div className="flex gap-4">
-             <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background rounded-full px-3 py-1.5 border border-border/50">
-                <Clock className="h-3.5 w-3.5" /> 20 min
-             </div>
-             <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background rounded-full px-3 py-1.5 border border-border/50">
-                <Flame className="h-3.5 w-3.5 text-orange-500" /> ~150 kcal
-             </div>
-          </div>
           
-          <button className="w-full mt-6 rounded-[1.5rem] bg-foreground py-4 text-sm font-bold text-background active:scale-[0.98] transition-transform flex justify-center items-center gap-2">
-            Marcar como completado
-          </button>
+          {isLoadingProgress || isLoadingExercise ? (
+            <div className="aspect-video w-full rounded-2xl bg-secondary animate-pulse mb-4" />
+          ) : exercise ? (
+            <>
+              {/* Video Player Area */}
+              <div className="aspect-video w-full rounded-2xl bg-black/5 flex items-center justify-center relative overflow-hidden mb-5 border border-border/50 shadow-inner group">
+                {isClient && videoUrl && !isImageUrl ? (
+                   <div className="absolute inset-0 w-full h-full">
+                     <ReactPlayer
+                        url={videoUrl}
+                        width="100%"
+                        height="100%"
+                        playing={isPlaying}
+                        controls={true}
+                        onPlay={() => setIsPlaying(true)}
+                        onPause={() => setIsPlaying(false)}
+                        style={{ position: 'absolute', top: 0, left: 0 }}
+                      />
+                   </div>
+                ) : (
+                  <>
+                    {/* Fallback image / Mockup when there's no real video URL */}
+                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2070')] bg-cover bg-center opacity-70 transition-transform duration-700 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4 text-center">
+                       <p className="text-white/90 text-sm font-bold shadow-black drop-shadow-md">
+                         {isImageUrl ? "Sube tu enlace de YouTube aquí" : "Añade un enlace de vídeo"}
+                       </p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Info Area */}
+              <div className="relative z-10">
+                <h3 className="font-display font-bold text-2xl text-foreground leading-tight">{exercise.name}</h3>
+                <p className="text-sm text-muted-foreground mt-2 mb-5 leading-relaxed">{exercise.description}</p>
+                
+                <div className="flex gap-3 mb-6">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-foreground bg-secondary/50 rounded-xl px-4 py-2 border border-border/50 backdrop-blur-sm">
+                    <Clock className="h-4 w-4 text-primary" /> {exercise.duration} min
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-foreground bg-secondary/50 rounded-xl px-4 py-2 border border-border/50 backdrop-blur-sm">
+                    <Flame className="h-4 w-4 text-orange-500" /> ~{exercise.duration * 7} kcal
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={handleComplete}
+                  disabled={upsertProgress.isPending}
+                  className={`w-full rounded-[1.5rem] py-4 text-sm font-bold active:scale-[0.98] transition-all flex justify-center items-center gap-2 shadow-lg ${
+                    isDone 
+                      ? "bg-primary/10 text-primary border-2 border-primary/20 shadow-none" 
+                      : "bg-foreground text-background hover:bg-foreground/90 shadow-foreground/20"
+                  }`}
+                >
+                  {upsertProgress.isPending ? (
+                    "Guardando..."
+                  ) : isDone ? (
+                    <>
+                      <Check className="h-5 w-5" strokeWidth={3} /> Completado
+                    </>
+                  ) : (
+                    "Marcar como completado"
+                  )}
+                </button>
+              </div>
+            </>
+          ) : (
+             <div className="py-10 text-center">
+               <p className="text-muted-foreground font-bold">No hay ejercicios asignados para hoy.</p>
+             </div>
+          )}
         </div>
       </div>
     </AppShell>
