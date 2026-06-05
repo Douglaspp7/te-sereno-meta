@@ -374,7 +374,7 @@ export type Database = {
         Row: {
           calories: number
           carbs: number
-          cooking_tips: Json | null
+          cooking_tips: Json
           created_at: string
           description: string | null
           fats: number
@@ -384,17 +384,17 @@ export type Database = {
           instructions: Json
           meal_type: string
           name: string
-          nutritional_benefits: Json | null
+          nutritional_benefits: Json
           prep_time: number
           proteins: number
-          substitutions: Json | null
+          substitutions: Json
           updated_at: string
-          weight_loss_benefits: Json | null
+          weight_loss_benefits: Json
         }
         Insert: {
           calories?: number
           carbs?: number
-          cooking_tips?: Json | null
+          cooking_tips?: Json
           created_at?: string
           description?: string | null
           fats?: number
@@ -404,17 +404,17 @@ export type Database = {
           instructions?: Json
           meal_type: string
           name: string
-          nutritional_benefits?: Json | null
+          nutritional_benefits?: Json
           prep_time?: number
           proteins?: number
-          substitutions?: Json | null
+          substitutions?: Json
           updated_at?: string
-          weight_loss_benefits?: Json | null
+          weight_loss_benefits?: Json
         }
         Update: {
           calories?: number
           carbs?: number
-          cooking_tips?: Json | null
+          cooking_tips?: Json
           created_at?: string
           description?: string | null
           fats?: number
@@ -424,12 +424,12 @@ export type Database = {
           instructions?: Json
           meal_type?: string
           name?: string
-          nutritional_benefits?: Json | null
+          nutritional_benefits?: Json
           prep_time?: number
           proteins?: number
-          substitutions?: Json | null
+          substitutions?: Json
           updated_at?: string
-          weight_loss_benefits?: Json | null
+          weight_loss_benefits?: Json
         }
         Relationships: []
       }
