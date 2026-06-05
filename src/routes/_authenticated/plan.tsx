@@ -26,8 +26,13 @@ function FullScreenRecipeModal({
 }) {
   if (!recipe) return null;
 
-  const ingredients = (recipe.ingredients as string[]) || [];
+  // New Rich Data handling
+  const ingredients = recipe.ingredients || {};
   const instructions = (recipe.instructions as string[]) || [];
+  const cookingTips = (recipe.cooking_tips as string[]) || [];
+  const substitutions = (recipe.substitutions as string[]) || [];
+  const nutritionalBenefits = (recipe.nutritional_benefits as string[]) || [];
+  const weightLossBenefits = (recipe.weight_loss_benefits as string[]) || [];
 
   return (
     <div className="fixed inset-0 z-[100] bg-background overflow-y-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -49,6 +54,12 @@ function FullScreenRecipeModal({
           </div>
           <h2 className="font-display text-3xl font-extrabold text-foreground leading-tight">{recipe.name}</h2>
           
+          {recipe.description && (
+            <p className="mt-3 text-base font-medium text-muted-foreground leading-relaxed">
+              {recipe.description}
+            </p>
+          )}
+
           <div className="flex gap-3 mt-5">
             <div className="flex items-center gap-1.5 text-sm font-bold text-foreground bg-secondary/30 px-4 py-2 rounded-2xl">
               <Clock className="h-4 w-4 text-muted-foreground" /> {recipe.prep_time} min
@@ -59,6 +70,7 @@ function FullScreenRecipeModal({
           </div>
         </div>
 
+        {/* Nutritional Macros */}
         <div className="flex gap-4">
           <div className="flex-1 rounded-[1.5rem] bg-secondary/20 p-5 text-center border border-border/40 shadow-sm">
             <div className="text-2xl font-display font-black text-foreground">{recipe.proteins}<span className="text-sm font-bold text-muted-foreground ml-0.5">g</span></div>
@@ -74,23 +86,67 @@ function FullScreenRecipeModal({
           </div>
         </div>
 
+        {/* Por qué es bueno para ti? (Beneficios) */}
+        {(weightLossBenefits.length > 0 || nutritionalBenefits.length > 0) && (
+          <div className="bg-emerald-50 rounded-[1.5rem] border border-emerald-100 p-6">
+            <h3 className="font-display text-xl font-bold mb-4 text-emerald-800 flex items-center gap-2">
+              <Heart className="h-5 w-5 text-emerald-500" /> Por qué es excelente
+            </h3>
+            <div className="space-y-4">
+              {weightLossBenefits.map((ben, i) => (
+                <div key={`wl-${i}`} className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5"><Flame className="h-3 w-3" /></div>
+                  <p className="text-sm text-emerald-900 font-medium leading-relaxed">{ben}</p>
+                </div>
+              ))}
+              {nutritionalBenefits.map((ben, i) => (
+                <div key={`n-${i}`} className="flex items-start gap-3">
+                  <div className="h-5 w-5 rounded-full bg-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5"><Sparkles className="h-3 w-3" /></div>
+                  <p className="text-sm text-emerald-900 font-medium leading-relaxed">{ben}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Ingredients (Handles both flat arrays and sectioned objects) */}
         <div>
           <h3 className="font-display text-2xl font-bold mb-5 flex items-center gap-2">
             <Utensils className="h-5 w-5 text-primary" /> Ingredientes
           </h3>
-          <ul className="space-y-4">
-            {ingredients.map((ing, i) => (
-              <li key={i} className="flex items-start gap-3">
-                <div className="h-2 w-2 rounded-full bg-primary/60 mt-2 shrink-0" />
-                <span className="text-base text-foreground/90 font-medium leading-snug">{ing}</span>
-              </li>
-            ))}
-          </ul>
+          
+          {Array.isArray(ingredients) ? (
+            <ul className="space-y-4">
+              {ingredients.map((ing, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <div className="h-2 w-2 rounded-full bg-primary/60 mt-2 shrink-0" />
+                  <span className="text-base text-foreground/90 font-medium leading-snug">{ing}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(ingredients).map(([section, items]: [string, any]) => (
+                <div key={section}>
+                  <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-3">{section}</h4>
+                  <ul className="space-y-4">
+                    {Array.isArray(items) && items.map((ing, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <div className="h-2 w-2 rounded-full bg-primary/60 mt-2 shrink-0" />
+                        <span className="text-base text-foreground/90 font-medium leading-snug">{ing}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
+        {/* Instructions */}
         <div>
-          <h3 className="font-display text-2xl font-bold mb-5">Preparación</h3>
-          <ol className="space-y-5">
+          <h3 className="font-display text-2xl font-bold mb-5">Preparación paso a paso</h3>
+          <ol className="space-y-6">
             {instructions.map((inst, i) => (
               <li key={i} className="flex gap-4">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-sm font-black text-primary border border-primary/20">
@@ -101,6 +157,28 @@ function FullScreenRecipeModal({
             ))}
           </ol>
         </div>
+
+        {/* Chef Tips & Substitutions */}
+        {(cookingTips.length > 0 || substitutions.length > 0) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+            {cookingTips.length > 0 && (
+              <div className="bg-orange-50 rounded-[1.5rem] border border-orange-100 p-5">
+                <h4 className="font-bold text-orange-800 flex items-center gap-2 mb-3"><Flame className="h-4 w-4" /> Tips del Chef</h4>
+                <ul className="space-y-2 text-sm text-orange-900 font-medium">
+                  {cookingTips.map((tip, i) => <li key={i}>• {tip}</li>)}
+                </ul>
+              </div>
+            )}
+            {substitutions.length > 0 && (
+              <div className="bg-blue-50 rounded-[1.5rem] border border-blue-100 p-5">
+                <h4 className="font-bold text-blue-800 flex items-center gap-2 mb-3"><ArrowLeft className="h-4 w-4" /> Sustituciones</h4>
+                <ul className="space-y-2 text-sm text-blue-900 font-medium">
+                  {substitutions.map((sub, i) => <li key={i}>• {sub}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="pt-6 pb-12 space-y-4">
           <button 
