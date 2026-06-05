@@ -4,7 +4,7 @@ import { PlayCircle, Clock, Flame, Check, Lock, CheckCircle2 } from "lucide-reac
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/lib/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import confetti from "canvas-confetti";
 
 export const Route = createFileRoute("/_authenticated/ejercicios")({
@@ -46,7 +46,7 @@ function EjerciciosPage() {
     enabled: !!user?.id,
   });
 
-  const unlockedDay = React.useMemo(() => {
+  const unlockedDay = useMemo(() => {
     if (!allProgress || allProgress.length === 0) return 1;
     const completedDays = allProgress.filter(p => p.exercise_done).map(p => p.day_number || 1);
     if (completedDays.length === 0) return 1;
@@ -67,7 +67,7 @@ function EjerciciosPage() {
 
   // 2. Fetch Exercise for the Day
   const { data: dayData, isLoading: isLoadingExercise } = useQuery({
-    queryKey: ["day_exercise", dayNumber],
+    queryKey: ["day_exercise", selectedDayNum],
     queryRefetchInterval: false,
     queryFn: async () => {
       const { data, error } = await supabase
