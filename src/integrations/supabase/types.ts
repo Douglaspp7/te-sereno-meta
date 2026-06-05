@@ -374,9 +374,7 @@ export type Database = {
         Row: {
           calories: number
           carbs: number
-          cooking_tips: Json | null
           created_at: string
-          description: string | null
           fats: number
           id: string
           image_url: string | null
@@ -384,19 +382,14 @@ export type Database = {
           instructions: Json
           meal_type: string
           name: string
-          nutritional_benefits: Json | null
           prep_time: number
           proteins: number
-          substitutions: Json | null
           updated_at: string
-          weight_loss_benefits: Json | null
         }
         Insert: {
           calories?: number
           carbs?: number
-          cooking_tips?: Json | null
           created_at?: string
-          description?: string | null
           fats?: number
           id?: string
           image_url?: string | null
@@ -404,19 +397,14 @@ export type Database = {
           instructions?: Json
           meal_type: string
           name: string
-          nutritional_benefits?: Json | null
           prep_time?: number
           proteins?: number
-          substitutions?: Json | null
           updated_at?: string
-          weight_loss_benefits?: Json | null
         }
         Update: {
           calories?: number
           carbs?: number
-          cooking_tips?: Json | null
           created_at?: string
-          description?: string | null
           fats?: number
           id?: string
           image_url?: string | null
@@ -424,12 +412,9 @@ export type Database = {
           instructions?: Json
           meal_type?: string
           name?: string
-          nutritional_benefits?: Json | null
           prep_time?: number
           proteins?: number
-          substitutions?: Json | null
           updated_at?: string
-          weight_loss_benefits?: Json | null
         }
         Relationships: []
       }
