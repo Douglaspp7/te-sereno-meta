@@ -1,13 +1,14 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, ClipboardList, ShoppingCart, TrendingUp, Sparkles } from "lucide-react";
+import { Home, ClipboardList, ShoppingCart, TrendingUp, PlaySquare } from "lucide-react";
 
 const items = [
   { to: "/", label: "Inicio", icon: Home, match: (p: string) => p === "/" },
   { to: "/plan", label: "Plan", icon: ClipboardList, match: (p: string) => p.startsWith("/plan") },
+  { to: "/ejercicios", label: "Ejercicios", icon: PlaySquare, match: (p: string) => p.startsWith("/ejercicios") },
   { to: "/compras", label: "Compras", icon: ShoppingCart, match: (p: string) => p.startsWith("/compras") },
   { to: "/progreso", label: "Progreso", icon: TrendingUp, match: (p: string) => p.startsWith("/progreso") },
-  { to: "/coach", label: "AI Coach", icon: Sparkles, match: (p: string) => p.startsWith("/coach") },
 ] as const;
+
 
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });

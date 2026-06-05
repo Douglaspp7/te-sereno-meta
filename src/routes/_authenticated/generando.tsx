@@ -7,12 +7,12 @@ export const Route = createFileRoute("/_authenticated/generando")({
 });
 
 const tasks = [
-  "Analizando tu perfil",
-  "Calculando tus objetivos",
-  "Generando tu alimentación",
-  "Creando tus ejercicios",
-  "Personalizando los desafíos",
-  "Preparando tu reto de 21 días",
+  "Preparando tu entorno",
+  "Descargando videos de ejercicios",
+  "Organizando tus recetas",
+  "Configurando tus misiones",
+  "Estructurando las 3 semanas",
+  "Liberando tu reto de 21 días",
 ];
 
 function GeneratingPage() {
@@ -40,9 +40,9 @@ function GeneratingPage() {
       </div>
 
       <h1 className="mt-10 font-display text-[28px] leading-tight text-foreground">
-        Creando tu plan<br />personalizado…
+        Preparando tu plan<br />estructurado…
       </h1>
-      <p className="mt-2 text-sm text-muted-foreground">La IA está diseñando tu reto de 21 días</p>
+      <p className="mt-2 text-sm text-muted-foreground">Estamos organizando tu reto de 21 días</p>
 
       <div className="mt-6 w-full">
         <div className="flex items-center justify-between text-[11px] font-semibold">
