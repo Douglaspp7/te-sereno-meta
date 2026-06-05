@@ -39,7 +39,7 @@ function EjerciciosPage() {
       const { data, error } = await supabase
         .from("daily_progress")
         .select("id, day_number, exercise_done")
-        .eq("user_id", user?.id);
+        .eq("user_id", user?.id || "");
 
       if (error) throw error;
       return data || [];
@@ -63,29 +63,13 @@ function EjerciciosPage() {
     }
   }, [unlockedDay]);
 
-  // Auto-scroll timeline to active day
-  useEffect(() => {
-    if (!isLoadingExercise && timelineRef.current) {
-      // Timeout garante que o DOM foi renderizado após o carregamento
-      setTimeout(() => {
-        if (!timelineRef.current) return;
-        const activeElement = timelineRef.current.children[selectedDayNum - 1] as HTMLElement;
-        if (activeElement) {
-          const container = timelineRef.current;
-          const scrollLeft = activeElement.offsetLeft - container.offsetWidth / 2 + activeElement.offsetWidth / 2;
-          container.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
-        }
-      }, 100);
-    }
-  }, [selectedDayNum, isLoadingExercise]);
-
   const currentProgress = allProgress?.find(p => p.day_number === selectedDayNum);
   const isDone = currentProgress?.exercise_done || false;
 
   // 2. Fetch Exercise for the Day
   const { data: dayData, isLoading: isLoadingExercise } = useQuery({
     queryKey: ["day_exercise", selectedDayNum],
-    queryRefetchInterval: false,
+    refetchInterval: false,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("days")
@@ -103,17 +87,33 @@ function EjerciciosPage() {
         .single();
 
       if (error && error.code !== "PGRST116") throw error;
-      return data;
+      return data as any; // Ignore strict typing to avoid TS errors
     },
     enabled: !!selectedDayNum,
   });
 
   const exercise = dayData?.exercises;
 
+  // Auto-scroll timeline to active day
+  useEffect(() => {
+    if (!isLoadingExercise && timelineRef.current) {
+      // Timeout garante que o DOM foi renderizado após o carregamento
+      setTimeout(() => {
+        if (!timelineRef.current) return;
+        const activeElement = timelineRef.current.children[selectedDayNum - 1] as HTMLElement;
+        if (activeElement) {
+          const container = timelineRef.current;
+          const scrollLeft = activeElement.offsetLeft - container.offsetWidth / 2 + activeElement.offsetWidth / 2;
+          container.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [selectedDayNum, isLoadingExercise]);
+
   const upsertProgress = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("daily_progress").upsert({
-        user_id: user?.id,
+        user_id: user?.id || "",
         day_number: selectedDayNum,
         log_date: currentLogDate,
         exercise_done: true,
