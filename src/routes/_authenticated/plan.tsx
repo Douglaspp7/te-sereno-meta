@@ -34,14 +34,10 @@ function FullScreenRecipeModal({
   const nutritionalBenefits = (recipe.nutritional_benefits as string[]) || [];
   const weightLossBenefits = (recipe.weight_loss_benefits as string[]) || [];
 
-  // Fallback para gerar imagem de IA na hora caso não tenha no banco (Otimizado para Mobile: 600x800)
-  const defaultImageUrl = `https://image.pollinations.ai/prompt/delicious%20${encodeURIComponent(recipe.name)}%20food%20photography%20hyperrealistic%20high%20resolution?width=600&height=800&nologo=true`;
-  const imageUrl = recipe.image_url || defaultImageUrl;
-
   return (
     <div className="fixed inset-0 z-[100] bg-background overflow-y-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="relative h-[35vh] w-full bg-muted">
-        <img src={imageUrl} alt={recipe.name} className="h-full w-full object-cover" />
+        <img src={recipe.image_url} alt={recipe.name} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80" />
         <button 
           onClick={onClose}
