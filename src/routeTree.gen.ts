@@ -17,8 +17,8 @@ import { Route as AuthenticatedProgresoRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedGenerandoRouteImport } from './routes/_authenticated/generando'
-import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
+import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -60,14 +60,14 @@ const AuthenticatedGenerandoRoute = AuthenticatedGenerandoRouteImport.update({
   path: '/generando',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
-  id: '/compras',
-  path: '/compras',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedEjerciciosRoute = AuthenticatedEjerciciosRouteImport.update({
   id: '/ejercicios',
   path: '/ejercicios',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
+  id: '/compras',
+  path: '/compras',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const LovableEmailQueueProcessRoute =
@@ -81,8 +81,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/compras': typeof AuthenticatedComprasRoute
+  '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/generando': typeof AuthenticatedGenerandoRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/plan': typeof AuthenticatedPlanRoute
@@ -93,8 +93,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/compras': typeof AuthenticatedComprasRoute
+  '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/generando': typeof AuthenticatedGenerandoRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/plan': typeof AuthenticatedPlanRoute
@@ -107,8 +107,8 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
+  '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/_authenticated/generando': typeof AuthenticatedGenerandoRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
@@ -121,8 +121,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/ejercicios'
     | '/compras'
+    | '/ejercicios'
     | '/generando'
     | '/onboarding'
     | '/plan'
@@ -133,8 +133,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/ejercicios'
     | '/compras'
+    | '/ejercicios'
     | '/generando'
     | '/onboarding'
     | '/plan'
@@ -146,8 +146,8 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
-    | '/_authenticated/ejercicios'
     | '/_authenticated/compras'
+    | '/_authenticated/ejercicios'
     | '/_authenticated/generando'
     | '/_authenticated/onboarding'
     | '/_authenticated/plan'
@@ -221,18 +221,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGenerandoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/compras': {
-      id: '/_authenticated/compras'
-      path: '/compras'
-      fullPath: '/compras'
-      preLoaderRoute: typeof AuthenticatedComprasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/ejercicios': {
       id: '/_authenticated/ejercicios'
       path: '/ejercicios'
       fullPath: '/ejercicios'
       preLoaderRoute: typeof AuthenticatedEjerciciosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/compras': {
+      id: '/_authenticated/compras'
+      path: '/compras'
+      fullPath: '/compras'
+      preLoaderRoute: typeof AuthenticatedComprasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/lovable/email/queue/process': {
@@ -246,8 +246,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
+  AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
   AuthenticatedGenerandoRoute: typeof AuthenticatedGenerandoRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
@@ -255,8 +255,8 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
+  AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
   AuthenticatedGenerandoRoute: AuthenticatedGenerandoRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
@@ -276,3 +276,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
