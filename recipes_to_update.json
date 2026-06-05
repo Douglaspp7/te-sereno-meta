@@ -1,0 +1,317 @@
+[
+  {
+    "id": "10388fbb-60ec-4005-a1af-f44236e8cf4c",
+    "name": "Avena clásica con frutos rojos",
+    "image_url": "/images/r_desayuno_1.png"
+  },
+  {
+    "id": "d6bebfed-9a39-434b-a541-db2a233dba94",
+    "name": "Huevos revueltos con espinacas",
+    "image_url": "/images/r_desayuno_2.png"
+  },
+  {
+    "id": "a5b9c5c3-c932-41c4-a947-8ba01f72101d",
+    "name": "Tostada de aguacate y huevo",
+    "image_url": "/images/r_desayuno_3.png"
+  },
+  {
+    "id": "2952108e-2c6d-4fd7-a2e7-694f8184c872",
+    "name": "Batido verde detox proteico",
+    "image_url": "/images/r_desayuno_4.png"
+  },
+  {
+    "id": "a41f6357-8f04-4026-a177-cc8efd85ceb6",
+    "name": "Yogur griego con nueces",
+    "image_url": "/images/r_desayuno_5.png"
+  },
+  {
+    "id": "3779fe95-37e1-42ca-a6a4-30cd70317fe2",
+    "name": "Pancakes de avena y plátano",
+    "image_url": "/images/r_desayuno_6.png"
+  },
+  {
+    "id": "aa86b144-2e23-4cf6-809a-bcba91650fa5",
+    "name": "Chía pudding con leche de coco",
+    "image_url": "/images/r_desayuno_7.png"
+  },
+  {
+    "id": "7f23fa68-ec8b-44bf-b394-c76904ae61b0",
+    "name": "Tortilla de claras con pavo",
+    "image_url": "/images/r_desayuno_8.png"
+  },
+  {
+    "id": "5a4909f7-5406-4caf-bd8f-e02d07dcbe01",
+    "name": "Tazón de queso cottage y fresas",
+    "image_url": "/images/r_desayuno_9.png"
+  },
+  {
+    "id": "6943f847-60fd-4d15-b1be-539c59c251d4",
+    "name": "Tostada integral con crema de cacahuete",
+    "image_url": "/images/r_desayuno_10.png"
+  },
+  {
+    "id": "da46cbc7-8bb0-4de0-8ae0-00d11f933ce2",
+    "name": "Huevos duros con tomates cherry",
+    "image_url": "/images/r_desayuno_11.png"
+  },
+  {
+    "id": "a2816b39-fe07-425c-89e6-c59eb5e5dd0f",
+    "name": "Avena horneada con manzana",
+    "image_url": "/images/r_desayuno_12.png"
+  },
+  {
+    "id": "6dbafaee-b2f4-4f8d-8c54-b47d5b9e43bb",
+    "name": "Batido de frutos rojos y espinaca",
+    "image_url": "/images/r_desayuno_13.png"
+  },
+  {
+    "id": "65067b96-d74b-4cbd-8bdc-4e380b55491f",
+    "name": "Omelette de champiñones",
+    "image_url": "/images/r_desayuno_14.png"
+  },
+  {
+    "id": "6bccfea5-f50f-4ebe-b314-7e0d3009b718",
+    "name": "Muffins de huevo y verduras",
+    "image_url": "/images/r_desayuno_15.png"
+  },
+  {
+    "id": "251c48a6-aec7-4e30-8d12-f7bce57eec71",
+    "name": "Porridge de avena y cacao",
+    "image_url": "/images/r_desayuno_16.png"
+  },
+  {
+    "id": "d169c425-83c0-4e8c-9539-7d962eb105f1",
+    "name": "Tostada con hummus y tomate",
+    "image_url": "/images/r_desayuno_17.png"
+  },
+  {
+    "id": "67331856-1d28-40c0-b0a9-a20ea89f1b58",
+    "name": "Wrap integral de pavo y lechuga",
+    "image_url": "/images/r_desayuno_18.png"
+  },
+  {
+    "id": "f9cfa1c6-9458-4e39-a9c3-96b36b0ab52c",
+    "name": "Smoothie bowl de mango",
+    "image_url": "/images/r_desayuno_19.png"
+  },
+  {
+    "id": "acabbe85-d8cb-4823-908d-17c676ea3b9e",
+    "name": "Huevos revueltos con tomate y albahaca",
+    "image_url": "/images/r_desayuno_20.png"
+  },
+  {
+    "id": "fdabea0b-e158-474a-a6f6-170e566378ad",
+    "name": "Kéfir con trozos de fruta",
+    "image_url": "/images/r_desayuno_21.png"
+  },
+  {
+    "id": "a3164f33-85dc-4180-b020-511d45dccd2a",
+    "name": "Pollo a la plancha con quinoa",
+    "image_url": "/images/r_almuerzo_1.png"
+  },
+  {
+    "id": "28e4e77e-9c9a-450e-97b5-3482b746b9d0",
+    "name": "Ensalada de Atún y aguacate",
+    "image_url": "/images/r_almuerzo_2.png"
+  },
+  {
+    "id": "f3209669-fa2f-471e-9779-222e5f0d3922",
+    "name": "Ternera salteada con brócoli",
+    "image_url": "/images/r_almuerzo_3.png"
+  },
+  {
+    "id": "1f9d42b9-a13a-4e20-ae2c-80ab6b98a123",
+    "name": "Bowl de lentejas y arroz",
+    "image_url": "/images/r_almuerzo_4.png"
+  },
+  {
+    "id": "b5726da2-d1e0-4067-8282-6d2c87d03e2d",
+    "name": "Pasta integral con pollo y tomate",
+    "image_url": "/images/r_almuerzo_5.png"
+  },
+  {
+    "id": "df92c5fa-fbb8-464e-9506-fed1fd7b4e08",
+    "name": "Salmón con batata asada",
+    "image_url": "/images/r_almuerzo_6.png"
+  },
+  {
+    "id": "f9909bae-554e-4779-baff-5bd3b0cd1459",
+    "name": "Ensalada de garbanzos",
+    "image_url": "/images/r_almuerzo_7.png"
+  },
+  {
+    "id": "cbd78156-109a-4fc7-9a1e-1a0376871d81",
+    "name": "Fajitas saludables de pollo",
+    "image_url": "/images/r_almuerzo_8.png"
+  },
+  {
+    "id": "7bf8795d-ec40-4480-b296-4eea16c487cf",
+    "name": "Pescado blanco al papillote",
+    "image_url": "/images/r_almuerzo_9.png"
+  },
+  {
+    "id": "d605ecee-f25b-4146-9f00-292d0fb206fb",
+    "name": "Guiso ligero de pavo",
+    "image_url": "/images/r_almuerzo_10.png"
+  },
+  {
+    "id": "5fbfab68-0f3c-45d5-b4ae-1c27665dccf1",
+    "name": "Poke bowl de tofu",
+    "image_url": "/images/r_almuerzo_11.png"
+  },
+  {
+    "id": "ae6c0caa-3997-41be-b851-cb92acf6dbf3",
+    "name": "Berenjena rellena de carne picada",
+    "image_url": "/images/r_almuerzo_12.png"
+  },
+  {
+    "id": "2500d9b8-e3ec-4f7f-bc73-6a9285ad6d1e",
+    "name": "Wrap de salmón ahumado",
+    "image_url": "/images/r_almuerzo_13.png"
+  },
+  {
+    "id": "fdb25fa0-0aac-4ad5-86a6-d7afc81fc521",
+    "name": "Arroz frito saludable de coliflor",
+    "image_url": "/images/r_almuerzo_14.png"
+  },
+  {
+    "id": "9c3437e8-9681-482c-a59d-cb95013e9340",
+    "name": "Albóndigas de pollo en salsa",
+    "image_url": "/images/r_almuerzo_15.png"
+  },
+  {
+    "id": "ee7884b3-6ed0-4a7e-9802-4864e53cdba1",
+    "name": "Ensalada César saludable",
+    "image_url": "/images/r_almuerzo_16.png"
+  },
+  {
+    "id": "d18fc6c0-6bea-418a-9419-aa37ef169bba",
+    "name": "Pimientos rellenos de quinoa",
+    "image_url": "/images/r_almuerzo_17.png"
+  },
+  {
+    "id": "c3526bca-d882-4819-ab94-59eadf643aa6",
+    "name": "Lomo de cerdo con puré de manzana",
+    "image_url": "/images/r_almuerzo_18.png"
+  },
+  {
+    "id": "55be2845-d5a5-40b9-aa15-40e4b30d2752",
+    "name": "Cazuela de alubias blancas",
+    "image_url": "/images/r_almuerzo_19.png"
+  },
+  {
+    "id": "bd3ec137-3916-4166-8221-a1eb99bb8fe2",
+    "name": "Pechuga pavo con verduras asadas",
+    "image_url": "/images/r_almuerzo_20.png"
+  },
+  {
+    "id": "551092a5-886a-4a72-917a-230a756e8d47",
+    "name": "Revuelto de gulas y gambas",
+    "image_url": "/images/r_almuerzo_21.png"
+  },
+  {
+    "id": "14f3a9c7-ff1a-4b3c-8751-e6eec1592151",
+    "name": "Salmón al horno con espárragos",
+    "image_url": "/images/r_cena_1.png"
+  },
+  {
+    "id": "1107d030-cfe1-4ef0-b294-ee626214caeb",
+    "name": "Sopa de verduras depurativa",
+    "image_url": "/images/r_cena_2.png"
+  },
+  {
+    "id": "da768778-0f51-4f1f-a0c8-ece3b1674f53",
+    "name": "Tortilla francesa con champiñones",
+    "image_url": "/images/r_cena_3.png"
+  },
+  {
+    "id": "1fed1e9b-3b5d-45b8-afd6-950ae4e74137",
+    "name": "Ensalada Caprese",
+    "image_url": "/images/r_cena_4.png"
+  },
+  {
+    "id": "ef9248fa-a913-4fb0-b4de-3e753559e0d2",
+    "name": "Calabacines rellenos de atún",
+    "image_url": "/images/r_cena_5.png"
+  },
+  {
+    "id": "15a323a0-d5de-4f78-9521-123b019cc0fc",
+    "name": "Pechuga a la plancha con pepino",
+    "image_url": "/images/r_cena_6.png"
+  },
+  {
+    "id": "427bbac1-7ebc-4c60-8c10-d5fc8d5124b0",
+    "name": "Crema de calabaza",
+    "image_url": "/images/r_cena_7.png"
+  },
+  {
+    "id": "dbb82004-d199-4ed1-9695-7b8341b60546",
+    "name": "Espaguetis de calabacín con pavo",
+    "image_url": "/images/r_cena_8.png"
+  },
+  {
+    "id": "45076267-899a-4291-b613-3b800be964f4",
+    "name": "Tartar de salmón y aguacate",
+    "image_url": "/images/r_cena_9.png"
+  },
+  {
+    "id": "34b395f5-9abc-4ea9-8849-d3623f30256e",
+    "name": "Ensalada de espinacas y queso fresco",
+    "image_url": "/images/r_cena_10.png"
+  },
+  {
+    "id": "148075df-bf25-4bef-b551-470a5b4bd63f",
+    "name": "Hamburguesa de pollo sin pan",
+    "image_url": "/images/r_cena_11.png"
+  },
+  {
+    "id": "f8e00aea-ca22-49e8-9e99-14cd9aea6611",
+    "name": "Merluza a la romana al horno",
+    "image_url": "/images/r_cena_12.png"
+  },
+  {
+    "id": "90f5d403-ca0c-41ab-a62c-022865bb0169",
+    "name": "Gazpacho andaluz",
+    "image_url": "/images/r_cena_13.png"
+  },
+  {
+    "id": "944a925d-180c-4a34-8d80-ece72583ff69",
+    "name": "Tortilla de calabacín",
+    "image_url": "/images/r_cena_14.png"
+  },
+  {
+    "id": "8bec73bd-2a49-45ff-a035-266629a4bef3",
+    "name": "Brochetas de pavo y verduras",
+    "image_url": "/images/r_cena_15.png"
+  },
+  {
+    "id": "766f6fb6-dd3e-464c-bc45-a4bfa651ebf9",
+    "name": "Ceviche de pescado blanco",
+    "image_url": "/images/r_cena_16.png"
+  },
+  {
+    "id": "7d12e6d2-4ea5-4646-a5f5-be6c16d19f52",
+    "name": "Guisantes con jamón",
+    "image_url": "/images/r_cena_17.png"
+  },
+  {
+    "id": "a08bce42-71ca-41c8-bebe-97b177586af4",
+    "name": "Cazuela de sepia y gambas",
+    "image_url": "/images/r_cena_18.png"
+  },
+  {
+    "id": "f9900a78-c640-4ccf-a94c-b4215d8fac39",
+    "name": "Champiñones rellenos de pavo",
+    "image_url": "/images/r_cena_19.png"
+  },
+  {
+    "id": "07a3e064-0bd0-4b90-a3cc-c67418da402e",
+    "name": "Ensalada tibia de judías verdes",
+    "image_url": "/images/r_cena_20.png"
+  },
+  {
+    "id": "e9d0991f-ccad-42c9-bba6-846a9c5a3814",
+    "name": "Sopa de miso con tofu",
+    "image_url": "/images/r_cena_21.png"
+  }
+]

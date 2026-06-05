@@ -8,6 +8,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import confetti from "canvas-confetti";
+import { TeDelDiaCard } from "@/components/dashboard/TeDelDiaCard";
 
 export const Route = createFileRoute("/_authenticated/plan")({
   component: PlanPage,
@@ -338,7 +339,7 @@ function PlanPage() {
     { done: progress?.lunch_done },
     { done: progress?.dinner_done },
     { done: progress?.mission_done },
-    { done: (progress?.water_glasses || 0) >= (day?.water_goal || 8) },
+    { done: (progress?.water_glasses || 0) > 0 }, // Represents Te del Dia
     { done: progress?.exercise_done },
   ];
   const completedTasks = tasks.filter(t => t.done).length;
@@ -393,9 +394,14 @@ function PlanPage() {
         </div>
       </div>
 
-      <div className="px-5 pb-24 space-y-10 mt-6 relative">
+      <div className="px-5 pb-24 space-y-10 mt-2 relative">
+        <TeDelDiaCard 
+          currentDayNum={selectedDayNum} 
+          isDone={(progress?.water_glasses || 0) > 0} 
+        />
+
         {/* Decorative Timeline Line */}
-        <div className="absolute left-9 top-4 bottom-0 w-0.5 bg-gradient-to-b from-primary/30 via-border to-transparent -z-10" />
+        <div className="absolute left-9 top-60 bottom-0 w-0.5 bg-gradient-to-b from-primary/30 via-border to-transparent -z-10" />
 
         {/* 🌅 MAÑANA */}
         <div className="relative">
@@ -495,50 +501,7 @@ function PlanPage() {
           </div>
         </div>
 
-        {/* 💧 ÁGUA MODULE */}
-        <div className="relative">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-8 w-8 rounded-full bg-cyan-100 text-cyan-500 flex items-center justify-center shrink-0 border-4 border-background z-10">
-              <Droplet className="h-4 w-4" />
-            </div>
-            <div className="flex items-center justify-between flex-1">
-              <h3 className="font-display text-xl font-bold text-foreground">Hidratación</h3>
-              <span className="text-xs font-bold bg-cyan-100 text-cyan-600 px-3 py-1 rounded-full">
-                {progress?.water_glasses || 0} / {day.water_goal || 8}
-              </span>
-            </div>
-          </div>
 
-          <div className="pl-11">
-            <div className="bg-white rounded-[1.5rem] border border-border/50 p-5 shadow-sm">
-              <div className="flex flex-wrap gap-2.5 justify-center">
-                {Array.from({ length: day.water_goal || 8 }).map((_, i) => {
-                  const isFilled = i < (progress?.water_glasses || 0);
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        const newVal = isFilled ? i : i + 1; // Toggle logic: if clicking filled, reduce to that amount. If clicking empty, fill up to that amount.
-                        updateProgress.mutate({ water_glasses: newVal });
-                        if(newVal > (progress?.water_glasses || 0)) {
-                           // small confetti for water
-                           confetti({ particleCount: 30, spread: 40, origin: { y: 0.8 }, colors: ['#06b6d4', '#67e8f9'] });
-                        }
-                      }}
-                      className={`h-11 w-9 rounded-full flex items-end justify-center pb-2 transition-all active:scale-90 ${
-                        isFilled 
-                          ? "bg-cyan-500 shadow-md shadow-cyan-500/30" 
-                          : "bg-secondary hover:bg-secondary/80 border border-border/40"
-                      }`}
-                    >
-                      <Droplet className={`h-4 w-4 ${isFilled ? "text-white" : "text-muted-foreground/30"}`} fill={isFilled ? "currentColor" : "none"} />
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* 🌙 NOCHE */}
         <div className="relative">

@@ -146,10 +146,10 @@ function Landing() {
             <div className="mt-2 space-y-2">
               <div className="flex items-center justify-between rounded-2xl bg-background p-3">
                  <div className="flex items-center gap-3">
-                   <Droplet className="h-5 w-5 text-accent" />
-                   <span className="text-sm font-semibold">Agua</span>
+                   <span className="text-xl">🍵</span>
+                   <span className="text-sm font-semibold">Té del Día</span>
                  </div>
-                 <span className="text-sm font-bold text-muted-foreground">4/8</span>
+                 <span className="text-xs font-bold text-accent">Pendiente</span>
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-background p-3">
                  <div className="flex items-center gap-3">
