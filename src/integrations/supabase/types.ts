@@ -14,36 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      day_progress: {
+      daily_progress: {
         Row: {
-          checklist: Json
-          completed: boolean
-          completed_at: string | null
+          breakfast_done: boolean
           created_at: string
           day_number: number
+          dinner_done: boolean
+          exercise_done: boolean
           id: string
+          log_date: string
+          lunch_done: boolean
+          mission_done: boolean
           updated_at: string
           user_id: string
+          water_glasses: number
+          weight: number | null
         }
         Insert: {
-          checklist?: Json
-          completed?: boolean
-          completed_at?: string | null
+          breakfast_done?: boolean
           created_at?: string
           day_number: number
+          dinner_done?: boolean
+          exercise_done?: boolean
           id?: string
+          log_date?: string
+          lunch_done?: boolean
+          mission_done?: boolean
           updated_at?: string
           user_id: string
+          water_glasses?: number
+          weight?: number | null
         }
         Update: {
-          checklist?: Json
-          completed?: boolean
-          completed_at?: string | null
+          breakfast_done?: boolean
           created_at?: string
           day_number?: number
+          dinner_done?: boolean
+          exercise_done?: boolean
           id?: string
+          log_date?: string
+          lunch_done?: boolean
+          mission_done?: boolean
           updated_at?: string
           user_id?: string
+          water_glasses?: number
+          weight?: number | null
         }
         Relationships: []
       }
@@ -134,102 +149,114 @@ export type Database = {
         }
         Relationships: []
       }
-      favorites: {
+      plan_days: {
         Row: {
+          breakfast: Json | null
           created_at: string
+          day_number: number
+          dinner: Json | null
+          exercise_description: string | null
+          exercise_duration_min: number | null
+          exercise_title: string | null
           id: string
-          recipe_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          recipe_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          recipe_id?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      habit_logs: {
-        Row: {
-          created_at: string
-          drank_tea: boolean
-          drank_water: boolean
-          id: string
-          log_date: string
-          no_sugar: boolean
-          slept_well: boolean
+          lunch: Json | null
+          mission: string | null
           updated_at: string
           user_id: string
-          walked: boolean
+          water_goal_glasses: number
         }
         Insert: {
+          breakfast?: Json | null
           created_at?: string
-          drank_tea?: boolean
-          drank_water?: boolean
+          day_number: number
+          dinner?: Json | null
+          exercise_description?: string | null
+          exercise_duration_min?: number | null
+          exercise_title?: string | null
           id?: string
-          log_date?: string
-          no_sugar?: boolean
-          slept_well?: boolean
+          lunch?: Json | null
+          mission?: string | null
           updated_at?: string
           user_id: string
-          walked?: boolean
+          water_goal_glasses?: number
         }
         Update: {
+          breakfast?: Json | null
           created_at?: string
-          drank_tea?: boolean
-          drank_water?: boolean
+          day_number?: number
+          dinner?: Json | null
+          exercise_description?: string | null
+          exercise_duration_min?: number | null
+          exercise_title?: string | null
           id?: string
-          log_date?: string
-          no_sugar?: boolean
-          slept_well?: boolean
+          lunch?: Json | null
+          mission?: string | null
           updated_at?: string
           user_id?: string
-          walked?: boolean
+          water_goal_glasses?: number
         }
         Relationships: []
       }
       profiles: {
         Row: {
+          activity_level: string | null
+          age: number | null
           created_at: string
           current_weight: number | null
           display_name: string | null
           email: string | null
           goal_weight: number | null
+          height_cm: number | null
           id: string
+          main_difficulty: string | null
+          main_goal: string | null
+          onboarding_completed: boolean
+          plan_started_at: string | null
           points: number
           premium_access: boolean
+          sex: string | null
           start_date: string
           start_weight: number | null
           updated_at: string
         }
         Insert: {
+          activity_level?: string | null
+          age?: number | null
           created_at?: string
           current_weight?: number | null
           display_name?: string | null
           email?: string | null
           goal_weight?: number | null
+          height_cm?: number | null
           id: string
+          main_difficulty?: string | null
+          main_goal?: string | null
+          onboarding_completed?: boolean
+          plan_started_at?: string | null
           points?: number
           premium_access?: boolean
+          sex?: string | null
           start_date?: string
           start_weight?: number | null
           updated_at?: string
         }
         Update: {
+          activity_level?: string | null
+          age?: number | null
           created_at?: string
           current_weight?: number | null
           display_name?: string | null
           email?: string | null
           goal_weight?: number | null
+          height_cm?: number | null
           id?: string
+          main_difficulty?: string | null
+          main_goal?: string | null
+          onboarding_completed?: boolean
+          plan_started_at?: string | null
           points?: number
           premium_access?: boolean
+          sex?: string | null
           start_date?: string
           start_weight?: number | null
           updated_at?: string
@@ -257,30 +284,6 @@ export type Database = {
           id?: string
           metadata?: Json | null
           reason?: string
-        }
-        Relationships: []
-      }
-      weight_logs: {
-        Row: {
-          created_at: string
-          id: string
-          logged_at: string
-          user_id: string
-          weight: number
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          logged_at?: string
-          user_id: string
-          weight: number
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          logged_at?: string
-          user_id?: string
-          weight?: number
         }
         Relationships: []
       }
