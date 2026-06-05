@@ -30,7 +30,16 @@ export function parseIngredients(days: any[]): ParsedIngredient[] {
     meals.forEach((meal) => {
       if (!meal.data || !meal.data.ingredients) return;
 
-      meal.data.ingredients.forEach((ing: string) => {
+      let ingredientsList: string[] = [];
+      if (Array.isArray(meal.data.ingredients)) {
+        ingredientsList = meal.data.ingredients;
+      } else if (typeof meal.data.ingredients === 'object') {
+        const obj = meal.data.ingredients;
+        if (obj.Principal && Array.isArray(obj.Principal)) ingredientsList.push(...obj.Principal);
+        if (obj.Opcional && Array.isArray(obj.Opcional)) ingredientsList.push(...obj.Opcional);
+      }
+
+      ingredientsList.forEach((ing: string) => {
         // Clean ingredient string
         const cleanStr = ing.toLowerCase().trim();
         
