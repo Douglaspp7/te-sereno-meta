@@ -197,7 +197,7 @@ function OnboardingPage() {
       <button
         onClick={next}
         disabled={!canContinue || saving}
-        className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary font-medium text-primary-foreground shadow-soft transition active:scale-[0.98] disabled:opacity-40"
+        className="mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary font-medium text-primary-foreground shadow-soft transition active:scale-[0.98] disabled:opacity-40"
       >
         {saving && <Loader2 className="h-4 w-4 animate-spin" />}
         {step === total - 1 ? (
