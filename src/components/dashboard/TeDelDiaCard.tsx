@@ -14,7 +14,7 @@ export function TeDelDiaCard({ currentDayNum, isDone }: { currentDayNum: number,
           alt={tea.name} 
           className="h-full w-full object-cover" 
           onError={(e) => {
-            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=1000&auto=format&fit=crop";
+            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1563822249548-9a72b6353cd1?q=80&w=1000&auto=format&fit=crop";
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
