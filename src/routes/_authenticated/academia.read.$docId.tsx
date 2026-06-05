@@ -1,13 +1,9 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { ArrowLeft, ZoomIn, ZoomOut, Maximize, Minimize } from "lucide-react";
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { academiaDocuments } from "@/data/academia";
 
-// Set worker for react-pdf
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+const PdfViewer = lazy(() => import("@/components/PdfViewer"));
 
 export const Route = createFileRoute("/_authenticated/academia/read/$docId")({
   component: PdfReaderRoute,
@@ -100,27 +96,21 @@ function PdfReaderRoute() {
 
       {/* Reader Area */}
       <div className="flex-1 overflow-auto flex justify-center py-6 px-2 md:px-8">
-        <Document
-          file={documentInfo.pdfUrl}
-          onLoadSuccess={onDocumentLoadSuccess}
-          loading={
+        {typeof window !== 'undefined' && (
+          <Suspense fallback={
             <div className="h-[60vh] flex flex-col items-center justify-center text-muted-foreground">
               <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
               <p className="text-sm font-medium">Cargando documento...</p>
             </div>
-          }
-          error={<div className="p-8 text-center text-red-500">Error al cargar el PDF. Revisa si el archivo existe.</div>}
-        >
-          <div className="shadow-2xl rounded-lg overflow-hidden bg-white">
-            <Page 
-              pageNumber={pageNumber} 
-              scale={scale} 
-              renderTextLayer={true}
-              renderAnnotationLayer={true}
-              className="max-w-full"
+          }>
+            <PdfViewer
+              file={documentInfo.pdfUrl}
+              pageNumber={pageNumber}
+              scale={scale}
+              onLoadSuccess={onDocumentLoadSuccess}
             />
-          </div>
-        </Document>
+          </Suspense>
+        )}
       </div>
 
       {/* Navigation Footer */}
