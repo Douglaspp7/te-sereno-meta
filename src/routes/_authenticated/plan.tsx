@@ -607,12 +607,8 @@ function TimelineMealCard({ recipe, isDone, onOpen }: { recipe: any, isDone: boo
         isDone ? "opacity-80 border-border/50" : "border-border/60"
       }`}
     >
-      <div className="relative w-28 shrink-0 bg-muted">
-        {recipe.image_url ? (
-          <img src={recipe.image_url} alt={recipe.name} className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${isDone ? 'grayscale opacity-70' : ''}`} onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=400&auto=format&fit=crop"; }} />
-        ) : (
-          <img src={`/images/recipes/${recipe.id}.jpg`} alt={recipe.name} className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${isDone ? 'grayscale opacity-70' : ''}`} onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=400&auto=format&fit=crop"; }} />
-        )}
+      <div className="w-[140px] shrink-0 relative overflow-hidden bg-muted">
+        <img src={`/images/recipes/${recipe.id}.jpg`} alt={recipe.name} className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${isDone ? 'grayscale opacity-70' : ''}`} onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=400&auto=format&fit=crop"; }} />
         {isDone && (
           <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-[2px]">
             <CheckCircle2 className="h-8 w-8 text-white drop-shadow-md" />
