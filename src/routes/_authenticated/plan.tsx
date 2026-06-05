@@ -39,7 +39,15 @@ function FullScreenRecipeModal({
   return (
     <div className="fixed inset-0 z-[100] bg-background overflow-y-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="relative h-[35vh] w-full bg-muted">
-        <img src={imageUrl} alt={recipe.name} className="h-full w-full object-cover" />
+        <img 
+          src={imageUrl} 
+          alt={recipe.name} 
+          className="h-full w-full object-cover" 
+          onError={(e) => {
+            // Fallback for when the AI image hasn't been generated yet
+            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1000&auto=format&fit=crop";
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80" />
         <button 
           onClick={onClose}
