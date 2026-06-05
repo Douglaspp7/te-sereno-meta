@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Check, Droplet, Plus, Minus, Dumbbell, Flame, Sparkles, User as UserIcon, Coffee, UtensilsCrossed, Moon, Bot } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
+import { RecipeModal, RecipeData } from "./RecipeModal";
 
 type Profile = {
   display_name: string | null;
@@ -79,11 +80,26 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
 
   const firstName = profile.display_name?.split(" ")[0] ?? "";
 
-  const meals = [
-    { id: "breakfast", label: "Desayuno", name: "Avena con frutos rojos", kcal: 320, p: 12, c: 45, f: 8, done: !!progress?.breakfast_done },
-    { id: "lunch", label: "Almuerzo", name: "Pollo a la plancha", kcal: 480, p: 35, c: 40, f: 15, done: !!progress?.lunch_done },
-    { id: "dinner", label: "Cena", name: "Tortilla de espinacas", kcal: 350, p: 20, c: 15, f: 18, done: !!progress?.dinner_done },
+  const meals: RecipeData[] = [
+    { 
+      id: "breakfast", label: "Desayuno", name: "Avena con frutos rojos", kcal: 320, macros: {p: 12, c: 45, f: 8}, done: !!progress?.breakfast_done,
+      ingredients: ["1/2 taza de avena integral", "1 taza de leche de almendras", "1/2 taza de frutos rojos (fresas, arándanos)", "1 cucharada de semillas de chía"],
+      instructions: ["Calienta la leche en una pequeña olla.", "Añade la avena y reduce el fuego. Cocina por 5 minutos.", "Sirve en un bol y decora con los frutos rojos y la chía.", "¡Disfruta tu desayuno lleno de energía!"]
+    },
+    { 
+      id: "lunch", label: "Almuerzo", name: "Pollo a la plancha", kcal: 480, macros: {p: 35, c: 40, f: 15}, done: !!progress?.lunch_done,
+      ingredients: ["150g de pechuga de pollo", "1/2 taza de quinoa cocida", "1 taza de espinacas frescas", "1 cucharada de aceite de oliva", "Medio aguacate"],
+      instructions: ["Sazona el pollo con sal, pimienta y ajo en polvo.", "Cocina el pollo a la plancha por 6-8 minutos de cada lado.", "Sirve sobre una cama de quinoa y espinacas.", "Añade el aguacate en rodajas y rocía con aceite de oliva."]
+    },
+    { 
+      id: "dinner", label: "Cena", name: "Tortilla de espinacas", kcal: 350, macros: {p: 20, c: 15, f: 18}, done: !!progress?.dinner_done,
+      ingredients: ["2 huevos enteros", "1 clara de huevo", "1 taza de espinacas picadas", "1/4 de cebolla picada", "1 rebanada de queso bajo en grasa"],
+      instructions: ["Bate los huevos y la clara en un bol con sal y pimienta.", "Saltea la cebolla y las espinacas en un sartén con un poco de aceite.", "Vierte los huevos sobre los vegetales y cocina a fuego medio.", "Dobla la tortilla, añade el queso y sirve caliente."]
+    },
   ];
+
+  const [openRecipeId, setOpenRecipeId] = useState<string | null>(null);
+  const activeRecipe = meals.find(m => m.id === openRecipeId) || null;
 
   const consumedKcal = meals.filter(m => m.done).reduce((acc, m) => acc + m.kcal, 0);
   const consumedP = meals.filter(m => m.done).reduce((acc, m) => acc + m.p, 0);
@@ -269,13 +285,14 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
               label={m.label}
               name={m.name}
               kcal={m.kcal}
-              macros={{ p: m.p, c: m.c, f: m.f }}
+              macros={m.macros}
               icon={
                 m.id === "breakfast" ? <Coffee className="h-5 w-5" /> :
                 m.id === "lunch" ? <UtensilsCrossed className="h-5 w-5" /> :
                 <Moon className="h-5 w-5" />
               }
               done={m.done}
+              onOpen={() => setOpenRecipeId(m.id)}
               onToggle={() => upsertProgress.mutate({ [`${m.id}_done`]: !m.done })}
             />
           ))}
@@ -286,6 +303,13 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       </section>
 
       <div className="h-10" />
+      <RecipeModal 
+        recipe={activeRecipe} 
+        open={!!openRecipeId} 
+        onOpenChange={(o) => !o && setOpenRecipeId(null)}
+        done={activeRecipe ? activeRecipe.done : false}
+        onToggle={() => activeRecipe && upsertProgress.mutate({ [`${activeRecipe.id}_done`]: !activeRecipe.done })}
+      />
     </AppShell>
   );
 }
@@ -348,12 +372,12 @@ function MacroBar({ label, current, max, color }: { label: string; current: numb
 }
 
 function MealCard({
-  label, name, kcal, macros, done, onToggle, icon,
-}: { label: string; name: string; kcal: number; macros: {p:number, c:number, f:number}; done: boolean; onToggle: () => void; icon: React.ReactNode }) {
+  label, name, kcal, macros, done, onToggle, onOpen, icon,
+}: { label: string; name: string; kcal: number; macros: {p:number, c:number, f:number}; done: boolean; onToggle: () => void; onOpen: () => void; icon: React.ReactNode }) {
   return (
-    <button
-      onClick={onToggle}
-      className="flex w-full items-center gap-4 rounded-[1.5rem] border border-border/40 bg-white p-4 text-left shadow-sm transition active:scale-[0.99]"
+    <div
+      onClick={onOpen}
+      className="flex w-full items-center gap-4 rounded-[1.5rem] border border-border/40 bg-white p-4 text-left shadow-sm transition active:scale-[0.99] cursor-pointer"
     >
       <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-2xl transition-colors ${done ? "bg-background text-muted-foreground" : "bg-secondary/15 text-primary"}`}>
         {icon}
@@ -370,9 +394,12 @@ function MealCard({
           <span><strong className={done ? "" : "text-rose-500"}>{macros.f}g</strong> G</span>
         </div>
       </div>
-      <span className={`ml-1 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 transition-all ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
+      <button 
+        onClick={(e) => { e.stopPropagation(); onToggle(); }}
+        className={`ml-1 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 transition-all ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}
+      >
         {done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
-      </span>
-    </button>
+      </button>
+    </div>
   );
 }
