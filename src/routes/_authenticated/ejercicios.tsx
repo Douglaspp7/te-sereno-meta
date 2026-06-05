@@ -117,11 +117,11 @@ function EjerciciosPage() {
   const isDone = progress?.exercise_done;
   let videoUrl = exercise?.video_url;
   
-  // Fallbacks diretos caso o banco de dados demore para processar a migração
-  if (dayNumber === 1 && (!videoUrl || videoUrl.includes('.png'))) {
+  // Forçar os URLs de vídeo independentemente do banco de dados (para Dias 1 e 2)
+  if (dayNumber === 1) {
     videoUrl = 'https://youtu.be/YFAuNBwvugY';
   }
-  if (dayNumber === 2 && (!videoUrl || videoUrl.includes('.png'))) {
+  if (dayNumber === 2) {
     videoUrl = 'https://youtu.be/21C7hlYOnwE';
   }
 
@@ -172,10 +172,9 @@ function EjerciciosPage() {
 
               {/* Info Area */}
               <div className="relative z-10">
-                <h3 className="font-display font-bold text-2xl text-foreground leading-tight">{exercise.name}</h3>
-                <p className="text-sm text-muted-foreground mt-2 mb-5 leading-relaxed">{exercise.description}</p>
+                <h3 className="font-display font-bold text-2xl text-foreground leading-tight">Día {dayNumber}</h3>
                 
-                <div className="flex gap-3 mb-6">
+                <div className="flex gap-3 mt-4 mb-6">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-foreground bg-secondary/50 rounded-xl px-4 py-2 border border-border/50 backdrop-blur-sm">
                     <Clock className="h-4 w-4 text-primary" /> {exercise.duration} min
                   </div>
