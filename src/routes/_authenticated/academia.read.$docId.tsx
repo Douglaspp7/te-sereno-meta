@@ -1,9 +1,7 @@
-import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { ArrowLeft, ZoomIn, ZoomOut, Maximize, Minimize } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState, useRef } from "react";
+import { ArrowLeft, Maximize, Minimize, Download } from "lucide-react";
 import { academiaDocuments } from "@/data/academia";
-
-const PdfViewer = lazy(() => import("@/components/PdfViewer"));
 
 export const Route = createFileRoute("/_authenticated/academia/read/$docId")({
   component: PdfReaderRoute,
@@ -14,46 +12,9 @@ function PdfReaderRoute() {
   const { docId } = Route.useParams();
   const documentInfo = academiaDocuments.find(d => d.id === docId);
 
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [scale, setScale] = useState(1.0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Load progress
-  useEffect(() => {
-    const savedProgressStr = localStorage.getItem('academia_pages');
-    if (savedProgressStr) {
-      const savedProgress = JSON.parse(savedProgressStr);
-      if (savedProgress[docId]) {
-        setPageNumber(savedProgress[docId]);
-      }
-    }
-  }, [docId]);
-
-  // Save progress automatically
-  useEffect(() => {
-    if (numPages) {
-      const percentage = (pageNumber / numPages) * 100;
-      
-      // Save global percentage
-      const progressObj = JSON.parse(localStorage.getItem('academia_progress') || '{}');
-      progressObj[docId] = percentage;
-      localStorage.setItem('academia_progress', JSON.stringify(progressObj));
-      
-      // Save exact page
-      const pagesObj = JSON.parse(localStorage.getItem('academia_pages') || '{}');
-      pagesObj[docId] = pageNumber;
-      localStorage.setItem('academia_pages', JSON.stringify(pagesObj));
-    }
-  }, [pageNumber, numPages, docId]);
-
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    setNumPages(numPages);
-  }
-
-  const zoomIn = () => setScale(s => Math.min(s + 0.25, 2.5));
-  const zoomOut = () => setScale(s => Math.max(s - 0.25, 0.5));
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       containerRef.current?.requestFullscreen().catch(err => console.log(err));
@@ -64,15 +25,12 @@ function PdfReaderRoute() {
     }
   };
 
-  const nextPage = () => setPageNumber(p => Math.min(p + 1, numPages || 1));
-  const prevPage = () => setPageNumber(p => Math.max(p - 1, 1));
-
   if (!documentInfo) return <div className="p-8 text-center">Documento no encontrado</div>;
 
   return (
-    <div ref={containerRef} className={`flex flex-col bg-[#EFEFEF] ${isFullscreen ? 'h-screen' : 'min-h-screen'}`}>
+    <div ref={containerRef} className={`flex flex-col bg-[#EFEFEF] ${isFullscreen ? 'h-screen' : 'h-[100dvh]'}`}>
       {/* Header */}
-      <div className="bg-white px-4 py-3 flex items-center justify-between shadow-sm z-10 sticky top-0">
+      <div className="bg-white px-4 py-3 flex items-center justify-between shadow-sm z-10 sticky top-0 shrink-0">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => navigate({ to: "/academia" })}
@@ -86,8 +44,16 @@ function PdfReaderRoute() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={zoomOut} className="p-2 rounded-full text-foreground/70 hover:bg-secondary"><ZoomOut className="h-5 w-5" /></button>
-          <button onClick={zoomIn} className="p-2 rounded-full text-foreground/70 hover:bg-secondary"><ZoomIn className="h-5 w-5" /></button>
+          <a 
+            href={documentInfo.pdfUrl} 
+            download 
+            target="_blank"
+            rel="noreferrer"
+            className="p-2 rounded-full text-foreground/70 hover:bg-secondary flex items-center gap-1"
+            title="Descargar PDF"
+          >
+            <Download className="h-5 w-5" />
+          </a>
           <button onClick={toggleFullscreen} className="p-2 rounded-full text-foreground/70 hover:bg-secondary hidden md:block">
             {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
           </button>
@@ -95,45 +61,12 @@ function PdfReaderRoute() {
       </div>
 
       {/* Reader Area */}
-      <div className="flex-1 overflow-auto flex justify-center py-6 px-2 md:px-8">
-        {typeof window !== 'undefined' && (
-          <Suspense fallback={
-            <div className="h-[60vh] flex flex-col items-center justify-center text-muted-foreground">
-              <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
-              <p className="text-sm font-medium">Cargando documento...</p>
-            </div>
-          }>
-            <PdfViewer
-              file={documentInfo.pdfUrl}
-              pageNumber={pageNumber}
-              scale={scale}
-              onLoadSuccess={onDocumentLoadSuccess}
-            />
-          </Suspense>
-        )}
-      </div>
-
-      {/* Navigation Footer */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-t border-border/50 sticky bottom-0 z-10">
-        <button 
-          onClick={prevPage} 
-          disabled={pageNumber <= 1}
-          className="px-5 py-2.5 rounded-full bg-secondary font-bold text-sm text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Anterior
-        </button>
-        
-        <div className="text-sm font-bold font-mono">
-          {pageNumber} <span className="text-muted-foreground">/ {numPages || '-'}</span>
-        </div>
-        
-        <button 
-          onClick={nextPage} 
-          disabled={pageNumber >= (numPages || 1)}
-          className="px-5 py-2.5 rounded-full bg-foreground font-bold text-sm text-background disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Siguiente
-        </button>
+      <div className="flex-1 overflow-hidden relative">
+        <iframe 
+          src={`${documentInfo.pdfUrl}#toolbar=0&view=FitH`} 
+          className="absolute inset-0 w-full h-full border-none"
+          title={documentInfo.title}
+        />
       </div>
     </div>
   );
