@@ -154,7 +154,7 @@ function OnboardingPage() {
         />
       </div>
 
-      <div className="mt-12 flex-1">
+      <div className="mt-10">
         <h1 className="font-display text-3xl leading-tight text-foreground">{current.title}</h1>
 
         <div className="mt-8">
