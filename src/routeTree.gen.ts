@@ -10,38 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as RecetasRouteImport } from './routes/recetas'
-import { Route as PremiumRouteImport } from './routes/premium'
-import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RecetasIdRouteImport } from './routes/recetas.$id'
 import { Route as AuthenticatedProgresoRouteImport } from './routes/_authenticated/progreso'
-import { Route as AuthenticatedProgramaRouteImport } from './routes/_authenticated/programa'
-import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
-import { Route as AuthenticatedAlimentacionRouteImport } from './routes/_authenticated/alimentacion'
-import { Route as AuthenticatedProgramaDiaRouteImport } from './routes/_authenticated/programa.$dia'
+import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedGenerandoRouteImport } from './routes/_authenticated/generando'
+import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
+import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecetasRoute = RecetasRouteImport.update({
-  id: '/recetas',
-  path: '/recetas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PremiumRoute = PremiumRouteImport.update({
-  id: '/premium',
-  path: '/premium',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PerfilRoute = PerfilRouteImport.update({
-  id: '/perfil',
-  path: '/perfil',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -58,38 +40,36 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RecetasIdRoute = RecetasIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => RecetasRoute,
-} as any)
 const AuthenticatedProgresoRoute = AuthenticatedProgresoRouteImport.update({
   id: '/progreso',
   path: '/progreso',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedProgramaRoute = AuthenticatedProgramaRouteImport.update({
-  id: '/programa',
-  path: '/programa',
+const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedEjerciciosRoute = AuthenticatedEjerciciosRouteImport.update({
-  id: '/ejercicios',
-  path: '/ejercicios',
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAlimentacionRoute =
-  AuthenticatedAlimentacionRouteImport.update({
-    id: '/alimentacion',
-    path: '/alimentacion',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedProgramaDiaRoute =
-  AuthenticatedProgramaDiaRouteImport.update({
-    id: '/$dia',
-    path: '/$dia',
-    getParentRoute: () => AuthenticatedProgramaRoute,
-  } as any)
+const AuthenticatedGenerandoRoute = AuthenticatedGenerandoRouteImport.update({
+  id: '/generando',
+  path: '/generando',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
+  id: '/compras',
+  path: '/compras',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCoachRoute = AuthenticatedCoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -100,31 +80,25 @@ const LovableEmailQueueProcessRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/perfil': typeof PerfilRoute
-  '/premium': typeof PremiumRoute
-  '/recetas': typeof RecetasRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
-  '/alimentacion': typeof AuthenticatedAlimentacionRoute
-  '/ejercicios': typeof AuthenticatedEjerciciosRoute
-  '/programa': typeof AuthenticatedProgramaRouteWithChildren
+  '/coach': typeof AuthenticatedCoachRoute
+  '/compras': typeof AuthenticatedComprasRoute
+  '/generando': typeof AuthenticatedGenerandoRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
-  '/recetas/$id': typeof RecetasIdRoute
-  '/programa/$dia': typeof AuthenticatedProgramaDiaRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/perfil': typeof PerfilRoute
-  '/premium': typeof PremiumRoute
-  '/recetas': typeof RecetasRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
-  '/alimentacion': typeof AuthenticatedAlimentacionRoute
-  '/ejercicios': typeof AuthenticatedEjerciciosRoute
-  '/programa': typeof AuthenticatedProgramaRouteWithChildren
+  '/coach': typeof AuthenticatedCoachRoute
+  '/compras': typeof AuthenticatedComprasRoute
+  '/generando': typeof AuthenticatedGenerandoRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
-  '/recetas/$id': typeof RecetasIdRoute
-  '/programa/$dia': typeof AuthenticatedProgramaDiaRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -132,16 +106,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/perfil': typeof PerfilRoute
-  '/premium': typeof PremiumRoute
-  '/recetas': typeof RecetasRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/alimentacion': typeof AuthenticatedAlimentacionRoute
-  '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
-  '/_authenticated/programa': typeof AuthenticatedProgramaRouteWithChildren
+  '/_authenticated/coach': typeof AuthenticatedCoachRoute
+  '/_authenticated/compras': typeof AuthenticatedComprasRoute
+  '/_authenticated/generando': typeof AuthenticatedGenerandoRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
-  '/recetas/$id': typeof RecetasIdRoute
-  '/_authenticated/programa/$dia': typeof AuthenticatedProgramaDiaRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -149,47 +120,38 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/perfil'
-    | '/premium'
-    | '/recetas'
     | '/reset-password'
-    | '/alimentacion'
-    | '/ejercicios'
-    | '/programa'
+    | '/coach'
+    | '/compras'
+    | '/generando'
+    | '/onboarding'
+    | '/plan'
     | '/progreso'
-    | '/recetas/$id'
-    | '/programa/$dia'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
-    | '/perfil'
-    | '/premium'
-    | '/recetas'
     | '/reset-password'
-    | '/alimentacion'
-    | '/ejercicios'
-    | '/programa'
+    | '/coach'
+    | '/compras'
+    | '/generando'
+    | '/onboarding'
+    | '/plan'
     | '/progreso'
-    | '/recetas/$id'
-    | '/programa/$dia'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/perfil'
-    | '/premium'
-    | '/recetas'
     | '/reset-password'
-    | '/_authenticated/alimentacion'
-    | '/_authenticated/ejercicios'
-    | '/_authenticated/programa'
+    | '/_authenticated/coach'
+    | '/_authenticated/compras'
+    | '/_authenticated/generando'
+    | '/_authenticated/onboarding'
+    | '/_authenticated/plan'
     | '/_authenticated/progreso'
-    | '/recetas/$id'
-    | '/_authenticated/programa/$dia'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -197,9 +159,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  PerfilRoute: typeof PerfilRoute
-  PremiumRoute: typeof PremiumRoute
-  RecetasRoute: typeof RecetasRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
@@ -211,27 +170,6 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recetas': {
-      id: '/recetas'
-      path: '/recetas'
-      fullPath: '/recetas'
-      preLoaderRoute: typeof RecetasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/premium': {
-      id: '/premium'
-      path: '/premium'
-      fullPath: '/premium'
-      preLoaderRoute: typeof PremiumRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/perfil': {
-      id: '/perfil'
-      path: '/perfil'
-      fullPath: '/perfil'
-      preLoaderRoute: typeof PerfilRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -255,13 +193,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/recetas/$id': {
-      id: '/recetas/$id'
-      path: '/$id'
-      fullPath: '/recetas/$id'
-      preLoaderRoute: typeof RecetasIdRouteImport
-      parentRoute: typeof RecetasRoute
-    }
     '/_authenticated/progreso': {
       id: '/_authenticated/progreso'
       path: '/progreso'
@@ -269,33 +200,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProgresoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/programa': {
-      id: '/_authenticated/programa'
-      path: '/programa'
-      fullPath: '/programa'
-      preLoaderRoute: typeof AuthenticatedProgramaRouteImport
+    '/_authenticated/plan': {
+      id: '/_authenticated/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof AuthenticatedPlanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/ejercicios': {
-      id: '/_authenticated/ejercicios'
-      path: '/ejercicios'
-      fullPath: '/ejercicios'
-      preLoaderRoute: typeof AuthenticatedEjerciciosRouteImport
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/alimentacion': {
-      id: '/_authenticated/alimentacion'
-      path: '/alimentacion'
-      fullPath: '/alimentacion'
-      preLoaderRoute: typeof AuthenticatedAlimentacionRouteImport
+    '/_authenticated/generando': {
+      id: '/_authenticated/generando'
+      path: '/generando'
+      fullPath: '/generando'
+      preLoaderRoute: typeof AuthenticatedGenerandoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/programa/$dia': {
-      id: '/_authenticated/programa/$dia'
-      path: '/$dia'
-      fullPath: '/programa/$dia'
-      preLoaderRoute: typeof AuthenticatedProgramaDiaRouteImport
-      parentRoute: typeof AuthenticatedProgramaRoute
+    '/_authenticated/compras': {
+      id: '/_authenticated/compras'
+      path: '/compras'
+      fullPath: '/compras'
+      preLoaderRoute: typeof AuthenticatedComprasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/coach': {
+      id: '/_authenticated/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof AuthenticatedCoachRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -307,57 +245,44 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedProgramaRouteChildren {
-  AuthenticatedProgramaDiaRoute: typeof AuthenticatedProgramaDiaRoute
-}
-
-const AuthenticatedProgramaRouteChildren: AuthenticatedProgramaRouteChildren = {
-  AuthenticatedProgramaDiaRoute: AuthenticatedProgramaDiaRoute,
-}
-
-const AuthenticatedProgramaRouteWithChildren =
-  AuthenticatedProgramaRoute._addFileChildren(
-    AuthenticatedProgramaRouteChildren,
-  )
-
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAlimentacionRoute: typeof AuthenticatedAlimentacionRoute
-  AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
-  AuthenticatedProgramaRoute: typeof AuthenticatedProgramaRouteWithChildren
+  AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
+  AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
+  AuthenticatedGenerandoRoute: typeof AuthenticatedGenerandoRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedProgresoRoute: typeof AuthenticatedProgresoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAlimentacionRoute: AuthenticatedAlimentacionRoute,
-  AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
-  AuthenticatedProgramaRoute: AuthenticatedProgramaRouteWithChildren,
+  AuthenticatedCoachRoute: AuthenticatedCoachRoute,
+  AuthenticatedComprasRoute: AuthenticatedComprasRoute,
+  AuthenticatedGenerandoRoute: AuthenticatedGenerandoRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedProgresoRoute: AuthenticatedProgresoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface RecetasRouteChildren {
-  RecetasIdRoute: typeof RecetasIdRoute
-}
-
-const RecetasRouteChildren: RecetasRouteChildren = {
-  RecetasIdRoute: RecetasIdRoute,
-}
-
-const RecetasRouteWithChildren =
-  RecetasRoute._addFileChildren(RecetasRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  PerfilRoute: PerfilRoute,
-  PremiumRoute: PremiumRoute,
-  RecetasRoute: RecetasRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

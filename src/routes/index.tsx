@@ -1,174 +1,102 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Sparkles, Calendar, TrendingDown, Leaf, BookOpen } from "lucide-react";
+import { useEffect } from "react";
+import { Sparkles, ArrowRight, CheckCircle2, Brain, Calendar, Target } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { PROGRAM_DAYS } from "@/data/program";
 import { useUser } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import heroImg from "@/assets/hero-tea.jpg";
+import { Dashboard } from "@/components/Dashboard";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "To testando peão" },
-      { name: "description", content: "Programa holístico de 21 días: alimentación, ejercicios, recetas naturales y seguimiento de progreso." },
-      { property: "og:title", content: "Reset 21 — Transforma tu cuerpo en 21 días" },
-      { property: "og:description", content: "Alimentación, ejercicios, recetas y progreso. Todo lo que necesitas en un solo lugar." },
-    ],
-  }),
-  component: Home,
+  ssr: false,
+  component: HomeRoute,
 });
 
-function Home() {
+function HomeRoute() {
   const { user, loading } = useUser();
+  const navigate = useNavigate();
 
-  const { data: progress } = useQuery({
-    queryKey: ["day_progress"],
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ["profile", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("day_progress").select("day_number, completed");
-      return data ?? [];
-    },
-    enabled: !!user,
-  });
-
-  const { data: profile } = useQuery({
-    queryKey: ["profile"],
-    queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("*").single();
+      const { data } = await supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle();
       return data;
     },
     enabled: !!user,
   });
 
-  const completed = progress?.filter((p) => p.completed).length ?? 0;
-  const currentDay = Math.min(21, completed + 1);
-  const day = PROGRAM_DAYS[currentDay - 1];
+  useEffect(() => {
+    if (user && profile && !profile.onboarding_completed) {
+      navigate({ to: "/onboarding", replace: true });
+    }
+  }, [user, profile, navigate]);
 
+  if (loading || (user && profileLoading)) {
+    return (
+      <AppShell hideNav>
+        <div className="grid min-h-screen place-items-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (!user) return <Landing />;
+  if (!profile?.onboarding_completed) return null;
+  return <Dashboard userId={user.id} profile={profile} />;
+}
+
+function Landing() {
   return (
-    <AppShell>
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 gradient-hero" />
-        <div className="relative px-5 pt-10 pb-6">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">Reset 21 · Programa holístico</p>
-          <h1 className="mt-3 font-display text-4xl leading-[1.05] text-foreground">
-            è Nóis na fita  <em className="not-italic text-primary">21 días</em>
-          </h1>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Alimentación, ejercicios, recetas y seguimiento. Todo lo que necesitas para tu reset, en un solo lugar.
-          </p>
-
-          <div className="mt-6 overflow-hidden rounded-3xl shadow-float">
-            <img src={heroImg} alt="Taza de té herbal con menta y limón" className="h-56 w-full object-cover" />
-          </div>
-
-          {!loading && !user && (
-            <div className="mt-6 flex flex-col gap-2">
-              <Link
-                to="/auth"
-                className="flex h-12 items-center justify-center gap-2 rounded-full bg-primary font-medium text-primary-foreground shadow-soft"
-              >
-                <Sparkles className="h-4 w-4" /> Comenzar Programa
-              </Link>
-              <Link to="/recetas" className="text-center text-sm text-muted-foreground">
-                Ver recetas →
-              </Link>
-            </div>
-          )}
-
-          {user && day && (
-            <Link
-              to="/_authenticated/programa/$dia"
-              params={{ dia: String(currentDay) }}
-              className="mt-6 block rounded-3xl bg-card p-4 shadow-float"
-            >
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Hoy · Día {currentDay} de 21</p>
-              <p className="mt-1 font-display text-xl">{day.title}</p>
-              <div className="mt-3 flex items-center gap-2 text-xs">
-                <span className="rounded-full bg-secondary px-2 py-1">{day.tea.emoji} {day.tea.name}</span>
-              </div>
-              <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                Continuar <ArrowRight className="h-4 w-4" />
-              </span>
-            </Link>
-          )}
+    <AppShell hideNav>
+      <div className="px-5 pt-12 pb-10">
+        <div className="flex items-center gap-2 text-xs font-medium text-primary">
+          <Sparkles className="h-3.5 w-3.5" /> MIRETO21 AI
         </div>
-      </section>
+        <h1 className="mt-6 font-display text-4xl leading-[1.05] text-foreground">
+          Tu plan de <em className="text-primary not-italic">21 días</em> creado por Inteligencia Artificial.
+        </h1>
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+          Pierde peso siguiendo un plan diseñado especialmente para ti.
+          Comidas, ejercicios y hábitos, día a día. Sin pensar.
+        </p>
 
-      {user && (
-        <section className="px-5 grid grid-cols-3 gap-2">
-          <Stat label="Día" value={`${currentDay}/21`} />
-          <Stat label="Peso" value={profile?.current_weight ? `${profile.current_weight}kg` : "—"} />
-          <Stat label="Puntos" value={String(profile?.points ?? 0)} />
-        </section>
-      )}
+        <Link
+          to="/auth"
+          className="mt-8 flex h-12 items-center justify-center gap-2 rounded-full bg-primary font-medium text-primary-foreground shadow-soft"
+        >
+          Empezar mi reto <ArrowRight className="h-4 w-4" />
+        </Link>
 
-      <section className="mt-8 px-5">
-        <div className="grid grid-cols-3 gap-2">
-          <ActionCard to={user ? "/_authenticated/programa" : "/auth"} icon={<Calendar />} label="Programa" />
-          <ActionCard to="/recetas" icon={<BookOpen />} label="Recetas" />
-          <ActionCard to={user ? "/_authenticated/progreso" : "/auth"} icon={<TrendingDown />} label="Progreso" />
+        <div className="mt-10 space-y-3">
+          <Feature icon={<Brain className="h-5 w-5" />} title="Plan personalizado con IA" desc="Adaptado a tu cuerpo, hábitos y objetivos." />
+          <Feature icon={<Calendar className="h-5 w-5" />} title="21 días estructurados" desc="Cada día con misión, comidas y ejercicio." />
+          <Feature icon={<Target className="h-5 w-5" />} title="Resultados reales" desc="Sigue el plan, marca tu progreso, ve tus cambios." />
         </div>
-      </section>
 
-      <section className="mt-8 px-5">
-        <h2 className="mb-3 font-display text-xl">Cómo funciona</h2>
-        <ol className="space-y-2">
-          {[
-            { n: "1", t: "Crea tu cuenta", d: "Define tu peso inicial y tu meta." },
-            { n: "2", t: "Sigue tu día", d: "Cada día tienes un té, un hábito y un consejo." },
-            { n: "3", t: "Marca tu checklist", d: "Acumula puntos y mantén tu racha." },
-            { n: "4", t: "Mide tu progreso", d: "Visualiza tu evolución día a día." },
-          ].map((s) => (
-            <li key={s.n} className="flex gap-3 rounded-2xl bg-card p-4 shadow-soft">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary font-display text-sm text-primary-foreground">
-                {s.n}
-              </span>
-              <div>
-                <p className="text-sm font-semibold">{s.t}</p>
-                <p className="text-xs text-muted-foreground">{s.d}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="mt-8 px-5">
-        <div className="rounded-3xl bg-gradient-to-br from-primary to-sage-deep p-6 text-primary-foreground shadow-float">
-          <Leaf className="h-6 w-6 opacity-90" />
-          <h3 className="mt-3 font-display text-2xl leading-tight">100% natural · sin dietas restrictivas</h3>
-          <p className="mt-2 text-sm opacity-90">
-            Más de 100 recetas de tés organizadas por categoría: detox, metabolismo, ansiedad y más.
-          </p>
-          <Link to="/recetas" className="mt-4 inline-flex items-center gap-1 rounded-full bg-background/15 px-3 py-1.5 text-xs font-medium backdrop-blur">
-            Explorar recetas <ArrowRight className="h-3 w-3" />
-          </Link>
+        <div className="mt-10 rounded-3xl bg-gradient-to-br from-primary to-sage-deep p-6 text-primary-foreground shadow-float">
+          <CheckCircle2 className="h-6 w-6 opacity-90" />
+          <h3 className="mt-3 font-display text-2xl leading-tight">Sin dietas restrictivas, sin gimnasio.</h3>
+          <p className="mt-2 text-sm opacity-90">Comida real, ejercicios en casa, hábitos sostenibles.</p>
         </div>
-      </section>
 
-      <footer className="mt-10 px-5 text-center text-xs text-muted-foreground">
-        Hecho con 🌿 para tu bienestar
-      </footer>
+        <p className="mt-8 text-center text-xs text-muted-foreground">
+          ¿Ya tienes cuenta?{" "}
+          <Link to="/auth" className="font-medium text-primary">Entrar</Link>
+        </p>
+      </div>
     </AppShell>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
-    <div className="rounded-2xl bg-card p-3 text-center shadow-soft">
-      <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</p>
-      <p className="mt-1 font-display text-lg">{value}</p>
+    <div className="flex gap-3 rounded-2xl bg-card p-4 shadow-soft">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent text-primary">{icon}</span>
+      <div>
+        <p className="text-sm font-semibold text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground">{desc}</p>
+      </div>
     </div>
-  );
-}
-
-function ActionCard({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) {
-  return (
-    <Link
-      to={to}
-      className="flex flex-col items-center gap-2 rounded-2xl bg-card p-4 text-foreground shadow-soft transition active:scale-95"
-    >
-      <span className="grid h-10 w-10 place-items-center rounded-full bg-accent text-primary">{icon}</span>
-      <span className="text-xs font-medium">{label}</span>
-    </Link>
   );
 }
