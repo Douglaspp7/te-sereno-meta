@@ -20,6 +20,7 @@ import { Route as AuthenticatedGenerandoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedAlimentacionRouteImport } from './routes/_authenticated/alimentacion'
+import { Route as AuthenticatedAguaRouteImport } from './routes/_authenticated/agua'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -77,6 +78,11 @@ const AuthenticatedAlimentacionRoute =
     path: '/alimentacion',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAguaRoute = AuthenticatedAguaRouteImport.update({
+  id: '/agua',
+  path: '/agua',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/agua': typeof AuthenticatedAguaRoute
   '/alimentacion': typeof AuthenticatedAlimentacionRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/agua': typeof AuthenticatedAguaRoute
   '/alimentacion': typeof AuthenticatedAlimentacionRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/agua': typeof AuthenticatedAguaRoute
   '/_authenticated/alimentacion': typeof AuthenticatedAlimentacionRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/agua'
     | '/alimentacion'
     | '/compras'
     | '/ejercicios'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/agua'
     | '/alimentacion'
     | '/compras'
     | '/ejercicios'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/agua'
     | '/_authenticated/alimentacion'
     | '/_authenticated/compras'
     | '/_authenticated/ejercicios'
@@ -255,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAlimentacionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/agua': {
+      id: '/_authenticated/agua'
+      path: '/agua'
+      fullPath: '/agua'
+      preLoaderRoute: typeof AuthenticatedAguaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -266,6 +285,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAguaRoute: typeof AuthenticatedAguaRoute
   AuthenticatedAlimentacionRoute: typeof AuthenticatedAlimentacionRoute
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
@@ -276,6 +296,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAguaRoute: AuthenticatedAguaRoute,
   AuthenticatedAlimentacionRoute: AuthenticatedAlimentacionRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
