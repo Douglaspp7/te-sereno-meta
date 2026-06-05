@@ -62,6 +62,80 @@ export type Database = {
         }
         Relationships: []
       }
+      days: {
+        Row: {
+          breakfast_recipe_id: string | null
+          created_at: string
+          day_number: number
+          dinner_recipe_id: string | null
+          exercise_id: string | null
+          id: string
+          lunch_recipe_id: string | null
+          mission: string
+          tip: string | null
+          title: string
+          updated_at: string
+          water_goal: number
+        }
+        Insert: {
+          breakfast_recipe_id?: string | null
+          created_at?: string
+          day_number: number
+          dinner_recipe_id?: string | null
+          exercise_id?: string | null
+          id?: string
+          lunch_recipe_id?: string | null
+          mission: string
+          tip?: string | null
+          title: string
+          updated_at?: string
+          water_goal?: number
+        }
+        Update: {
+          breakfast_recipe_id?: string | null
+          created_at?: string
+          day_number?: number
+          dinner_recipe_id?: string | null
+          exercise_id?: string | null
+          id?: string
+          lunch_recipe_id?: string | null
+          mission?: string
+          tip?: string | null
+          title?: string
+          updated_at?: string
+          water_goal?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "days_breakfast_recipe_id_fkey"
+            columns: ["breakfast_recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "days_dinner_recipe_id_fkey"
+            columns: ["dinner_recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "days_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "days_lunch_recipe_id_fkey"
+            columns: ["lunch_recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -146,6 +220,39 @@ export type Database = {
           id?: string
           token?: string
           used_at?: string | null
+        }
+        Relationships: []
+      }
+      exercises: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration: number
+          id: string
+          name: string
+          updated_at: string
+          video_url: string | null
+          week: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration?: number
+          id?: string
+          name: string
+          updated_at?: string
+          video_url?: string | null
+          week?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration?: number
+          id?: string
+          name?: string
+          updated_at?: string
+          video_url?: string | null
+          week?: number
         }
         Relationships: []
       }
@@ -259,6 +366,54 @@ export type Database = {
           sex?: string | null
           start_date?: string
           start_weight?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          calories: number
+          carbs: number
+          created_at: string
+          fats: number
+          id: string
+          image_url: string | null
+          ingredients: Json
+          instructions: Json
+          meal_type: string
+          name: string
+          prep_time: number
+          proteins: number
+          updated_at: string
+        }
+        Insert: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          fats?: number
+          id?: string
+          image_url?: string | null
+          ingredients?: Json
+          instructions?: Json
+          meal_type: string
+          name: string
+          prep_time?: number
+          proteins?: number
+          updated_at?: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          created_at?: string
+          fats?: number
+          id?: string
+          image_url?: string | null
+          ingredients?: Json
+          instructions?: Json
+          meal_type?: string
+          name?: string
+          prep_time?: number
+          proteins?: number
           updated_at?: string
         }
         Relationships: []
