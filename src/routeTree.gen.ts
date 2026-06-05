@@ -13,12 +13,16 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRecetasRouteImport } from './routes/_authenticated/recetas'
 import { Route as AuthenticatedProgresoRouteImport } from './routes/_authenticated/progreso'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedGenerandoRouteImport } from './routes/_authenticated/generando'
 import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
+import { Route as AuthenticatedAnalizarRouteImport } from './routes/_authenticated/analizar'
+import { Route as AuthenticatedAlimentacionRouteImport } from './routes/_authenticated/alimentacion'
+import { Route as AuthenticatedAguaRouteImport } from './routes/_authenticated/agua'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -39,6 +43,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRecetasRoute = AuthenticatedRecetasRouteImport.update({
+  id: '/recetas',
+  path: '/recetas',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProgresoRoute = AuthenticatedProgresoRouteImport.update({
   id: '/progreso',
@@ -70,6 +79,22 @@ const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
   path: '/compras',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAnalizarRoute = AuthenticatedAnalizarRouteImport.update({
+  id: '/analizar',
+  path: '/analizar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAlimentacionRoute =
+  AuthenticatedAlimentacionRouteImport.update({
+    id: '/alimentacion',
+    path: '/alimentacion',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAguaRoute = AuthenticatedAguaRouteImport.update({
+  id: '/agua',
+  path: '/agua',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -81,24 +106,32 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/agua': typeof AuthenticatedAguaRoute
+  '/alimentacion': typeof AuthenticatedAlimentacionRoute
+  '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/generando': typeof AuthenticatedGenerandoRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
+  '/recetas': typeof AuthenticatedRecetasRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/agua': typeof AuthenticatedAguaRoute
+  '/alimentacion': typeof AuthenticatedAlimentacionRoute
+  '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/generando': typeof AuthenticatedGenerandoRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
+  '/recetas': typeof AuthenticatedRecetasRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -107,12 +140,16 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/agua': typeof AuthenticatedAguaRoute
+  '/_authenticated/alimentacion': typeof AuthenticatedAlimentacionRoute
+  '/_authenticated/analizar': typeof AuthenticatedAnalizarRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/_authenticated/generando': typeof AuthenticatedGenerandoRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
+  '/_authenticated/recetas': typeof AuthenticatedRecetasRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -121,24 +158,32 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/agua'
+    | '/alimentacion'
+    | '/analizar'
     | '/compras'
     | '/ejercicios'
     | '/generando'
     | '/onboarding'
     | '/plan'
     | '/progreso'
+    | '/recetas'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/agua'
+    | '/alimentacion'
+    | '/analizar'
     | '/compras'
     | '/ejercicios'
     | '/generando'
     | '/onboarding'
     | '/plan'
     | '/progreso'
+    | '/recetas'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -146,12 +191,16 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/agua'
+    | '/_authenticated/alimentacion'
+    | '/_authenticated/analizar'
     | '/_authenticated/compras'
     | '/_authenticated/ejercicios'
     | '/_authenticated/generando'
     | '/_authenticated/onboarding'
     | '/_authenticated/plan'
     | '/_authenticated/progreso'
+    | '/_authenticated/recetas'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -192,6 +241,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/recetas': {
+      id: '/_authenticated/recetas'
+      path: '/recetas'
+      fullPath: '/recetas'
+      preLoaderRoute: typeof AuthenticatedRecetasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/progreso': {
       id: '/_authenticated/progreso'
@@ -235,6 +291,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedComprasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/analizar': {
+      id: '/_authenticated/analizar'
+      path: '/analizar'
+      fullPath: '/analizar'
+      preLoaderRoute: typeof AuthenticatedAnalizarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/alimentacion': {
+      id: '/_authenticated/alimentacion'
+      path: '/alimentacion'
+      fullPath: '/alimentacion'
+      preLoaderRoute: typeof AuthenticatedAlimentacionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/agua': {
+      id: '/_authenticated/agua'
+      path: '/agua'
+      fullPath: '/agua'
+      preLoaderRoute: typeof AuthenticatedAguaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -246,21 +323,29 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAguaRoute: typeof AuthenticatedAguaRoute
+  AuthenticatedAlimentacionRoute: typeof AuthenticatedAlimentacionRoute
+  AuthenticatedAnalizarRoute: typeof AuthenticatedAnalizarRoute
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
   AuthenticatedGenerandoRoute: typeof AuthenticatedGenerandoRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedProgresoRoute: typeof AuthenticatedProgresoRoute
+  AuthenticatedRecetasRoute: typeof AuthenticatedRecetasRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAguaRoute: AuthenticatedAguaRoute,
+  AuthenticatedAlimentacionRoute: AuthenticatedAlimentacionRoute,
+  AuthenticatedAnalizarRoute: AuthenticatedAnalizarRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
   AuthenticatedGenerandoRoute: AuthenticatedGenerandoRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedProgresoRoute: AuthenticatedProgresoRoute,
+  AuthenticatedRecetasRoute: AuthenticatedRecetasRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
