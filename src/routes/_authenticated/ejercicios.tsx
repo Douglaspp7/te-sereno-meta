@@ -199,7 +199,7 @@ function EjerciciosPage() {
           
           {isLoadingProgress || isLoadingExercise ? (
             <div className="aspect-video w-full rounded-2xl bg-secondary animate-pulse mb-4" />
-          ) : exercise ? (
+          ) : (exercise || videoUrl) ? (
             <>
               {/* Video Player Area */}
               <div className="aspect-video w-full rounded-2xl bg-black/5 flex items-center justify-center relative overflow-hidden mb-5 border border-border/50 shadow-inner group">
@@ -235,10 +235,10 @@ function EjerciciosPage() {
                 
                 <div className="flex gap-3 mt-4 mb-6">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-foreground bg-secondary/50 rounded-xl px-4 py-2 border border-border/50 backdrop-blur-sm">
-                    <Clock className="h-4 w-4 text-primary" /> {exercise.duration} min
+                    <Clock className="h-4 w-4 text-primary" /> {exercise?.duration || 20} min
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-foreground bg-secondary/50 rounded-xl px-4 py-2 border border-border/50 backdrop-blur-sm">
-                    <Flame className="h-4 w-4 text-orange-500" /> ~{exercise.duration * 7} kcal
+                    <Flame className="h-4 w-4 text-orange-500" /> ~{(exercise?.duration || 20) * 7} kcal
                   </div>
                 </div>
                 
