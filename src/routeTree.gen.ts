@@ -20,6 +20,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGenerandoRouteImport } from './routes/_authenticated/generando'
 import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
+import { Route as AuthenticatedAnalizarRouteImport } from './routes/_authenticated/analizar'
 import { Route as AuthenticatedAlimentacionRouteImport } from './routes/_authenticated/alimentacion'
 import { Route as AuthenticatedAguaRouteImport } from './routes/_authenticated/agua'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -78,6 +79,11 @@ const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
   path: '/compras',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAnalizarRoute = AuthenticatedAnalizarRouteImport.update({
+  id: '/analizar',
+  path: '/analizar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAlimentacionRoute =
   AuthenticatedAlimentacionRouteImport.update({
     id: '/alimentacion',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/agua': typeof AuthenticatedAguaRoute
   '/alimentacion': typeof AuthenticatedAlimentacionRoute
+  '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/generando': typeof AuthenticatedGenerandoRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/agua': typeof AuthenticatedAguaRoute
   '/alimentacion': typeof AuthenticatedAlimentacionRoute
+  '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/generando': typeof AuthenticatedGenerandoRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/agua': typeof AuthenticatedAguaRoute
   '/_authenticated/alimentacion': typeof AuthenticatedAlimentacionRoute
+  '/_authenticated/analizar': typeof AuthenticatedAnalizarRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
   '/_authenticated/generando': typeof AuthenticatedGenerandoRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/agua'
     | '/alimentacion'
+    | '/analizar'
     | '/compras'
     | '/ejercicios'
     | '/generando'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/agua'
     | '/alimentacion'
+    | '/analizar'
     | '/compras'
     | '/ejercicios'
     | '/generando'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/agua'
     | '/_authenticated/alimentacion'
+    | '/_authenticated/analizar'
     | '/_authenticated/compras'
     | '/_authenticated/ejercicios'
     | '/_authenticated/generando'
@@ -279,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedComprasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/analizar': {
+      id: '/_authenticated/analizar'
+      path: '/analizar'
+      fullPath: '/analizar'
+      preLoaderRoute: typeof AuthenticatedAnalizarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/alimentacion': {
       id: '/_authenticated/alimentacion'
       path: '/alimentacion'
@@ -306,6 +325,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAguaRoute: typeof AuthenticatedAguaRoute
   AuthenticatedAlimentacionRoute: typeof AuthenticatedAlimentacionRoute
+  AuthenticatedAnalizarRoute: typeof AuthenticatedAnalizarRoute
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
   AuthenticatedGenerandoRoute: typeof AuthenticatedGenerandoRoute
@@ -318,6 +338,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAguaRoute: AuthenticatedAguaRoute,
   AuthenticatedAlimentacionRoute: AuthenticatedAlimentacionRoute,
+  AuthenticatedAnalizarRoute: AuthenticatedAnalizarRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
   AuthenticatedGenerandoRoute: AuthenticatedGenerandoRoute,
