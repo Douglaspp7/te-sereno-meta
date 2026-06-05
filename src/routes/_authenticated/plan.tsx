@@ -302,14 +302,27 @@ function PlanPage() {
   const updateProgress = useMutation({
     mutationFn: async (updates: Partial<typeof progress>) => {
       if (!userId) return;
-      const { error } = await supabase.from("daily_progress").upsert({
-        user_id: userId,
-        day_number: selectedDayNum,
-        log_date: new Date().toISOString().split("T")[0], // Always save current day
-        ...progress,
-        ...updates,
-      }, { onConflict: 'user_id,day_number' });
-      if (error) throw error;
+      if (progress?.id) {
+        const { error } = await supabase.from("daily_progress").update({
+          log_date: new Date().toISOString().split("T")[0],
+          ...updates,
+        }).eq('id', progress.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("daily_progress").insert({
+          user_id: userId,
+          day_number: selectedDayNum,
+          log_date: new Date().toISOString().split("T")[0],
+          mission_done: progress?.mission_done || false,
+          breakfast_done: progress?.breakfast_done || false,
+          lunch_done: progress?.lunch_done || false,
+          dinner_done: progress?.dinner_done || false,
+          water_glasses: progress?.water_glasses || 0,
+          exercise_done: progress?.exercise_done || false,
+          ...updates,
+        });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["daily_progress", userId, selectedDayNum] });
