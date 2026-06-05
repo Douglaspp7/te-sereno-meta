@@ -30,13 +30,15 @@ function TeDelDiaPage() {
     queryKey: ["profile", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", user!.id).single();
       if (error) throw error;
       return data;
     },
   });
 
-  const currentDayNum = profile?.current_day || 1;
+  const startDate = profile?.start_date ? new Date(profile.start_date) : new Date();
+  const daysSinceStart = Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const currentDayNum = Math.max(1, daysSinceStart);
   const currentLogDate = new Date().toISOString().split("T")[0];
 
   // Obter progresso de hoje
@@ -47,7 +49,7 @@ function TeDelDiaPage() {
       const { data, error } = await supabase
         .from("daily_progress")
         .select("*")
-        .eq("user_id", user?.id)
+        .eq("user_id", user!.id)
         .eq("day_number", currentDayNum)
         .eq("log_date", currentLogDate)
         .maybeSingle();
