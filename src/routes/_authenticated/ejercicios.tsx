@@ -113,6 +113,8 @@ function EjerciciosPage() {
     }
   };
 
+  const exercise = dayData?.exercises;
+  const isDone = progress?.exercise_done;
   let videoUrl = exercise?.video_url;
   
   // Fallbacks diretos caso o banco de dados demore para processar a migração
