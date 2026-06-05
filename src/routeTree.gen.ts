@@ -21,6 +21,8 @@ import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authentic
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedAnalizarRouteImport } from './routes/_authenticated/analizar'
 import { Route as AuthenticatedAguaRouteImport } from './routes/_authenticated/agua'
+import { Route as AuthenticatedAcademiaRouteImport } from './routes/_authenticated/academia'
+import { Route as AuthenticatedAcademiaReadDocIdRouteImport } from './routes/_authenticated/academia.read.$docId'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -82,6 +84,17 @@ const AuthenticatedAguaRoute = AuthenticatedAguaRouteImport.update({
   path: '/agua',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAcademiaRoute = AuthenticatedAcademiaRouteImport.update({
+  id: '/academia',
+  path: '/academia',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAcademiaReadDocIdRoute =
+  AuthenticatedAcademiaReadDocIdRouteImport.update({
+    id: '/academia/read/$docId',
+    path: '/academia/read/$docId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -94,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/agua': typeof AuthenticatedAguaRoute
+  '/academia': typeof AuthenticatedAcademiaRoute
   '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -108,6 +122,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/agua': typeof AuthenticatedAguaRoute
+  '/academia': typeof AuthenticatedAcademiaRoute
   '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -124,6 +139,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/agua': typeof AuthenticatedAguaRoute
+  '/_authenticated/academia': typeof AuthenticatedAcademiaRoute
   '/_authenticated/analizar': typeof AuthenticatedAnalizarRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -131,6 +147,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
+  '/_authenticated/academia/read/$docId': typeof AuthenticatedAcademiaReadDocIdRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +157,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/agua'
+    | '/academia'
     | '/analizar'
     | '/compras'
     | '/ejercicios'
@@ -148,12 +166,14 @@ export interface FileRouteTypes {
     | '/plan'
     | '/progreso'
     | '/lovable/email/queue/process'
+    | '/academia/read/$docId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/reset-password'
     | '/agua'
+    | '/academia'
     | '/analizar'
     | '/compras'
     | '/ejercicios'
@@ -162,6 +182,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/progreso'
     | '/lovable/email/queue/process'
+    | '/academia/read/$docId'
   id:
     | '__root__'
     | '/'
@@ -169,6 +190,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/_authenticated/agua'
+    | '/_authenticated/academia'
     | '/_authenticated/analizar'
     | '/_authenticated/compras'
     | '/_authenticated/ejercicios'
@@ -177,6 +199,7 @@ export interface FileRouteTypes {
     | '/_authenticated/plan'
     | '/_authenticated/progreso'
     | '/lovable/email/queue/process'
+    | '/_authenticated/academia/read/$docId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -292,10 +315,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedProgresoRoute: typeof AuthenticatedProgresoRoute
+  AuthenticatedAcademiaReadDocIdRoute: typeof AuthenticatedAcademiaReadDocIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAguaRoute: AuthenticatedAguaRoute,
+  AuthenticatedAcademiaRoute: AuthenticatedAcademiaRoute,
   AuthenticatedAnalizarRoute: AuthenticatedAnalizarRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
@@ -303,6 +328,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedProgresoRoute: AuthenticatedProgresoRoute,
+  AuthenticatedAcademiaReadDocIdRoute: AuthenticatedAcademiaReadDocIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
