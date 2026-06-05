@@ -122,6 +122,7 @@ function OnboardingPage() {
         })
         .eq("id", user!.id);
       if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
       navigate({ to: "/generando", replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error al guardar.");
