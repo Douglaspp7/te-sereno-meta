@@ -148,7 +148,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       <section className="mt-6 px-5">
         <div className="grid grid-cols-2 gap-3">
           <MegaCard to="/alimentacion" image="/alimentacion_3d.png" title="Alimentación" subtitle="Comidas del día" tint="primary" />
-          <MegaCard to="/ejercicios" icon={<Dumbbell className="h-7 w-7" />} title="Ejercicios" subtitle="Tu rutina diaria" tint="accent" />
+          <MegaCard to="/ejercicios" image="/ejercicios_real.png" title="Ejercicios" subtitle="Tu rutina diaria" tint="accent" />
           <MegaCard to="/recetas" icon={<BookOpen className="h-7 w-7" />} title="Recetas" subtitle="Paso a paso" tint="primary" />
           <MegaCard to="/compras" icon={<ShoppingCart className="h-7 w-7" />} title="Compras" subtitle="Por semana" tint="accent" />
           <MegaCard to="/agua" icon={<Droplet className="h-7 w-7" />} title="Agua" subtitle={`${progress?.water_glasses ?? 0}/8 vasos`} tint="accent" />
