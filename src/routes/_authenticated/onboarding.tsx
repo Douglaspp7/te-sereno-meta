@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -83,6 +84,7 @@ const steps: ReadonlyArray<Step> = [
 
 function OnboardingPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = Route.useRouteContext();
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Data>(empty);
@@ -120,6 +122,7 @@ function OnboardingPage() {
         })
         .eq("id", user!.id);
       if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
       navigate({ to: "/generando", replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error al guardar.");
@@ -132,6 +135,7 @@ function OnboardingPage() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background px-5 pb-8 pt-8">
+
       <div className="flex items-center justify-between">
         <button
           onClick={() => step > 0 && setStep(step - 1)}
@@ -150,7 +154,7 @@ function OnboardingPage() {
         />
       </div>
 
-      <div className="mt-12 flex-1">
+      <div className="mt-10">
         <h1 className="font-display text-3xl leading-tight text-foreground">{current.title}</h1>
 
         <div className="mt-8">
@@ -193,7 +197,7 @@ function OnboardingPage() {
       <button
         onClick={next}
         disabled={!canContinue || saving}
-        className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary font-medium text-primary-foreground shadow-soft transition active:scale-[0.98] disabled:opacity-40"
+        className="mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary font-medium text-primary-foreground shadow-soft transition active:scale-[0.98] disabled:opacity-40"
       >
         {saving && <Loader2 className="h-4 w-4 animate-spin" />}
         {step === total - 1 ? (
