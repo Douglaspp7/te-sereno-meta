@@ -135,6 +135,7 @@ function OnboardingPage() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background px-5 pb-8 pt-8">
+
       <div className="flex items-center justify-between">
         <button
           onClick={() => step > 0 && setStep(step - 1)}
