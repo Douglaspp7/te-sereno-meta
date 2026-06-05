@@ -4,7 +4,6 @@ import { Link } from "@tanstack/react-router";
 import { Check, Sparkles, UtensilsCrossed, Dumbbell, BookOpen, ShoppingCart, Droplet, TrendingUp, Camera, User as UserIcon, Flame } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
-import { getDayContent } from "@/lib/content/days";
 
 type Profile = {
   display_name: string | null;
@@ -62,8 +61,15 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
 
   const planPct = Math.round((currentDay / 21) * 100);
   const firstName = profile.display_name?.split(" ")[0] ?? "";
-  const dayContent = getDayContent(currentDay);
-  const missionText = dayContent.mission.replace(/^[^\w\s]+\s/, "");
+  const { data: dayData } = useQuery({
+    queryKey: ["day", currentDay],
+    queryFn: async () => {
+      const { data } = await supabase.from('days').select('*').eq('day_number', currentDay).maybeSingle();
+      return data;
+    }
+  });
+
+  const missionText = dayData?.mission?.replace(/^[^\w\s]+\s/, "") || "Cargando misión...";
   const lostKg =
     profile.start_weight && profile.current_weight
       ? Math.max(0, profile.start_weight - profile.current_weight)
