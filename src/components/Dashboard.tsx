@@ -1,13 +1,10 @@
-import { useMemo, useState } from "react";
-import { getDayContent } from "@/lib/content/days";
+import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Check, Droplet, Plus, Minus, Dumbbell, Flame, Sparkles, User as UserIcon, Coffee, UtensilsCrossed, Moon, Bot } from "lucide-react";
+import { Check, Sparkles, UtensilsCrossed, Dumbbell, BookOpen, ShoppingCart, Droplet, TrendingUp, Camera, User as UserIcon, Flame } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
-import { RecipeModal, RecipeData } from "./RecipeModal";
-import { WorkoutPlayer } from "./WorkoutPlayer";
-import { WeightChartModal } from "./WeightChartModal";
+import { getDayContent } from "@/lib/content/days";
 
 type Profile = {
   display_name: string | null;
@@ -63,361 +60,147 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
     onSuccess: () => qc.invalidateQueries({ queryKey: ["daily_progress", userId, currentDay] }),
   });
 
-  const waterGoal = 8;
-  const water = progress?.water_glasses ?? 0;
-  const completedCount = [
-    progress?.mission_done,
-    progress?.exercise_done,
-    progress?.breakfast_done,
-    progress?.lunch_done,
-    progress?.dinner_done,
-  ].filter(Boolean).length;
-  const totalTasks = 5;
-  const dayProgressPct = Math.round((completedCount / totalTasks) * 100);
-  const planProgressPct = Math.round((currentDay / 21) * 100);
-
+  const planPct = Math.round((currentDay / 21) * 100);
+  const firstName = profile.display_name?.split(" ")[0] ?? "";
+  const dayContent = getDayContent(currentDay);
+  const missionText = dayContent.mission.replace(/^[^\w\s]+\s/, "");
   const lostKg =
     profile.start_weight && profile.current_weight
       ? Math.max(0, profile.start_weight - profile.current_weight)
       : 0;
 
-  const firstName = profile.display_name?.split(" ")[0] ?? "";
-
-  const dayContent = getDayContent(currentDay);
-
-  const meals: RecipeData[] = [
-    { ...dayContent.breakfast, id: "breakfast", done: !!progress?.breakfast_done },
-    { ...dayContent.lunch, id: "lunch", done: !!progress?.lunch_done },
-    { ...dayContent.dinner, id: "dinner", done: !!progress?.dinner_done },
-  ];
-
-  const [openRecipeId, setOpenRecipeId] = useState<string | null>(null);
-  const [showWorkout, setShowWorkout] = useState(false);
-  const [showWeight, setShowWeight] = useState(false);
-  const activeRecipe = meals.find(m => m.id === openRecipeId) || null;
-
-  const consumedKcal = meals.filter(m => m.done).reduce((acc, m) => acc + m.kcal, 0);
-  const consumedP = meals.filter(m => m.done).reduce((acc, m) => acc + m.macros.p, 0);
-  const consumedC = meals.filter(m => m.done).reduce((acc, m) => acc + m.macros.c, 0);
-  const consumedF = meals.filter(m => m.done).reduce((acc, m) => acc + m.macros.f, 0);
-
-  // Mock Goals based on user profile or fixed for now
-  const goalKcal = 1500;
-  const goalP = 110;
-  const goalC = 150;
-  const goalF = 50;
-  const remainingKcal = Math.max(0, goalKcal - consumedKcal);
-
-  // SVG ring (Arise Style)
-  const ringSize = 180;
-  const ringStroke = 14;
-  const ringRadius = (ringSize - ringStroke) / 2;
-  const ringCirc = 2 * Math.PI * ringRadius;
-  const ringOffset = ringCirc - (consumedKcal / goalKcal) * ringCirc;
-
   return (
     <AppShell>
-      {/* HEADER PREMIUM - ARISE STYLE */}
-      <header className="bg-background px-6 pt-12 pb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-full bg-primary text-white shadow-sm">
-              <span className="text-sm font-bold">{(firstName[0] || "U").toUpperCase()}</span>
-            </div>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Día {currentDay}</p>
-              <p className="text-base font-bold text-foreground">Hola, {firstName || "amig@"} 👋</p>
-            </div>
+      {/* HEADER */}
+      <header className="px-5 pt-10 pb-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="grid h-11 w-11 place-items-center rounded-full bg-primary text-white">
+            <span className="text-sm font-bold">{(firstName[0] || "U").toUpperCase()}</span>
           </div>
-          <Link to="/auth" className="grid h-10 w-10 place-items-center rounded-full border border-border/50 bg-white shadow-sm">
-            <UserIcon className="h-4 w-4 text-foreground" />
-          </Link>
-        </div>
-
-        {/* ARISE CALORIE RING */}
-        <div className="mt-8 flex flex-col items-center rounded-[2rem] border border-border/50 bg-white p-6 shadow-float">
-          <div className="relative shrink-0" style={{ width: ringSize, height: ringSize }}>
-            <svg width={ringSize} height={ringSize} className="-rotate-90">
-              <circle cx={ringSize/2} cy={ringSize/2} r={ringRadius} stroke="#F3F4F6" strokeWidth={ringStroke} fill="none" />
-              <circle
-                cx={ringSize/2} cy={ringSize/2} r={ringRadius}
-                stroke="url(#ringGrad)" strokeWidth={ringStroke} fill="none"
-                strokeLinecap="round"
-                strokeDasharray={ringCirc}
-                strokeDashoffset={ringOffset}
-                style={{ transition: "stroke-dashoffset 800ms cubic-bezier(0.4, 0, 0.2, 1)" }}
-              />
-              <defs>
-                <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#4F8A5B" />
-                  <stop offset="100%" stopColor="#7DBE8A" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">Restantes</p>
-              <p className="font-display text-4xl font-extrabold leading-none text-foreground my-1">{remainingKcal}</p>
-              <p className="text-[12px] font-semibold text-muted-foreground">kcal</p>
-            </div>
-          </div>
-
-          <div className="mt-6 flex w-full items-center justify-between text-center text-sm">
-             <div>
-               <p className="text-[11px] font-bold text-muted-foreground uppercase">Consumido</p>
-               <p className="font-bold">{consumedKcal} kcal</p>
-             </div>
-             <div className="h-8 w-px bg-border/60" />
-             <div>
-               <p className="text-[11px] font-bold text-muted-foreground uppercase">Objetivo</p>
-               <p className="font-bold">{goalKcal} kcal</p>
-             </div>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Hola</p>
+            <p className="text-base font-bold text-foreground leading-tight">{firstName || "amig@"} 👋</p>
           </div>
         </div>
-
-        {/* MACROS - ARISE STYLE */}
-        <div className="mt-4 grid grid-cols-3 gap-3">
-          <MacroBar label="Proteínas" current={consumedP} max={goalP} color="bg-blue-500" />
-          <MacroBar label="Carbos" current={consumedC} max={goalC} color="bg-amber-500" />
-          <MacroBar label="Grasas" current={consumedF} max={goalF} color="bg-rose-500" />
-        </div>
+        <Link to="/auth" className="grid h-10 w-10 place-items-center rounded-full border border-border bg-white">
+          <UserIcon className="h-4 w-4 text-foreground" />
+        </Link>
       </header>
 
-      {/* WEIGHT STATS */}
-      <section className="-mt-4 grid grid-cols-3 gap-3 px-6">
-        <Stat label="Inicial" value={profile.start_weight ? `${profile.start_weight}` : "—"} unit="kg" />
-        <button onClick={() => setShowWeight(true)} className="outline-none active:scale-95 transition-transform text-left">
-          <Stat label="Actual" value={profile.current_weight ? `${profile.current_weight}` : "—"} unit="kg" highlight />
-        </button>
-        <Stat label="Meta" value={profile.goal_weight ? `${profile.goal_weight}` : "—"} unit="kg" />
-      </section>
-      {lostKg > 0 && (
-        <div className="mx-6 mt-4 flex items-center justify-center gap-1.5 rounded-full bg-secondary/15 px-3 py-2 text-xs font-bold text-primary shadow-sm border border-border/40">
-          <Flame className="h-4 w-4" /> Has perdido {lostKg.toFixed(1)} kg
+      {/* PROGRESS CARD */}
+      <section className="px-5">
+        <div className="rounded-[1.75rem] bg-primary text-white p-5 shadow-float">
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-white/70">Tu Reto</p>
+              <p className="mt-1 font-display text-3xl font-extrabold leading-none">
+                Día {currentDay} <span className="text-base font-semibold text-white/70">de 21</span>
+              </p>
+            </div>
+            <div className="rounded-full bg-white/15 px-3 py-1.5 backdrop-blur-sm">
+              <span className="text-xs font-bold">{planPct}%</span>
+            </div>
+          </div>
+          <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-white/20">
+            <div
+              className="h-full rounded-full bg-white transition-all duration-700"
+              style={{ width: `${planPct}%` }}
+            />
+          </div>
+          <div className="mt-5 grid grid-cols-3 gap-3 text-center">
+            <MiniStat label="Inicial" value={profile.start_weight ? `${profile.start_weight}` : "—"} unit="kg" />
+            <MiniStat label="Actual" value={profile.current_weight ? `${profile.current_weight}` : "—"} unit="kg" big />
+            <MiniStat label="Meta" value={profile.goal_weight ? `${profile.goal_weight}` : "—"} unit="kg" />
+          </div>
         </div>
-      )}
 
-      {/* MISSION */}
-      <section className="mt-8 px-6">
-        <SectionLabel>Misión del día</SectionLabel>
+        {lostKg > 0 && (
+          <div className="mt-3 flex items-center justify-center gap-1.5 rounded-full bg-secondary/15 px-3 py-2 text-xs font-bold text-primary border border-border/40">
+            <Flame className="h-4 w-4" /> Has perdido {lostKg.toFixed(1)} kg
+          </div>
+        )}
+      </section>
+
+      {/* MISSION CARD */}
+      <section className="mt-5 px-5">
         <button
           onClick={() => upsertProgress.mutate({ mission_done: !progress?.mission_done })}
-          className={`relative w-full overflow-hidden rounded-[1.5rem] border p-5 text-left shadow-sm transition active:scale-[0.99] ${
-            progress?.mission_done ? "bg-background border-border/50" : "bg-white border-border/50"
-          }`}
+          className={`relative w-full overflow-hidden rounded-[1.5rem] border border-border/50 bg-white p-5 text-left shadow-sm transition active:scale-[0.99]`}
         >
-          {!progress?.mission_done && (
-            <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-primary/5 blur-2xl" />
-          )}
-          <div className="relative flex items-center gap-4">
+          <div className="flex items-center gap-4">
             <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${progress?.mission_done ? "bg-muted text-muted-foreground" : "bg-secondary/15 text-primary"}`}>
               <Sparkles className="h-6 w-6" />
             </span>
-            <div className="flex-1">
-              <p className={`text-[10px] font-bold uppercase tracking-widest ${progress?.mission_done ? "text-muted-foreground/50" : "text-primary"}`}>Reto IA</p>
-              <p className={`text-[15px] font-bold ${progress?.mission_done ? "text-muted-foreground line-through opacity-60" : "text-foreground"}`}>
-                {dayContent.mission.replace(/^[^\w\s]+\s/, '') /* Remova o emoji inicial para o título */}
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Misión de hoy</p>
+              <p className={`text-[15px] font-bold leading-snug ${progress?.mission_done ? "text-muted-foreground line-through opacity-60" : "text-foreground"}`}>
+                {missionText}
               </p>
-              <p className={`text-[13px] ${progress?.mission_done ? "text-muted-foreground/50" : "text-muted-foreground"}`}>{dayContent.motivation}</p>
             </div>
-            <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 transition-all ${progress?.mission_done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
+            <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 transition-all ${progress?.mission_done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
               {progress?.mission_done && <Check className="h-4 w-4" strokeWidth={3} />}
             </span>
           </div>
         </button>
       </section>
 
-      {/* WATER */}
-      <section className="mt-8 px-6">
-        <SectionLabel>Hidratación</SectionLabel>
-        <div className="rounded-[1.5rem] border border-border/40 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-accent/10 text-accent">
-                <Droplet className="h-6 w-6" />
-              </span>
-              <div>
-                <p className="text-[15px] font-bold text-foreground">{water} / {waterGoal} vasos</p>
-                <p className="text-[13px] text-muted-foreground">{water * 250} ml de {waterGoal * 250} ml</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => upsertProgress.mutate({ water_glasses: Math.max(0, water - 1) })} className="grid h-10 w-10 place-items-center rounded-full bg-background border border-border text-foreground transition active:scale-95">
-                <Minus className="h-4 w-4" />
-              </button>
-              <button onClick={() => upsertProgress.mutate({ water_glasses: Math.min(waterGoal, water + 1) })} className="grid h-10 w-10 place-items-center rounded-full bg-accent text-white shadow-sm transition active:scale-95">
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-          <div className="mt-5 flex gap-1.5">
-            {Array.from({ length: waterGoal }).map((_, i) => (
-              <div
-                key={i}
-                className={`h-10 flex-1 rounded-lg transition-all duration-300 ${i < water ? "bg-accent" : "bg-background border border-border/50"}`}
-              />
-            ))}
-          </div>
+      {/* MEGA GRID */}
+      <section className="mt-6 px-5">
+        <div className="grid grid-cols-2 gap-3">
+          <MegaCard to="/alimentacion" icon={<UtensilsCrossed className="h-7 w-7" />} title="Alimentación" subtitle="Comidas del día" tint="primary" />
+          <MegaCard to="/ejercicios" icon={<Dumbbell className="h-7 w-7" />} title="Ejercicios" subtitle="Tu rutina diaria" tint="accent" />
+          <MegaCard to="/recetas" icon={<BookOpen className="h-7 w-7" />} title="Recetas" subtitle="Paso a paso" tint="primary" />
+          <MegaCard to="/compras" icon={<ShoppingCart className="h-7 w-7" />} title="Compras" subtitle="Por semana" tint="accent" />
+          <MegaCard to="/agua" icon={<Droplet className="h-7 w-7" />} title="Agua" subtitle={`${progress?.water_glasses ?? 0}/8 vasos`} tint="accent" />
+          <MegaCard to="/progreso" icon={<TrendingUp className="h-7 w-7" />} title="Progreso" subtitle="Tu evolución" tint="primary" />
         </div>
-      </section>
 
-      {/* EXERCISE */}
-      <section className="mt-8 px-6">
-        <SectionLabel>Ejercicio</SectionLabel>
-        <TaskCard
-          icon={<Dumbbell className="h-6 w-6 text-primary" />}
-          title={dayContent.exercise.title}
-          subtitle={`${dayContent.exercise.level} · ~${dayContent.exercise.kcalBurn} kcal`}
-          done={!!progress?.exercise_done}
-          onToggle={() => setShowWorkout(true)}
-        />
-      </section>
-
-      {/* MEALS */}
-      <section className="mt-8 px-6">
-        <SectionLabel>Comidas de hoy</SectionLabel>
-        <div className="space-y-3">
-          {meals.map((m) => (
-            <MealCard
-              key={m.id}
-              label={m.label}
-              name={m.name}
-              kcal={m.kcal}
-              macros={m.macros}
-              icon={
-                m.id === "breakfast" ? <Coffee className="h-5 w-5" /> :
-                m.id === "lunch" ? <UtensilsCrossed className="h-5 w-5" /> :
-                <Moon className="h-5 w-5" />
-              }
-              done={!!m.done}
-              onOpen={() => setOpenRecipeId(m.id)}
-              onToggle={() => upsertProgress.mutate({ [`${m.id}_done`]: !m.done })}
-            />
-          ))}
-        </div>
-        <div className="mt-5 flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-white py-4 text-[13px] font-medium text-muted-foreground shadow-sm">
-          <Bot className="h-4 w-4 text-primary" /> Recetas personalizadas con IA en breve
-        </div>
+        <Link
+          to="/analizar"
+          className="mt-3 flex h-[88px] w-full items-center justify-center gap-3 rounded-[1.5rem] bg-foreground text-background shadow-float transition active:scale-[0.99]"
+        >
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-background/10">
+            <Camera className="h-6 w-6" />
+          </span>
+          <div className="text-left">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-background/60">Premium IA</p>
+            <p className="text-[17px] font-bold leading-tight">Analizar Comida</p>
+          </div>
+        </Link>
       </section>
 
       <div className="h-10" />
-      <RecipeModal 
-        recipe={activeRecipe} 
-        open={!!openRecipeId} 
-        onOpenChange={(o) => !o && setOpenRecipeId(null)}
-        done={activeRecipe ? !!activeRecipe.done : false}
-        onToggle={() => activeRecipe && upsertProgress.mutate({ [`${activeRecipe.id}_done`]: !activeRecipe.done })}
-      />
-      
-      <WorkoutPlayer 
-        open={showWorkout} 
-        onClose={() => setShowWorkout(false)} 
-        onComplete={() => upsertProgress.mutate({ exercise_done: true })} 
-      />
-
-      <WeightChartModal
-        open={showWeight}
-        onClose={() => setShowWeight(false)}
-        currentWeight={profile.current_weight}
-        startWeight={profile.start_weight}
-        goalWeight={profile.goal_weight}
-        onSaveWeight={(w) => {
-          // Here we would typically update profile.current_weight in the db
-          supabase.from("profiles").update({ current_weight: w }).eq("id", userId).then(() => {
-            qc.invalidateQueries({ queryKey: ["daily_progress", userId, currentDay] });
-            // In a real app we might also invalidate profile queries
-          });
-        }}
-      />
     </AppShell>
   );
 }
 
-function Stat({ label, value, unit, highlight = false }: { label: string; value: string; unit?: string; highlight?: boolean }) {
+function MiniStat({ label, value, unit, big = false }: { label: string; value: string; unit?: string; big?: boolean }) {
   return (
-    <div className={`rounded-[1.5rem] p-4 text-center border border-border/40 shadow-sm ${highlight ? "bg-primary text-white" : "bg-white"}`}>
-      <p className={`text-[10px] font-bold uppercase tracking-widest ${highlight ? "text-white/80" : "text-muted-foreground"}`}>{label}</p>
-      <p className={`mt-1 font-display text-xl font-bold leading-none ${highlight ? "" : "text-foreground"}`}>
-        {value}<span className={`ml-0.5 text-xs font-semibold ${highlight ? "text-white/80" : "text-muted-foreground"}`}>{unit}</span>
+    <div className={`rounded-2xl p-2.5 ${big ? "bg-white/15" : ""}`}>
+      <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">{label}</p>
+      <p className="mt-0.5 font-display text-lg font-bold leading-none">
+        {value}<span className="ml-0.5 text-[10px] font-semibold text-white/70">{unit}</span>
       </p>
     </div>
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <p className="mb-3 px-1 text-[12px] font-bold uppercase tracking-widest text-muted-foreground">{children}</p>;
-}
-
-function TaskCard({
-  title, subtitle, done, onToggle, icon,
-}: { title: string; subtitle?: string; done: boolean; onToggle: () => void; icon?: React.ReactNode }) {
+function MegaCard({
+  to, icon, title, subtitle, tint,
+}: { to: string; icon: React.ReactNode; title: string; subtitle: string; tint: "primary" | "accent" }) {
+  const iconBg = tint === "primary" ? "bg-secondary/15 text-primary" : "bg-accent/10 text-accent";
   return (
-    <button
-      onClick={onToggle}
-      className="flex w-full items-center gap-4 rounded-[1.5rem] border border-border/40 bg-white p-5 text-left shadow-sm transition active:scale-[0.99]"
+    <Link
+      to={to}
+      className="group flex min-h-[130px] flex-col justify-between rounded-[1.5rem] border border-border/50 bg-white p-4 shadow-sm transition active:scale-[0.98]"
     >
-      {icon && (
-        <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-colors ${done ? "bg-background text-muted-foreground" : "bg-secondary/15"}`}>
-          {icon}
-        </span>
-      )}
-      <div className="flex-1">
-        <p className={`text-[16px] font-bold ${done ? "text-muted-foreground line-through opacity-60" : "text-foreground"}`}>{title}</p>
-        {subtitle && <p className={`mt-0.5 text-[13px] ${done ? "text-muted-foreground/60" : "text-muted-foreground"}`}>{subtitle}</p>}
-      </div>
-      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 transition-all ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}>
-        {done && <Check className="h-4 w-4" strokeWidth={3} />}
-      </span>
-    </button>
-  );
-}
-
-function MacroBar({ label, current, max, color }: { label: string; current: number; max: number; color: string }) {
-  const pct = Math.min(100, Math.max(0, (current / max) * 100));
-  return (
-    <div className="rounded-2xl border border-border/40 bg-white p-3 shadow-sm">
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
-      </div>
-      <div className="mt-1 flex items-baseline gap-1">
-        <span className="text-sm font-bold text-foreground">{current}</span>
-        <span className="text-[10px] font-medium text-muted-foreground">/ {max}g</span>
-      </div>
-      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-        <div className={`h-full rounded-full transition-all duration-700 ${color}`} style={{ width: `${pct}%` }} />
-      </div>
-    </div>
-  );
-}
-
-function MealCard({
-  label, name, kcal, macros, done, onToggle, onOpen, icon,
-}: { label: string; name: string; kcal: number; macros: {p:number, c:number, f:number}; done: boolean; onToggle: () => void; onOpen: () => void; icon: React.ReactNode }) {
-  return (
-    <div
-      onClick={onOpen}
-      className="flex w-full items-center gap-4 rounded-[1.5rem] border border-border/40 bg-white p-4 text-left shadow-sm transition active:scale-[0.99] cursor-pointer"
-    >
-      <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-2xl transition-colors ${done ? "bg-background text-muted-foreground" : "bg-secondary/15 text-primary"}`}>
+      <span className={`grid h-12 w-12 place-items-center rounded-2xl ${iconBg}`}>
         {icon}
       </span>
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
-          <span className={`text-[11px] font-bold ${done ? "text-muted-foreground opacity-50" : "text-primary"}`}>{kcal} kcal</span>
-        </div>
-        <p className={`mt-0.5 text-[15px] font-bold leading-snug ${done ? "line-through opacity-50 text-muted-foreground" : "text-foreground"}`}>{name}</p>
-        <div className={`mt-1.5 flex gap-2 text-[11px] font-medium ${done ? "text-muted-foreground/50" : "text-muted-foreground"}`}>
-          <span><strong className={done ? "" : "text-blue-500"}>{macros.p}g</strong> P</span>
-          <span><strong className={done ? "" : "text-amber-500"}>{macros.c}g</strong> C</span>
-          <span><strong className={done ? "" : "text-rose-500"}>{macros.f}g</strong> G</span>
-        </div>
+      <div>
+        <p className="text-[16px] font-bold text-foreground leading-tight">{title}</p>
+        <p className="mt-0.5 text-[12px] text-muted-foreground">{subtitle}</p>
       </div>
-      <button 
-        onClick={(e) => { e.stopPropagation(); onToggle(); }}
-        className={`ml-1 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 transition-all ${done ? "border-primary bg-primary text-white" : "border-border bg-background"}`}
-      >
-        {done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
-      </button>
-    </div>
+    </Link>
   );
 }
