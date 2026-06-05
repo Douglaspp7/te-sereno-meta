@@ -91,7 +91,7 @@ function EjerciciosPage() {
     enabled: !!selectedDayNum,
   });
 
-  const exercise = dayData?.exercises?.[0];
+  const exercise = dayData?.exercises;
 
   const upsertProgress = useMutation({
     mutationFn: async () => {
