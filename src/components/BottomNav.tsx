@@ -3,7 +3,7 @@ import { Home, ClipboardList, ShoppingCart, TrendingUp, PlaySquare } from "lucid
 
 const items = [
   { to: "/", label: "Inicio", icon: Home, match: (p: string) => p === "/" },
-  { to: "/plan", label: "Plan", icon: ClipboardList, match: (p: string) => p.startsWith("/plan") },
+  { to: "/plan", label: "Mi Plan", icon: ClipboardList, match: (p: string) => p.startsWith("/plan") },
   { to: "/ejercicios", label: "Ejercicios", icon: PlaySquare, match: (p: string) => p.startsWith("/ejercicios") },
   { to: "/compras", label: "Compras", icon: ShoppingCart, match: (p: string) => p.startsWith("/compras") },
   { to: "/progreso", label: "Progreso", icon: TrendingUp, match: (p: string) => p.startsWith("/progreso") },
