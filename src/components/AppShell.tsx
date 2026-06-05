@@ -2,17 +2,25 @@ import type { ReactNode } from "react";
 import { BottomNav } from "./BottomNav";
 import { PWAInstallPrompt } from "./PWAInstallPrompt";
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, hideNav = false }: { children: ReactNode; hideNav?: boolean }) {
   return (
-    <div className="mx-auto min-h-screen w-full max-w-md bg-background pb-24">
+    <div className={`mx-auto min-h-screen w-full max-w-md bg-background ${hideNav ? "" : "pb-24"}`}>
       {children}
-      <PWAInstallPrompt />
-      <BottomNav />
+      {!hideNav && <PWAInstallPrompt />}
+      {!hideNav && <BottomNav />}
     </div>
   );
 }
 
-export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
+export function PageHeader({
+  title,
+  subtitle,
+  action,
+}: {
+  title: string;
+  subtitle?: string;
+  action?: ReactNode;
+}) {
   return (
     <header className="px-5 pt-8 pb-4">
       <div className="flex items-start justify-between gap-3">
