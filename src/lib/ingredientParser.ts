@@ -18,11 +18,13 @@ const CATEGORIES = {
 export function parseIngredients(days: any[]): ParsedIngredient[] {
   const ingredientMap = new Map<string, ParsedIngredient>();
 
+  const getMealData = (mealData: any) => Array.isArray(mealData) ? mealData[0] : mealData;
+
   days.forEach((day) => {
     const meals = [
-      { key: "breakfast", label: "Desayuno", data: day.breakfast },
-      { key: "lunch", label: "Almuerzo", data: day.lunch },
-      { key: "dinner", label: "Cena", data: day.dinner },
+      { key: "breakfast", label: "Desayuno", data: getMealData(day.breakfast) },
+      { key: "lunch", label: "Almuerzo", data: getMealData(day.lunch) },
+      { key: "dinner", label: "Cena", data: getMealData(day.dinner) },
     ];
 
     meals.forEach((meal) => {
