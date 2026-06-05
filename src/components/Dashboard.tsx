@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Check, Droplet, Plus, Minus, Dumbbell, Flame, Sparkles, User as UserIcon, Coffee, UtensilsCrossed, Moon } from "lucide-react";
+import { Check, Droplet, Plus, Minus, Dumbbell, Flame, Sparkles, User as UserIcon, Coffee, UtensilsCrossed, Moon, Bot } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
 
