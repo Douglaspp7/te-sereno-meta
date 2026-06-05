@@ -144,7 +144,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
       else break;
     }
 
-    const totalDays = allProgress.length;
+    const totalDays = 21; // Sempre proporcional a 21 dias totais do desafio
     const waterDays = allProgress.filter(p => (p.water_glasses ?? 0) >= 8).length;
     const exerciseDays = allProgress.filter(p => p.exercise_done).length;
     const mealsDays = allProgress.filter(p => p.breakfast_done && p.lunch_done && p.dinner_done).length;

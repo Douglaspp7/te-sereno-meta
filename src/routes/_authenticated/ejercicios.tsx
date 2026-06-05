@@ -139,13 +139,33 @@ function EjerciciosPage() {
     return url;
   };
   
+  const VIDEO_LINKS: Record<number, string> = {
+    1: 'https://youtu.be/YFAuNBwvugY',
+    2: 'https://youtu.be/21C7hlYOnwE',
+    3: 'https://youtu.be/LZORkCJf9ow',
+    4: 'https://youtu.be/B4Ef_BaAZuk',
+    5: 'https://youtu.be/qeFt1gZeOWg',
+    6: 'https://youtu.be/-HZvbHUot78',
+    7: 'https://youtu.be/tz0ffHMmloQ',
+    8: 'https://youtu.be/9kKZII96YPc',
+    9: 'https://youtu.be/75S19ireC0w',
+    10: 'https://youtu.be/9o0UPuDBM8M',
+    11: 'https://youtu.be/e6C0Ia5Cazo',
+    12: 'https://youtu.be/bVNDdQ7xc5U',
+    13: 'https://youtu.be/YhGrKAOT-rQ',
+    14: 'https://youtu.be/coy1trQFQCU',
+    15: 'https://youtu.be/07UozcXXOXY',
+    16: 'https://youtu.be/_fBLOyRbzzs',
+    17: 'https://youtu.be/39PzNPzDL_g',
+    18: 'https://youtu.be/d-TjzCjVBLg',
+    19: 'https://youtu.be/5lDNqN7eZ4A',
+    20: 'https://youtu.be/hEt3YCJILOs',
+    21: 'https://youtu.be/2sHRAQO4J8k',
+  };
   
-  // Forçar os URLs de vídeo independentemente do banco de dados (para Dias 1 e 2)
-  if (selectedDayNum === 1) {
-    videoUrl = 'https://youtu.be/YFAuNBwvugY';
-  }
-  if (selectedDayNum === 2) {
-    videoUrl = 'https://youtu.be/21C7hlYOnwE';
+  // Forçar os URLs de vídeo mapeados, caso contrário, usa o do banco de dados
+  if (VIDEO_LINKS[selectedDayNum]) {
+    videoUrl = VIDEO_LINKS[selectedDayNum];
   }
 
   // Se o URL não for youtube/vimeo e parecer um path de imagem (ex: /images/caminar_20.png)
