@@ -65,13 +65,19 @@ function EjerciciosPage() {
 
   // Auto-scroll timeline to active day
   useEffect(() => {
-    if (timelineRef.current) {
-      const activeElement = timelineRef.current.children[selectedDayNum - 1] as HTMLElement;
-      if (activeElement) {
-        activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
+    if (!isLoadingExercise && timelineRef.current) {
+      // Timeout garante que o DOM foi renderizado após o carregamento
+      setTimeout(() => {
+        if (!timelineRef.current) return;
+        const activeElement = timelineRef.current.children[selectedDayNum - 1] as HTMLElement;
+        if (activeElement) {
+          const container = timelineRef.current;
+          const scrollLeft = activeElement.offsetLeft - container.offsetWidth / 2 + activeElement.offsetWidth / 2;
+          container.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+        }
+      }, 100);
     }
-  }, [selectedDayNum]);
+  }, [selectedDayNum, isLoadingExercise]);
 
   const currentProgress = allProgress?.find(p => p.day_number === selectedDayNum);
   const isDone = currentProgress?.exercise_done || false;
