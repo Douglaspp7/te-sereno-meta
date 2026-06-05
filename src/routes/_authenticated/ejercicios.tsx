@@ -3,7 +3,7 @@ import { AppShell, PageHeader } from "@/components/AppShell";
 import { PlayCircle, Clock, Flame, Check } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/components/AuthProvider";
+import { useUser } from "@/lib/auth";
 import { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
 import confetti from "canvas-confetti";
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/ejercicios")({
 });
 
 function EjerciciosPage() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const queryClient = useQueryClient();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isClient, setIsClient] = useState(false);
