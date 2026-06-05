@@ -102,9 +102,9 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
   const activeRecipe = meals.find(m => m.id === openRecipeId) || null;
 
   const consumedKcal = meals.filter(m => m.done).reduce((acc, m) => acc + m.kcal, 0);
-  const consumedP = meals.filter(m => m.done).reduce((acc, m) => acc + m.p, 0);
-  const consumedC = meals.filter(m => m.done).reduce((acc, m) => acc + m.c, 0);
-  const consumedF = meals.filter(m => m.done).reduce((acc, m) => acc + m.f, 0);
+  const consumedP = meals.filter(m => m.done).reduce((acc, m) => acc + m.macros.p, 0);
+  const consumedC = meals.filter(m => m.done).reduce((acc, m) => acc + m.macros.c, 0);
+  const consumedF = meals.filter(m => m.done).reduce((acc, m) => acc + m.macros.f, 0);
 
   // Mock Goals based on user profile or fixed for now
   const goalKcal = 1500;

@@ -10,6 +10,7 @@ export type RecipeData = {
   macros: { p: number; c: number; f: number };
   ingredients: string[];
   instructions: string[];
+  done?: boolean;
 };
 
 export function RecipeModal({
