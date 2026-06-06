@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowRight, Bot, Target, BrainCircuit, CalendarDays, Activity, Droplet, CheckCircle2, Mail } from "lucide-react";
+import { ArrowRight, Bot, Target, BrainCircuit, CalendarDays, Activity, Droplet, CheckCircle2, Mail, Lock } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useUser } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,19 +53,35 @@ function Landing() {
   const [sent, setSent] = useState(false);
   const [otp, setOtp] = useState("");
 
+  const [password, setPassword] = useState("");
+  const isTestEmail = email.toLowerCase() === "douglasp7@hotmail.com";
+
   const submitEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: window.location.origin,
-          shouldCreateUser: true,
-        },
-      });
-      if (error) throw error;
-      setSent(true);
+      if (isTestEmail) {
+        if (!password) {
+          alert("Por favor, ingresa la contraseña para el correo de prueba.");
+          setLoading(false);
+          return;
+        }
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            emailRedirectTo: window.location.origin,
+            shouldCreateUser: true,
+          },
+        });
+        if (error) throw error;
+        setSent(true);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Algo salió mal.";
       alert(translateError(msg)); 
@@ -143,6 +159,20 @@ function Landing() {
                   autoComplete="email"
                 />
               </div>
+
+              {isTestEmail && (
+                <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <Lock className="h-5 w-5 text-white/60 group-focus-within:text-white transition-colors" />
+                  <input
+                    type="password"
+                    required={isTestEmail}
+                    className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
+                    placeholder="Contraseña de administrador"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+              )}
 
               <button
                 type="submit"
