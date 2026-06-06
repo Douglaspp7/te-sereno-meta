@@ -18,11 +18,11 @@ export const Route = createFileRoute("/_authenticated/recompensas")({
 });
 
 const REWARDS = [
-  { id: 1, name: "10 Recetas Express", condition: "7 días consecutivos", icon: Utensils, type: "streak", target: 7, unlockMsg: "Mantén tu racha 7 días para desbloquear 10 Recetas Express.", pdfUrl: "/pdfs/10 Receitas Express.pdf" },
-  { id: 2, name: "Postres Saludables", condition: "14 días consecutivos", icon: Flame, type: "streak", target: 14, unlockMsg: "Mantén tu racha 14 días para desbloquear Postres Saludables.", pdfUrl: "/pdfs/Postres-Saludables.pdf" },
-  { id: 3, name: "Guía de Compras Inteligentes", condition: "10 comidas preparadas", icon: ShoppingCart, type: "meals", target: 10, unlockMsg: "Prepara 10 comidas para desbloquear Guía de Compras.", pdfUrl: "/pdfs/Guia-de-Compras.pdf" },
-  { id: 4, name: "Menú de Emergencia", condition: "5 ejercicios realizados", icon: Dumbbell, type: "exercises", target: 5, unlockMsg: "Realiza 5 ejercicios para desbloquear Menú de Emergencia.", pdfUrl: "/pdfs/Menu de Emergencia.pdf" },
-  { id: 5, name: "21 Recetas Premium Extra", condition: "50% del desafío", icon: Sparkles, type: "plan", target: 50, unlockMsg: "Alcanza 50% del plan para desbloquear 21 Recetas Premium.", pdfUrl: "/pdfs/21 Receitas Premium.pdf" },
+  { id: 1, name: "10 Recetas Express", condition: "7 días consecutivos", icon: Utensils, type: "streak", target: 7, unlockMsg: "Mantén tu racha 7 días para desbloquear 10 Recetas Express.", pdfUrl: "/pdfs/10_receitas_express.pdf" },
+  { id: 2, name: "Postres Saludables", condition: "14 días consecutivos", icon: Flame, type: "streak", target: 14, unlockMsg: "Mantén tu racha 14 días para desbloquear Postres Saludables.", pdfUrl: "/pdfs/postres_saludables.pdf" },
+  { id: 3, name: "Guía de Compras Inteligentes", condition: "10 comidas preparadas", icon: ShoppingCart, type: "meals", target: 10, unlockMsg: "Prepara 10 comidas para desbloquear Guía de Compras.", pdfUrl: "/pdfs/guia_de_compras.pdf" },
+  { id: 4, name: "Menú de Emergencia", condition: "5 ejercicios realizados", icon: Dumbbell, type: "exercises", target: 5, unlockMsg: "Realiza 5 ejercicios para desbloquear Menú de Emergencia.", pdfUrl: "/pdfs/menu_de_emergencia.pdf" },
+  { id: 5, name: "21 Recetas Premium Extra", condition: "50% del desafío", icon: Sparkles, type: "plan", target: 50, unlockMsg: "Alcanza 50% del plan para desbloquear 21 Recetas Premium.", pdfUrl: "/pdfs/21_receitas_premium.pdf" },
   { id: 7, name: "Maestro del Té", condition: "14 tés consumidos", icon: Droplet, type: "teas", target: 14, unlockMsg: "Consume té 14 días para desbloquear Maestro del Té." },
   { id: 6, name: "Certificado Oficial MiReto21", condition: "Concluir Día 21", icon: Award, type: "plan", target: 100, unlockMsg: "Completa el Día 21 para desbloquear Certificado Oficial.", isCertificate: true },
   { id: 8, name: "Campeón MiReto21", condition: "100% del programa", icon: Trophy, type: "plan", target: 100, unlockMsg: "Completa el 100% del programa para ser Campeón MiReto21.", isCertificate: true },
