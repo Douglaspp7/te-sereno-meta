@@ -50,8 +50,9 @@ function Landing() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [otp, setOtp] = useState("");
 
-  const submit = async (e: React.FormEvent) => {
+  const submitEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -67,6 +68,25 @@ function Landing() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Algo salió mal.";
       alert(translateError(msg)); 
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'email',
+      });
+      if (error) throw error;
+      // User is now logged in, the `useUser` hook will detect the session change
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Código incorrecto.";
+      alert(translateError(msg));
     } finally {
       setLoading(false);
     }
@@ -100,13 +120,13 @@ function Landing() {
             </h1>
             <p className="mt-2 text-[14px] text-white/80 drop-shadow-md">
               {sent
-                ? `Te enviamos un enlace a ${email}. Ábrelo para entrar.`
+                ? `Haz clic en el enlace que te enviamos, o ingresa el código de 6 dígitos aquí.`
                 : "Ingresa tu correo para acceder a tu plan de 21 días."}
             </p>
           </div>
 
           {!sent ? (
-            <form onSubmit={submit} className="w-full space-y-4">
+            <form onSubmit={submitEmail} className="w-full space-y-4">
               <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
                 <Mail className="h-5 w-5 text-white/60 group-focus-within:text-white transition-colors" />
                 <input
@@ -131,15 +151,40 @@ function Landing() {
               </button>
             </form>
           ) : (
-            <button
-              onClick={() => {
-                setSent(false);
-                setEmail("");
-              }}
-              className="mt-4 w-full text-center text-sm font-semibold text-white/70 transition-colors hover:text-white"
-            >
-              Usar otro correo
-            </button>
+            <form onSubmit={verifyOtp} className="w-full space-y-4">
+              <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
+                <input
+                  type="text"
+                  required
+                  className="w-full bg-transparent text-center text-2xl font-bold tracking-[0.5em] text-white outline-none placeholder:text-white/30"
+                  placeholder="000000"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  autoComplete="one-time-code"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || otp.length < 6}
+                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-white font-bold text-black shadow-xl transition-all active:scale-[0.98] disabled:opacity-70"
+              >
+                {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />}
+                Entrar
+                {!loading && <ArrowRight className="h-5 w-5" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSent(false);
+                  setOtp("");
+                }}
+                className="mt-4 w-full text-center text-sm font-semibold text-white/70 transition-colors hover:text-white"
+              >
+                Usar otro correo
+              </button>
+            </form>
           )}
         </div>
       </section>
