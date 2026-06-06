@@ -256,6 +256,39 @@ export type Database = {
         }
         Relationships: []
       }
+      hotmart_allowlist: {
+        Row: {
+          created_at: string
+          email: string
+          plan: string | null
+          purchased_at: string
+          raw_payload: Json | null
+          status: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          plan?: string | null
+          purchased_at?: string
+          raw_payload?: Json | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          plan?: string | null
+          purchased_at?: string
+          raw_payload?: Json | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       plan_days: {
         Row: {
           breakfast: Json | null
@@ -314,7 +347,9 @@ export type Database = {
           email: string | null
           goal_weight: number | null
           height_cm: number | null
+          hotmart_transaction_id: string | null
           id: string
+          is_admin: boolean
           main_difficulty: string | null
           main_goal: string | null
           onboarding_completed: boolean
@@ -324,6 +359,10 @@ export type Database = {
           sex: string | null
           start_date: string
           start_weight: number | null
+          subscription_expires_at: string | null
+          subscription_plan: string | null
+          subscription_started_at: string | null
+          subscription_status: string
           updated_at: string
         }
         Insert: {
@@ -335,7 +374,9 @@ export type Database = {
           email?: string | null
           goal_weight?: number | null
           height_cm?: number | null
+          hotmart_transaction_id?: string | null
           id: string
+          is_admin?: boolean
           main_difficulty?: string | null
           main_goal?: string | null
           onboarding_completed?: boolean
@@ -345,6 +386,10 @@ export type Database = {
           sex?: string | null
           start_date?: string
           start_weight?: number | null
+          subscription_expires_at?: string | null
+          subscription_plan?: string | null
+          subscription_started_at?: string | null
+          subscription_status?: string
           updated_at?: string
         }
         Update: {
@@ -356,7 +401,9 @@ export type Database = {
           email?: string | null
           goal_weight?: number | null
           height_cm?: number | null
+          hotmart_transaction_id?: string | null
           id?: string
+          is_admin?: boolean
           main_difficulty?: string | null
           main_goal?: string | null
           onboarding_completed?: boolean
@@ -366,6 +413,10 @@ export type Database = {
           sex?: string | null
           start_date?: string
           start_weight?: number | null
+          subscription_expires_at?: string | null
+          subscription_plan?: string | null
+          subscription_started_at?: string | null
+          subscription_status?: string
           updated_at?: string
         }
         Relationships: []
