@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { ArrowRight, Bot, Target, BrainCircuit, CalendarDays, Activity, Droplet, CheckCircle2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, Bot, Target, BrainCircuit, CalendarDays, Activity, Droplet, CheckCircle2, Mail } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useUser } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,160 +47,101 @@ function HomeRoute() {
 }
 
 function Landing() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: window.location.origin,
+          shouldCreateUser: true,
+        },
+      });
+      if (error) throw error;
+      setSent(true);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Algo salió mal.";
+      alert(translateError(msg)); // Simplified toast for now, can add sonner if needed
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AppShell hideNav>
-      {/* HERO PREMIUM */}
-      <section className="relative overflow-hidden bg-background px-6 pb-12 pt-16">
+      <section className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-background px-6">
+        {/* Dynamic Background Elements */}
         <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-secondary/20 blur-3xl" />
         <div className="absolute -left-24 top-40 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
-        
-        <div className="relative flex flex-col items-center text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-1.5 shadow-sm">
-            <Bot className="h-4 w-4 text-primary" />
-            <span className="text-[11px] font-bold tracking-widest text-foreground uppercase">MiReto21 AI</span>
-          </div>
+        <div className="absolute bottom-0 right-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
 
-          <h1 className="mt-8 max-w-[280px] font-display text-[2.75rem] font-extrabold leading-[1.05] tracking-tight text-foreground">
-            Tu transformación<br/>comienza hoy.
-          </h1>
-          
-          <p className="mt-5 max-w-[300px] text-[15px] leading-relaxed text-muted-foreground">
-            Un plan personalizado de 21 días creado por <span className="font-semibold text-primary">Inteligencia Artificial</span> para ayudarte a perder peso y crear hábitos duraderos.
-          </p>
-
-          <Link
-            to="/auth"
-            className="mt-8 flex h-14 w-full max-w-[280px] items-center justify-center gap-2 rounded-2xl bg-primary font-semibold text-white shadow-float transition-all active:scale-[0.98]"
-          >
-            Comenzar mi transformación <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-
-        {/* MOCKUP PROGRESS BAR - PWA VIBE */}
-        <div className="relative mt-12 mx-auto max-w-[340px] overflow-hidden rounded-[2rem] border border-border/50 bg-white p-6 shadow-float">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Tu Reto</p>
-              <p className="mt-0.5 font-display text-xl font-bold text-foreground">Día 1 <span className="font-medium text-base text-muted-foreground">de 21</span></p>
+        <div className="relative w-full max-w-[340px] animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="mb-8 flex flex-col items-center text-center">
+            <div className="mb-6 grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-soft border border-border/50 text-primary">
+              {sent ? <CheckCircle2 className="h-8 w-8" /> : <Bot className="h-8 w-8" />}
             </div>
-            <div className="rounded-2xl bg-secondary/20 px-3 py-1.5">
-              <span className="text-xs font-bold text-primary">5%</span>
-            </div>
+            <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground">
+              {sent ? "Revisa tu correo" : "MiReto21 AI"}
+            </h1>
+            <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+              {sent
+                ? `Te enviamos un enlace a ${email}. Ábrelo para entrar automáticamente.`
+                : "Ingresa tu correo para comenzar tu transformación de 21 días."}
+            </p>
           </div>
-          
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-primary" style={{ width: "5%" }} />
-          </div>
-          
-          <div className="mt-5 flex items-center gap-3 rounded-2xl border border-border/50 bg-background p-3">
-             <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white shadow-sm">
-                <Target className="h-5 w-5 text-accent" />
-             </div>
-             <div>
-               <p className="text-[10px] font-bold uppercase text-muted-foreground">Meta Principal</p>
-               <p className="text-sm font-bold text-foreground">-5 kg en 21 días</p>
-             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* BENEFICIOS */}
-      <section className="bg-white px-6 py-10">
-        <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground">
-          Diseñado para ti
-        </h2>
-        <div className="mx-auto max-w-[340px] space-y-4">
-          <FeatureCard
-            icon={<BrainCircuit className="h-6 w-6 text-primary" />}
-            title="Plan creado por IA"
-            desc="Tu programa se adapta a tus objetivos y metabolismo."
-          />
-          <FeatureCard
-            icon={<CalendarDays className="h-6 w-6 text-primary" />}
-            title="21 días guiados"
-            desc="Cada día con misión, comidas y ejercicio. Sin pensar."
-          />
-          <FeatureCard
-            icon={<Activity className="h-6 w-6 text-primary" />}
-            title="Seguimiento real"
-            desc="Visualiza tu progreso día tras día. Resultados reales."
-          />
-        </div>
-      </section>
-
-      {/* DASHBOARD PREVIEW */}
-      <section className="bg-background px-6 py-12">
-        <div className="mx-auto max-w-[340px]">
-          <h2 className="mb-2 text-center font-display text-2xl font-bold text-foreground">
-            Todo en un solo lugar
-          </h2>
-          <p className="mb-8 text-center text-sm text-muted-foreground">Controla tu progreso diario como en los mejores apps.</p>
-          
-          <div className="rounded-[2rem] border border-border/50 bg-white p-5 shadow-float">
-            <div className="mb-4 flex justify-between">
-              <MiniStat label="Inicial" value="78kg" />
-              <MiniStat label="Actual" value="76kg" highlight />
-              <MiniStat label="Meta" value="73kg" />
-            </div>
-            
-            <div className="mt-2 space-y-2">
-              <div className="flex items-center justify-between rounded-2xl bg-background p-3">
-                 <div className="flex items-center gap-3">
-                   <span className="text-xl">🍵</span>
-                   <span className="text-sm font-semibold">Té del Día</span>
-                 </div>
-                 <span className="text-xs font-bold text-accent">Pendiente</span>
+          {!sent ? (
+            <form onSubmit={submit} className="w-full space-y-4">
+              <div className="group flex items-center gap-3 rounded-2xl border border-border/60 bg-white/60 px-4 py-3.5 shadow-sm backdrop-blur-md transition-all focus-within:border-primary focus-within:bg-white focus-within:shadow-md">
+                <Mail className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <input
+                  type="email"
+                  required
+                  className="w-full bg-transparent text-[15px] font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground/70"
+                  placeholder="tu@correo.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  autoFocus
+                />
               </div>
-              <div className="flex items-center justify-between rounded-2xl bg-background p-3">
-                 <div className="flex items-center gap-3">
-                   <CheckCircle2 className="h-5 w-5 text-primary" />
-                   <span className="text-sm font-semibold text-muted-foreground line-through">Ejercicio</span>
-                 </div>
-                 <span className="text-xs font-bold text-primary">¡Hecho!</span>
-              </div>
-            </div>
-          </div>
+
+              <button
+                type="submit"
+                disabled={loading || !email}
+                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-foreground font-semibold text-background shadow-float transition-all active:scale-[0.98] disabled:opacity-60"
+              >
+                {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-background/30 border-t-background" />}
+                Continuar
+                {!loading && <ArrowRight className="h-4 w-4" />}
+              </button>
+            </form>
+          ) : (
+            <button
+              onClick={() => {
+                setSent(false);
+                setEmail("");
+              }}
+              className="mt-6 w-full text-center text-sm font-medium text-primary transition-colors hover:text-primary/80"
+            >
+              Usar otro correo
+            </button>
+          )}
         </div>
       </section>
-
-      {/* CTA BOTTOM */}
-      <section className="bg-white px-6 py-12 text-center">
-        <h2 className="mb-6 font-display text-3xl font-bold text-foreground">¿Lista para cambiar?</h2>
-        <Link
-          to="/auth"
-          className="mx-auto flex h-14 w-full max-w-[280px] items-center justify-center gap-2 rounded-2xl bg-foreground font-semibold text-background shadow-float transition-all active:scale-[0.98]"
-        >
-           Generar mi plan ahora <ArrowRight className="h-4 w-4" />
-        </Link>
-        <p className="mt-4 text-[13px] text-muted-foreground">
-          ¿Ya tienes cuenta? <Link to="/auth" className="font-bold text-primary">Inicia sesión</Link>
-        </p>
-      </section>
-      
-      <div className="h-12 bg-white" />
     </AppShell>
   );
 }
 
-function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
-  return (
-    <div className="flex gap-4 rounded-[1.5rem] border border-border/40 bg-background p-5 shadow-sm">
-      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-secondary/15">
-        {icon}
-      </div>
-      <div className="flex-1 pt-0.5">
-        <p className="text-[16px] font-bold text-foreground">{title}</p>
-        <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{desc}</p>
-      </div>
-    </div>
-  );
-}
-
-function MiniStat({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
-  return (
-    <div className={`flex w-[30%] flex-col items-center justify-center rounded-2xl p-3 ${highlight ? 'bg-primary text-white shadow-soft' : 'bg-background text-foreground'}`}>
-      <span className={`text-[10px] font-bold uppercase tracking-wider ${highlight ? 'text-white/80' : 'text-muted-foreground'}`}>{label}</span>
-      <span className="mt-0.5 font-display text-lg font-bold">{value}</span>
-    </div>
-  );
+function translateError(msg: string) {
+  const m = msg.toLowerCase();
+  if (m.includes("rate limit") || m.includes("too many")) return "Demasiados intentos. Intenta en unos minutos.";
+  if (m.includes("invalid email")) return "Correo inválido.";
+  if (m.includes("signups not allowed")) return "Los registros están desactivados.";
+  return msg;
 }
