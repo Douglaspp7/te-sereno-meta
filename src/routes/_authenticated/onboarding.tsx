@@ -122,6 +122,12 @@ function OnboardingPage() {
         })
         .eq("id", user!.id);
       if (error) throw error;
+      
+      // Update cache instantly so when we navigate to /, it doesn't use stale data and redirect us back
+      queryClient.setQueryData(["profile", user!.id], (old: any) => ({
+        ...old,
+        onboarding_completed: true,
+      }));
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
       navigate({ to: "/generando", replace: true });
     } catch (err) {
