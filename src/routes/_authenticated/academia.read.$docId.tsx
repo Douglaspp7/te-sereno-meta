@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useRef } from "react";
-import { ArrowLeft, Maximize, Minimize, Download } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ArrowLeft, Maximize, Minimize, Download, ExternalLink, FileText } from "lucide-react";
 import { academiaDocuments } from "@/data/academia";
 
 export const Route = createFileRoute("/_authenticated/academia/read/$docId")({
@@ -13,7 +13,14 @@ function PdfReaderRoute() {
   const documentInfo = academiaDocuments.find(d => d.id === docId);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Detect if the user is on a mobile device
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    setIsMobile(/iphone|ipad|ipod|android/.test(userAgent));
+  }, []);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -54,19 +61,44 @@ function PdfReaderRoute() {
           >
             <Download className="h-5 w-5" />
           </a>
-          <button onClick={toggleFullscreen} className="p-2 rounded-full text-foreground/70 hover:bg-secondary hidden md:block">
-            {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
-          </button>
+          {!isMobile && (
+            <button onClick={toggleFullscreen} className="p-2 rounded-full text-foreground/70 hover:bg-secondary hidden md:block">
+              {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Reader Area */}
-      <div className="flex-1 overflow-hidden relative">
-        <iframe 
-          src={`${documentInfo.pdfUrl}#toolbar=0&view=FitH`} 
-          className="absolute inset-0 w-full h-full border-none"
-          title={documentInfo.title}
-        />
+      <div className="flex-1 overflow-hidden relative flex flex-col">
+        {isMobile ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white m-4 rounded-[2rem] shadow-sm border border-border/50">
+            <div className="grid h-20 w-20 place-items-center rounded-full bg-primary/10 text-primary mb-6">
+              <FileText className="h-10 w-10" />
+            </div>
+            <h3 className="text-2xl font-display font-bold text-foreground mb-3">
+              Modo Lectura
+            </h3>
+            <p className="text-muted-foreground mb-8 max-w-[280px]">
+              Para una mejor experiencia en tu celular, el documento se abrirá en pantalla completa de forma nativa.
+            </p>
+            <a 
+              href={documentInfo.pdfUrl} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-primary/30 active:scale-95 transition-all w-full justify-center"
+            >
+              <ExternalLink className="h-5 w-5" /> 
+              Abrir Documento
+            </a>
+          </div>
+        ) : (
+          <iframe 
+            src={`${documentInfo.pdfUrl}#toolbar=0&view=FitH`} 
+            className="absolute inset-0 w-full h-full border-none"
+            title={documentInfo.title}
+          />
+        )}
       </div>
     </div>
   );
