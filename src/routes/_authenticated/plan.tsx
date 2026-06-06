@@ -18,7 +18,7 @@ function FullScreenRecipeModal({
   recipe, 
   onClose,
   isPrepared,
-  onMarkPrepared
+  onTogglePrepared
 }: { 
   recipe: any | null, 
   onClose: () => void,
