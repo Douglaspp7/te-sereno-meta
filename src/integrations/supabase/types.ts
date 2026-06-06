@@ -325,10 +325,6 @@ export type Database = {
           start_date: string
           start_weight: number | null
           updated_at: string
-          subscription_status: string | null
-          subscription_plan: string | null
-          subscription_started_at: string | null
-          subscription_expires_at: string | null
         }
         Insert: {
           activity_level?: string | null
@@ -350,10 +346,6 @@ export type Database = {
           start_date?: string
           start_weight?: number | null
           updated_at?: string
-          subscription_status?: string | null
-          subscription_plan?: string | null
-          subscription_started_at?: string | null
-          subscription_expires_at?: string | null
         }
         Update: {
           activity_level?: string | null
@@ -375,10 +367,6 @@ export type Database = {
           start_date?: string
           start_weight?: number | null
           updated_at?: string
-          subscription_status?: string | null
-          subscription_plan?: string | null
-          subscription_started_at?: string | null
-          subscription_expires_at?: string | null
         }
         Relationships: []
       }
