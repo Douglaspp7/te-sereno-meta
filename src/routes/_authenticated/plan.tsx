@@ -302,11 +302,12 @@ function PlanPage() {
   const updateProgress = useMutation({
     mutationFn: async (updates: Partial<typeof progress>) => {
       if (!userId) return;
-      if (progress?.id) {
+      const progressId = (progress as { id?: string } | undefined)?.id;
+      if (progressId) {
         const { error } = await supabase.from("daily_progress").update({
           log_date: new Date().toISOString().split("T")[0],
           ...updates,
-        }).eq('id', progress.id);
+        }).eq('id', progressId);
         if (error) {
           console.error("Supabase update error:", error);
           throw error;
