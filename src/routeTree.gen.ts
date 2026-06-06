@@ -21,9 +21,9 @@ import { Route as AuthenticatedGenerandoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedAnalizarRouteImport } from './routes/_authenticated/analizar'
-import { Route as AuthenticatedAcademiaRouteImport } from './routes/_authenticated/academia'
+import { Route as AuthenticatedRecompensasRouteImport } from './routes/_authenticated/recompensas'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
-import { Route as AuthenticatedAcademiaReadDocIdRouteImport } from './routes/_authenticated/academia.read.$docId'
+
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -84,9 +84,9 @@ const AuthenticatedAnalizarRoute = AuthenticatedAnalizarRouteImport.update({
   path: '/analizar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAcademiaRoute = AuthenticatedAcademiaRouteImport.update({
-  id: '/academia',
-  path: '/academia',
+const AuthenticatedRecompensasRoute = AuthenticatedRecompensasRouteImport.update({
+  id: '/recompensas',
+  path: '/recompensas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const LovableEmailQueueProcessRoute =
@@ -95,18 +95,13 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthenticatedAcademiaReadDocIdRoute =
-  AuthenticatedAcademiaReadDocIdRouteImport.update({
-    id: '/read/$docId',
-    path: '/read/$docId',
-    getParentRoute: () => AuthenticatedAcademiaRoute,
-  } as any)
+
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/academia': typeof AuthenticatedAcademiaRouteWithChildren
+  '/recompensas': typeof AuthenticatedRecompensasRoute
   '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -115,14 +110,14 @@ export interface FileRoutesByFullPath {
   '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
   '/te': typeof AuthenticatedTeRoute
-  '/academia/read/$docId': typeof AuthenticatedAcademiaReadDocIdRoute
+
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/academia': typeof AuthenticatedAcademiaRouteWithChildren
+  '/recompensas': typeof AuthenticatedRecompensasRoute
   '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -131,7 +126,7 @@ export interface FileRoutesByTo {
   '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
   '/te': typeof AuthenticatedTeRoute
-  '/academia/read/$docId': typeof AuthenticatedAcademiaReadDocIdRoute
+
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -140,7 +135,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/academia': typeof AuthenticatedAcademiaRouteWithChildren
+  '/_authenticated/recompensas': typeof AuthenticatedRecompensasRoute
   '/_authenticated/analizar': typeof AuthenticatedAnalizarRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -149,7 +144,7 @@ export interface FileRoutesById {
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
   '/_authenticated/te': typeof AuthenticatedTeRoute
-  '/_authenticated/academia/read/$docId': typeof AuthenticatedAcademiaReadDocIdRoute
+
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -158,7 +153,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/academia'
+    | '/recompensas'
     | '/analizar'
     | '/compras'
     | '/ejercicios'
@@ -167,14 +162,14 @@ export interface FileRouteTypes {
     | '/plan'
     | '/progreso'
     | '/te'
-    | '/academia/read/$docId'
+
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/academia'
+    | '/recompensas'
     | '/analizar'
     | '/compras'
     | '/ejercicios'
@@ -183,7 +178,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/progreso'
     | '/te'
-    | '/academia/read/$docId'
+
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -191,7 +186,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
-    | '/_authenticated/academia'
+    | '/_authenticated/recompensas'
     | '/_authenticated/analizar'
     | '/_authenticated/compras'
     | '/_authenticated/ejercicios'
@@ -200,7 +195,7 @@ export interface FileRouteTypes {
     | '/_authenticated/plan'
     | '/_authenticated/progreso'
     | '/_authenticated/te'
-    | '/_authenticated/academia/read/$docId'
+
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -298,11 +293,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnalizarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/academia': {
-      id: '/_authenticated/academia'
-      path: '/academia'
-      fullPath: '/academia'
-      preLoaderRoute: typeof AuthenticatedAcademiaRouteImport
+    '/_authenticated/recompensas': {
+      id: '/_authenticated/recompensas'
+      path: '/recompensas'
+      fullPath: '/recompensas'
+      preLoaderRoute: typeof AuthenticatedRecompensasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/lovable/email/queue/process': {
@@ -312,31 +307,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/academia/read/$docId': {
-      id: '/_authenticated/academia/read/$docId'
-      path: '/read/$docId'
-      fullPath: '/academia/read/$docId'
-      preLoaderRoute: typeof AuthenticatedAcademiaReadDocIdRouteImport
-      parentRoute: typeof AuthenticatedAcademiaRoute
-    }
+
   }
 }
 
-interface AuthenticatedAcademiaRouteChildren {
-  AuthenticatedAcademiaReadDocIdRoute: typeof AuthenticatedAcademiaReadDocIdRoute
-}
 
-const AuthenticatedAcademiaRouteChildren: AuthenticatedAcademiaRouteChildren = {
-  AuthenticatedAcademiaReadDocIdRoute: AuthenticatedAcademiaReadDocIdRoute,
-}
-
-const AuthenticatedAcademiaRouteWithChildren =
-  AuthenticatedAcademiaRoute._addFileChildren(
-    AuthenticatedAcademiaRouteChildren,
-  )
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAcademiaRoute: typeof AuthenticatedAcademiaRouteWithChildren
+  AuthenticatedRecompensasRoute: typeof AuthenticatedRecompensasRoute
   AuthenticatedAnalizarRoute: typeof AuthenticatedAnalizarRoute
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
@@ -348,7 +326,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAcademiaRoute: AuthenticatedAcademiaRouteWithChildren,
+  AuthenticatedRecompensasRoute: AuthenticatedRecompensasRoute,
   AuthenticatedAnalizarRoute: AuthenticatedAnalizarRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,

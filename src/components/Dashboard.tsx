@@ -167,6 +167,48 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
     window.location.href = "/";
   };
 
+  // Calculate Unlocked Rewards for the Recompensas Button
+  const unlockedRewardsCount = useMemo(() => {
+    if (!allProgress) return 0;
+    
+    let streak = 0, maxStreak = 0;
+    let meals = 0, exercises = 0, teas = 0;
+    let prevDay = 0;
+    
+    for (const p of allProgress) {
+      meals += (p.breakfast_done ? 1 : 0) + (p.lunch_done ? 1 : 0) + (p.dinner_done ? 1 : 0);
+      if (p.exercise_done) exercises++;
+      if ((p.water_glasses || 0) > 0) teas++;
+
+      if (p.mission_done || p.exercise_done || p.breakfast_done || p.lunch_done || p.dinner_done || (p.water_glasses || 0) > 0) {
+        if (p.day_number === prevDay + 1 || prevDay === 0) streak++;
+        else streak = 1;
+        prevDay = p.day_number;
+        if (streak > maxStreak) maxStreak = streak;
+      } else {
+        streak = 0;
+      }
+    }
+    
+    const REWARDS = [
+      { type: "streak", target: 7 }, { type: "streak", target: 14 },
+      { type: "meals", target: 10 }, { type: "exercises", target: 5 },
+      { type: "plan", target: 50 }, { type: "plan", target: 100 },
+      { type: "teas", target: 14 }, { type: "plan", target: 100 } // Certificado y Campeón
+    ];
+    
+    let unlockedCount = 0;
+    for (const r of REWARDS) {
+      if (r.type === "streak" && maxStreak >= r.target) unlockedCount++;
+      if (r.type === "meals" && meals >= r.target) unlockedCount++;
+      if (r.type === "exercises" && exercises >= r.target) unlockedCount++;
+      if (r.type === "teas" && teas >= r.target) unlockedCount++;
+      if (r.type === "plan" && planPct >= r.target) unlockedCount++;
+    }
+    
+    return unlockedCount;
+  }, [allProgress, planPct]);
+
   return (
     <AppShell>
       {/* HEADER: Modern & Clean */}
@@ -441,7 +483,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           <MegaCard to="/ejercicios" image="/ejercicios_real.webp" title="Ejercicios" subtitle="Tu rutina diaria" />
           <MegaCard to="/compras" image="/compras_real.webp" title="Compras" subtitle="Por semana" />
           <MegaCard to="/te" image="/te_real.webp" title="Té del Día" subtitle={(progress?.water_glasses ?? 0) > 0 ? "Consumido" : "Pendiente"} />
-          <MegaCard to="/academia" image="https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=1000&auto=format&fit=crop" title="Academia" subtitle="Aprende hábitos" />
+          <MegaCard to="/recompensas" image="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1000&auto=format&fit=crop" title="Recompensas" subtitle={`${unlockedRewardsCount} de 8 desbloqueadas`} />
           <MegaCard to="/analizar" image="/calorias_ia_real.webp" title="Calorías IA" subtitle="Analizar comida" />
         </div>
       </section>
