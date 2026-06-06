@@ -99,8 +99,9 @@ function Landing() {
         {/* Full Screen Background Image */}
         <div className="absolute inset-0 z-0">
           <img 
-            src="/images/entrada.jpg" 
+            src="/images/entrada_optimized.webp" 
             alt="MiReto21 Entrada" 
+            fetchPriority="high"
             className="h-full w-full object-cover opacity-90"
           />
           {/* Gradient to make the bottom text readable */}
