@@ -483,7 +483,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           <MegaCard to="/ejercicios" image="/ejercicios_real.webp" title="Ejercicios" subtitle="Tu rutina diaria" />
           <MegaCard to="/compras" image="/compras_real.webp" title="Compras" subtitle="Por semana" />
           <MegaCard to="/te" image="/te_real.webp" title="Té del Día" subtitle={(progress?.water_glasses ?? 0) > 0 ? "Consumido" : "Pendiente"} />
-          <MegaCard to="/recompensas" image="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1000&auto=format&fit=crop" title="Recompensas" subtitle={`${unlockedRewardsCount} de 8 desbloqueadas`} />
+          <MegaCard to="/recompensas" image="/images/recipes/botao_recompensas.jpeg" title="Recompensas" subtitle={`${unlockedRewardsCount} de 8 desbloqueadas`} />
           <MegaCard to="/analizar" image="/calorias_ia_real.webp" title="Calorías IA" subtitle="Analizar comida" />
         </div>
       </section>
