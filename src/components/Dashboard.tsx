@@ -1,12 +1,10 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { Check, Sparkles, LogOut, Flame, Target, ChevronRight, Activity, Droplet, Dumbbell, Utensils, Plus } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Check, Sparkles, LogOut, Flame, Target, ChevronRight, Droplet, Dumbbell, Utensils, Lock, Gift, ArrowRight, Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
-import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, ReferenceLine } from "recharts";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import confetti from "canvas-confetti";
 
 type Profile = {
   display_name: string | null;
@@ -17,10 +15,21 @@ type Profile = {
   height_cm: number | null;
 };
 
+// Recompensa definition based on recompensas.tsx
+const REWARDS = [
+  { id: 1, name: "10 Recetas Express", type: "streak", target: 7 },
+  { id: 2, name: "Postres Saludables", type: "streak", target: 14 },
+  { id: 3, name: "Guía de Compras Inteligentes", type: "meals", target: 10 },
+  { id: 4, name: "Menú de Emergencia", type: "exercises", target: 5 },
+  { id: 5, name: "21 Recetas Premium Extra", type: "plan", target: 50 },
+  { id: 7, name: "Maestro del Té", type: "teas", target: 14 },
+  { id: 6, name: "Certificado Oficial MiReto21", type: "plan", target: 100 },
+  { id: 8, name: "Campeón MiReto21", type: "plan", target: 100 },
+];
+
 export function Dashboard({ userId, profile }: { userId: string; profile: Profile }) {
   const qc = useQueryClient();
-  const [weightInput, setWeightInput] = useState("");
-  const [isWeightModalOpen, setIsWeightModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const currentDay = useMemo(() => {
     if (!profile.plan_started_at) return 1;
@@ -30,7 +39,6 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
     return Math.min(21, Math.max(1, diff + 1));
   }, [profile.plan_started_at]);
 
-  // Fetch all progress for stats and chart
   const { data: allProgress } = useQuery({
     queryKey: ["daily_progress", userId],
     queryFn: async () => {
@@ -43,7 +51,9 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
     },
   });
 
-  const progress = allProgress?.find(p => p.day_number === currentDay);
+  const progress = allProgress?.find(p => p.day_number === currentDay) || { 
+    mission_done: false, exercise_done: false, breakfast_done: false, lunch_done: false, dinner_done: false, water_glasses: 0 
+  };
 
   const { data: dayData } = useQuery({
     queryKey: ["day", currentDay],
@@ -53,7 +63,6 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
     }
   });
 
-  // Mutations
   const upsertProgress = useMutation({
     mutationFn: async (patch: Record<string, unknown>) => {
       const { error } = await supabase.from("daily_progress").upsert(
@@ -76,457 +85,356 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
     onSuccess: () => qc.invalidateQueries({ queryKey: ["daily_progress", userId] }),
   });
 
-  const updateWeight = useMutation({
-    mutationFn: async (newWeight: number) => {
-      // 1. Update Profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ current_weight: newWeight })
-        .eq("id", userId);
-      if (profileError) throw profileError;
+  // Calculate stats & rewards
+  const { stats, planPct, remainingKg, firstLockedReward } = useMemo(() => {
+    let streak = 0, maxStreak = 0;
+    let meals = 0, exercises = 0, teas = 0;
+    let prevDay = 0;
 
-      // 2. Add to Daily Progress
-      const { error: progressError } = await supabase.from("daily_progress").upsert(
-        {
-          user_id: userId,
-          day_number: currentDay,
-          log_date: new Date().toISOString().slice(0, 10),
-          weight: newWeight,
-        },
-        { onConflict: "user_id,day_number" }
-      );
-      if (progressError) throw progressError;
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["daily_progress", userId] });
-      qc.invalidateQueries({ queryKey: ["profile"] }); // Assuming you have a profile query in the router
-      setIsWeightModalOpen(false);
-      setWeightInput("");
-    },
-  });
-
-  // Computations
-  const planPct = Math.round((currentDay / 21) * 100);
-  const firstName = profile.display_name?.split(" ")[0] ?? "Usuario";
-  const missionText = dayData?.mission?.replace(/^[^\w\s]+\s/, "") || "Cargando misión...";
-  
-  const lostKg = profile.start_weight && profile.current_weight
-    ? Math.max(0, profile.start_weight - profile.current_weight)
-    : 0;
-  
-  const remainingKg = profile.current_weight && profile.goal_weight
-    ? Math.max(0, profile.current_weight - profile.goal_weight)
-    : 0;
-
-  // Chart Data preparation
-  const chartData = useMemo(() => {
-    let data = [];
-    if (profile.start_weight) {
-      data.push({ name: "Inicio", peso: profile.start_weight });
-    }
     if (allProgress) {
-      const logs = allProgress.filter(p => p.weight !== null).map(p => ({
-        name: `Día ${p.day_number}`,
-        peso: p.weight
-      }));
-      data = [...data, ...logs];
-    }
-    return data;
-  }, [profile.start_weight, allProgress]);
+      for (const p of allProgress) {
+        meals += (p.breakfast_done ? 1 : 0) + (p.lunch_done ? 1 : 0) + (p.dinner_done ? 1 : 0);
+        if (p.exercise_done) exercises++;
+        if ((p.water_glasses || 0) > 0) teas++;
 
-  // BMI (IMC) Calculation
-  const imcData = useMemo(() => {
-    if (!profile.current_weight || !profile.height_cm) return null;
-    const heightM = profile.height_cm / 100;
-    const imc = profile.current_weight / (heightM * heightM);
-    let label = "";
-    let color = "";
-    
-    if (imc < 18.5) { label = "Bajo Peso"; color = "text-blue-400"; }
-    else if (imc >= 18.5 && imc < 24.9) { label = "Peso Normal"; color = "text-green-400"; }
-    else if (imc >= 25 && imc < 29.9) { label = "Sobrepeso"; color = "text-orange-400"; }
-    else { label = "Obesidad"; color = "text-red-400"; }
-    
-    return { value: imc.toFixed(1), label, color };
-  }, [profile.current_weight, profile.height_cm]);
-
-  // Quick Stats computations
-  const stats = useMemo(() => {
-    if (!allProgress || allProgress.length === 0) return { streak: 0, water: 0, exercise: 0, meals: 0 };
-    
-    let streak = 0;
-    for (let i = allProgress.length - 1; i >= 0; i--) {
-      const p = allProgress[i];
-      if (p.mission_done || p.exercise_done || p.breakfast_done) streak++;
-      else break;
+        if (p.mission_done || p.exercise_done || p.breakfast_done || p.lunch_done || p.dinner_done || (p.water_glasses || 0) > 0) {
+          if (p.day_number === prevDay + 1 || prevDay === 0) streak++;
+          else streak = 1;
+          prevDay = p.day_number;
+          if (streak > maxStreak) maxStreak = streak;
+        } else {
+          streak = 0;
+        }
+      }
     }
 
-    const totalDays = 21; // Sempre proporcional a 21 dias totais do desafio
-    const waterDays = allProgress.filter(p => (p.water_glasses ?? 0) >= 8).length;
-    const exerciseDays = allProgress.filter(p => p.exercise_done).length;
-    const mealsDays = allProgress.filter(p => p.breakfast_done && p.lunch_done && p.dinner_done).length;
+    const pct = Math.min(100, Math.round((currentDay / 21) * 100));
+    
+    // Evaluate Rewards
+    let unlockedCount = 0;
+    let nextReward = null;
+    
+    for (const r of REWARDS) {
+      let current = 0;
+      if (r.type === "streak") current = maxStreak;
+      if (r.type === "meals") current = meals;
+      if (r.type === "exercises") current = exercises;
+      if (r.type === "teas") current = teas;
+      if (r.type === "plan") current = pct;
+      
+      const isUnlocked = current >= r.target;
+      if (isUnlocked) {
+        unlockedCount++;
+      } else if (!nextReward) {
+        // Grab the first locked reward
+        const remaining = r.target - current;
+        let remainingText = "";
+        if (r.type === "streak") remainingText = `Faltan ${remaining} días`;
+        if (r.type === "meals") remainingText = `Faltan ${remaining} comidas`;
+        if (r.type === "exercises") remainingText = `Falta ${remaining} ejercicio${remaining > 1 ? 's' : ''}`;
+        if (r.type === "teas") remainingText = `Faltan ${remaining} tés`;
+        if (r.type === "plan") remainingText = `Falta ${remaining}% del plan`;
+        
+        nextReward = { ...r, remainingText, current, target: r.target };
+      }
+    }
+
+    const remKg = profile.current_weight && profile.goal_weight
+      ? Math.max(0, profile.current_weight - profile.goal_weight)
+      : 0;
 
     return {
-      streak,
-      water: Math.round((waterDays / totalDays) * 100) || 0,
-      exercise: Math.round((exerciseDays / totalDays) * 100) || 0,
-      meals: Math.round((mealsDays / totalDays) * 100) || 0,
+      stats: { streak: maxStreak, meals, exercises, teas, unlockedRewards: unlockedCount },
+      planPct: pct,
+      remainingKg: remKg,
+      firstLockedReward: nextReward
     };
-  }, [allProgress]);
+  }, [allProgress, currentDay, profile]);
 
-  // Circular Progress values
-  const radius = 38;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (planPct / 100) * circumference;
+  const firstName = profile.display_name?.split(" ")[0] ?? "Usuario";
+  const missionText = dayData?.mission?.replace(/^[^\w\s]+\s/, "") || "Cargando misión...";
+
+  // Dynamic CTA Hierarchy
+  const pendingCTA = useMemo(() => {
+    if (!progress.mission_done) {
+      return { 
+        title: "Misión del día pendiente", 
+        subtitle: "Hoy: " + (missionText.length > 25 ? missionText.substring(0, 25) + "..." : missionText),
+        icon: Sparkles, 
+        action: () => upsertProgress.mutate({ mission_done: true }), 
+        btnText: "Completar Misión",
+        color: "bg-amber-500",
+        lightBg: "bg-amber-50"
+      };
+    }
+    if ((progress.water_glasses || 0) === 0) {
+      return { 
+        title: "Té del día pendiente", 
+        subtitle: "Acelera tu metabolismo",
+        icon: Droplet, 
+        action: () => navigate({ to: "/te" }), 
+        btnText: "Preparar Té",
+        color: "bg-cyan-500",
+        lightBg: "bg-cyan-50"
+      };
+    }
+    if (!progress.breakfast_done || !progress.lunch_done || !progress.dinner_done) {
+      return { 
+        title: "Comidas pendientes", 
+        subtitle: "Sigue tu menú diario",
+        icon: Utensils, 
+        action: () => navigate({ to: "/plan" }), 
+        btnText: "Ver Menú",
+        color: "bg-green-500",
+        lightBg: "bg-green-50"
+      };
+    }
+    if (!progress.exercise_done) {
+      return { 
+        title: "Ejercicio pendiente", 
+        subtitle: "Apenas 20 minutos hoy",
+        icon: Dumbbell, 
+        action: () => navigate({ to: "/ejercicios" }), 
+        btnText: "Hacer Ejercicio",
+        color: "bg-indigo-500",
+        lightBg: "bg-indigo-50"
+      };
+    }
+    return { 
+      title: "¡Día completado! 🎉", 
+      subtitle: "Has hecho un trabajo increíble hoy.",
+      icon: Check, 
+      action: null, 
+      btnText: "¡Vuelve mañana!",
+      color: "bg-emerald-500",
+      lightBg: "bg-emerald-50",
+      isDone: true 
+    };
+  }, [progress, missionText, navigate, upsertProgress]);
+
+  const handleMissionComplete = () => {
+    upsertProgress.mutate({ mission_done: !progress.mission_done });
+    if (!progress.mission_done) {
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.href = "/";
   };
 
-  // Calculate Unlocked Rewards for the Recompensas Button
-  const unlockedRewardsCount = useMemo(() => {
-    if (!allProgress) return 0;
-    
-    let streak = 0, maxStreak = 0;
-    let meals = 0, exercises = 0, teas = 0;
-    let prevDay = 0;
-    
-    for (const p of allProgress) {
-      meals += (p.breakfast_done ? 1 : 0) + (p.lunch_done ? 1 : 0) + (p.dinner_done ? 1 : 0);
-      if (p.exercise_done) exercises++;
-      if ((p.water_glasses || 0) > 0) teas++;
-
-      if (p.mission_done || p.exercise_done || p.breakfast_done || p.lunch_done || p.dinner_done || (p.water_glasses || 0) > 0) {
-        if (p.day_number === prevDay + 1 || prevDay === 0) streak++;
-        else streak = 1;
-        prevDay = p.day_number;
-        if (streak > maxStreak) maxStreak = streak;
-      } else {
-        streak = 0;
-      }
-    }
-    
-    const REWARDS = [
-      { type: "streak", target: 7 }, { type: "streak", target: 14 },
-      { type: "meals", target: 10 }, { type: "exercises", target: 5 },
-      { type: "plan", target: 50 }, { type: "plan", target: 100 },
-      { type: "teas", target: 14 }, { type: "plan", target: 100 } // Certificado y Campeón
-    ];
-    
-    let unlockedCount = 0;
-    for (const r of REWARDS) {
-      if (r.type === "streak" && maxStreak >= r.target) unlockedCount++;
-      if (r.type === "meals" && meals >= r.target) unlockedCount++;
-      if (r.type === "exercises" && exercises >= r.target) unlockedCount++;
-      if (r.type === "teas" && teas >= r.target) unlockedCount++;
-      if (r.type === "plan" && planPct >= r.target) unlockedCount++;
-    }
-    
-    return unlockedCount;
-  }, [allProgress, planPct]);
-
   return (
     <AppShell>
-      {/* HEADER: Modern & Clean */}
-      <header className="px-5 pt-10 pb-2 flex items-center justify-between bg-background z-10 sticky top-0 bg-opacity-90 backdrop-blur-md">
+      {/* 1. HEADER */}
+      <header className="px-5 pt-10 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-tr from-primary to-green-400 text-white shadow-sm ring-2 ring-background">
+          <div className="grid h-12 w-12 place-items-center rounded-full bg-slate-900 text-white shadow-md border-2 border-primary/20">
             <span className="text-base font-bold">{firstName[0].toUpperCase()}</span>
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Bienvenido de vuelta</p>
-            <p className="text-xl font-display font-extrabold text-foreground leading-tight">{firstName} 👋</p>
+            <p className="text-sm font-medium text-muted-foreground">Bienvenido de vuelta,</p>
+            <p className="text-2xl font-display font-extrabold text-foreground leading-tight">{firstName}</p>
           </div>
         </div>
-        <button onClick={handleLogout} className="grid h-10 w-10 place-items-center rounded-full bg-secondary/50 text-foreground transition-transform active:scale-95" title="Cerrar Sesión">
-          <LogOut className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <Link to="/progreso" className="grid h-10 w-10 place-items-center rounded-full bg-secondary/80 text-foreground transition-transform active:scale-95" title="Mi Progreso">
+            <Activity className="h-4 w-4" />
+          </Link>
+          <button onClick={handleLogout} className="grid h-10 w-10 place-items-center rounded-full bg-secondary/80 text-foreground transition-transform active:scale-95" title="Cerrar Sesión">
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </header>
 
-      {/* HORIZONTAL DAY NAV */}
-      <section className="mt-4 px-5">
-        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide snap-x">
-          {Array.from({ length: 21 }).map((_, i) => {
-            const dayNum = i + 1;
-            const isPast = dayNum < currentDay;
-            const isCurrent = dayNum === currentDay;
-            const pd = allProgress?.find(p => p.day_number === dayNum);
-            const isSuccess = pd?.mission_done || pd?.exercise_done;
-
-            return (
-              <div 
-                key={dayNum} 
-                className={`snap-center shrink-0 flex flex-col items-center justify-center w-14 h-16 rounded-2xl border transition-all ${
-                  isCurrent 
-                    ? "bg-primary border-primary text-white shadow-md transform scale-105" 
-                    : isPast 
-                      ? "bg-white border-border/60 text-muted-foreground" 
-                      : "bg-background border-dashed border-border/50 text-muted-foreground opacity-50"
-                }`}
-              >
-                <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">Día</span>
-                <span className="text-lg font-display font-bold leading-none mt-0.5">{dayNum}</span>
-                {isPast && isSuccess && (
-                  <div className="absolute -bottom-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white grid place-items-center">
-                    <Check className="h-2 w-2 text-white" strokeWidth={4} />
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* MAIN PROGRESS DASHBOARD */}
+      {/* 2. HERO DE PROGRESSO */}
       <section className="px-5 mt-2">
-        <div className="rounded-[2rem] bg-slate-900 text-white p-6 shadow-xl relative overflow-hidden group">
-          {/* Decorative background glow */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary rounded-full mix-blend-screen filter blur-[80px] opacity-40 group-hover:opacity-60 transition-opacity duration-700" />
-          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-500 rounded-full mix-blend-screen filter blur-[80px] opacity-20" />
+        <div className="rounded-[2rem] bg-gradient-to-br from-slate-900 to-slate-800 p-6 shadow-xl relative overflow-hidden">
+          {/* Decoraciones */}
+          <div className="absolute -top-12 -right-12 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl" />
           
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">Objetivo 21 Días</p>
-              <h2 className="mt-1 font-display text-3xl font-extrabold leading-tight">Tu Progreso</h2>
-              <div className="mt-3 flex items-center gap-2">
-                <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-md border border-white/5">
-                  <Flame className="h-3.5 w-3.5 text-orange-400" />
-                  <span className="text-xs font-bold text-white/90">-{lostKg.toFixed(1)} kg</span>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-md border border-white/5">
-                  <Target className="h-3.5 w-3.5 text-blue-400" />
-                  <span className="text-xs font-bold text-white/90">{remainingKg.toFixed(1)} kg left</span>
-                </div>
-              </div>
+          <div className="relative z-10 flex justify-between items-end mb-4">
+            <div>
+              <p className="text-emerald-400 font-bold uppercase tracking-widest text-xs mb-1">Tu Jornada</p>
+              <h2 className="text-white font-display text-4xl font-black">Día {currentDay} <span className="text-white/50 text-2xl font-medium">/ 21</span></h2>
             </div>
-            
-            {/* Circular Progress */}
-            <div className="relative w-[100px] h-[100px] shrink-0 drop-shadow-lg">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r={radius} stroke="rgba(255,255,255,0.1)" strokeWidth="10" fill="none" />
-                <circle
-                  cx="50" cy="50" r={radius} 
-                  stroke="currentColor" 
-                  strokeWidth="10" 
-                  fill="none"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round"
-                  className="text-emerald-400 transition-all duration-1000 ease-out"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-display font-black leading-none">{planPct}%</span>
-              </div>
+            <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md">
+              <Flame className="h-4 w-4 text-orange-400" />
+              <span className="text-white font-bold text-sm">{stats.streak} días</span>
             </div>
           </div>
 
-          <div className="mt-8 border-t border-white/10 pt-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold text-white/80 flex items-center gap-2">
-                <Activity className="h-4 w-4 text-emerald-400" /> Evolución de Peso
-              </h3>
-              
-              <Dialog open={isWeightModalOpen} onOpenChange={setIsWeightModalOpen}>
-                <DialogTrigger asChild>
-                  <button className="flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full hover:bg-emerald-400/20 transition-colors">
-                    <Plus className="h-3 w-3" /> Actualizar
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md rounded-[2rem] p-6 border-0 shadow-2xl">
-                  <DialogHeader>
-                    <DialogTitle className="font-display text-2xl">Registrar Peso</DialogTitle>
-                    <p className="text-sm text-muted-foreground mt-1">Ingresa tu peso actual para actualizar tu gráfico de progreso.</p>
-                  </DialogHeader>
-                  <div className="my-6">
-                    <div className="relative">
-                      <Input
-                        type="number"
-                        placeholder="00.0"
-                        value={weightInput}
-                        onChange={(e) => setWeightInput(e.target.value)}
-                        className="text-center font-display text-4xl h-20 rounded-2xl bg-secondary/30 border-0 focus-visible:ring-primary focus-visible:ring-2"
-                      />
-                      <span className="absolute right-6 top-1/2 -translate-y-1/2 font-bold text-muted-foreground">kg</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <DialogClose asChild>
-                      <button className="flex-1 rounded-xl bg-secondary py-3.5 font-bold text-foreground">Cancelar</button>
-                    </DialogClose>
-                    <button
-                      disabled={!weightInput || updateWeight.isPending}
-                      onClick={() => updateWeight.mutate(parseFloat(weightInput))}
-                      className="flex-1 rounded-xl bg-primary py-3.5 font-bold text-white shadow-lg shadow-primary/30 disabled:opacity-50 transition-active"
-                    >
-                      {updateWeight.isPending ? "Guardando..." : "Guardar Peso"}
-                    </button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+          <div className="relative z-10 mb-5">
+            <div className="flex justify-between text-xs font-bold text-white/70 mb-2">
+              <span>Progreso del plan</span>
+              <span>{planPct}%</span>
             </div>
+            <div className="h-3 w-full bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+              <div 
+                className="h-full bg-emerald-400 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${planPct}%` }}
+              />
+            </div>
+          </div>
 
-            {/* WEIGHT CHART */}
-            <div className="h-[120px] w-full">
-              {chartData.length > 1 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 15, right: 0, left: 0, bottom: 5 }}>
-                    <defs>
-                      <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#34d399" stopOpacity={0.5}/>
-                        <stop offset="95%" stopColor="#34d399" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <YAxis domain={['dataMin - 1.5', 'dataMax + 1.5']} hide />
-                    <RechartsTooltip 
-                      contentStyle={{ borderRadius: '12px', border: 'none', background: 'rgba(15, 23, 42, 0.9)', color: '#fff', fontWeight: 'bold' }}
-                      itemStyle={{ color: '#34d399' }}
-                    />
-                    {profile.goal_weight && (
-                      <ReferenceLine 
-                        y={profile.goal_weight} 
-                        stroke="#3b82f6" 
-                        strokeDasharray="4 4" 
-                        strokeWidth={1.5}
-                        label={{ position: 'insideTopLeft', value: 'Meta', fill: '#60a5fa', fontSize: 10, fontWeight: 'bold' }} 
-                      />
-                    )}
-                    <Area 
-                      type="monotone" 
-                      dataKey="peso" 
-                      stroke="#34d399" 
-                      strokeWidth={3}
-                      fillOpacity={1} 
-                      fill="url(#colorWeight)"
-                      activeDot={{ r: 6, strokeWidth: 0, fill: '#34d399' }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full w-full flex items-center justify-center border-2 border-dashed border-white/10 rounded-2xl">
-                  <p className="text-xs font-semibold text-white/50 text-center">
-                    Actualiza tu peso para<br/>ver tu curva de progreso.
-                  </p>
-                </div>
-              )}
-            </div>
-            
-            {/* WEIGHT STATS ROW */}
-            <div className="mt-4 flex justify-between px-2 items-center">
-              <div className="text-left w-1/3">
-                <p className="text-[10px] uppercase font-bold text-white/50 tracking-wider">Inicial</p>
-                <p className="text-lg font-bold leading-tight">{profile.start_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
-              </div>
-              <div className="text-center w-1/3 border-x border-white/10 flex flex-col items-center">
-                {imcData ? (
-                  <>
-                    <p className="text-[10px] uppercase font-bold text-white/50 tracking-wider">IMC</p>
-                    <p className={`text-lg font-black leading-tight ${imcData.color}`}>{imcData.value}</p>
-                    <div className={`mt-0.5 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-white/5 ${imcData.color}`}>
-                      {imcData.label}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Actual</p>
-                    <p className="text-xl font-bold text-white leading-tight">{profile.current_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
-                  </>
-                )}
-              </div>
-              <div className="text-right w-1/3">
-                <p className="text-[10px] uppercase font-bold text-white/50 tracking-wider">Meta</p>
-                <p className="text-lg font-bold leading-tight">{profile.goal_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
-              </div>
-            </div>
+          <div className="relative z-10 pt-4 border-t border-white/10">
+            <p className="text-white/90 text-sm font-medium flex items-center gap-2">
+              <Target className="h-4 w-4 text-blue-400" /> 
+              {remainingKg > 0 
+                ? `¡Excelente progreso! Te faltan ${remainingKg.toFixed(1)} kg para tu meta.` 
+                : "¡Has alcanzado tu meta de peso! Sigue así."}
+            </p>
           </div>
         </div>
       </section>
 
-      {/* QUICK STATS (GLASSMORPHISM) */}
-      <section className="px-5 mt-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-[1.5rem] bg-white border border-border/40 p-4 shadow-sm flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-orange-100 text-orange-500 grid place-items-center shrink-0">
-              <Flame className="h-5 w-5" />
+      {/* 3. CARD CONTINUAR MI DÍA (Main CTA) */}
+      <section className="px-5 mt-6">
+        <h3 className="text-sm font-bold text-foreground mb-3 px-1">Continuar Mi Día</h3>
+        <div className={`rounded-[1.5rem] border p-5 transition-all shadow-sm flex items-center justify-between ${pendingCTA.lightBg} border-${pendingCTA.color.replace('bg-', '')}/20`}>
+          <div className="flex items-center gap-4">
+            <div className={`h-12 w-12 rounded-2xl grid place-items-center text-white ${pendingCTA.color} shadow-lg`}>
+              <pendingCTA.icon className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Racha</p>
-              <p className="text-xl font-display font-black leading-none text-foreground">{stats.streak} <span className="text-sm font-bold text-muted-foreground">días</span></p>
+              <h4 className="font-display font-bold text-[17px] text-foreground leading-tight">{pendingCTA.title}</h4>
+              <p className="text-sm text-muted-foreground font-medium mt-0.5">{pendingCTA.subtitle}</p>
             </div>
           </div>
-          
-          <div className="rounded-[1.5rem] bg-white border border-border/40 p-4 shadow-sm flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-cyan-100 text-cyan-500 grid place-items-center shrink-0">
-              <span className="text-xl">🍵</span>
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Té</p>
-              <p className="text-xl font-display font-black leading-none text-foreground">{stats.water}<span className="text-sm font-bold text-muted-foreground">%</span></p>
-            </div>
-          </div>
-          
-          <div className="rounded-[1.5rem] bg-white border border-border/40 p-4 shadow-sm flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-indigo-100 text-indigo-500 grid place-items-center shrink-0">
-              <Dumbbell className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Treino</p>
-              <p className="text-xl font-display font-black leading-none text-foreground">{stats.exercise}<span className="text-sm font-bold text-muted-foreground">%</span></p>
-            </div>
-          </div>
-
-          <div className="rounded-[1.5rem] bg-white border border-border/40 p-4 shadow-sm flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-green-100 text-green-500 grid place-items-center shrink-0">
-              <Utensils className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Dieta</p>
-              <p className="text-xl font-display font-black leading-none text-foreground">{stats.meals}<span className="text-sm font-bold text-muted-foreground">%</span></p>
-            </div>
-          </div>
+          {pendingCTA.action && (
+            <button 
+              onClick={pendingCTA.action}
+              className={`h-10 px-4 rounded-full font-bold text-white flex items-center gap-1.5 shadow-md active:scale-95 transition-transform ${pendingCTA.color}`}
+            >
+              {pendingCTA.btnText}
+            </button>
+          )}
         </div>
       </section>
 
-      {/* MISSION CARD (Refined) */}
-      <section className="mt-5 px-5">
-        <div className="flex items-center justify-between mb-3 px-1">
-          <h3 className="text-sm font-bold text-foreground">Tu Misión de Hoy</h3>
-        </div>
+      {/* 4. MISIÓN DE HOY */}
+      <section className="px-5 mt-6">
+        <h3 className="text-sm font-bold text-foreground mb-3 px-1">Misión de Hoy</h3>
         <button
-          onClick={() => upsertProgress.mutate({ mission_done: !progress?.mission_done })}
-          className={`relative w-full overflow-hidden rounded-[1.5rem] border ${progress?.mission_done ? 'border-primary/30 bg-primary/5' : 'border-border/50 bg-white'} p-5 text-left shadow-sm transition-all duration-300 active:scale-[0.98] group`}
+          onClick={handleMissionComplete}
+          className={`w-full rounded-[1.5rem] border p-4 text-left shadow-sm transition-all duration-300 active:scale-[0.98] ${
+            progress.mission_done 
+              ? 'bg-emerald-50 border-emerald-200' 
+              : 'bg-white border-border/60 hover:border-border'
+          }`}
         >
           <div className="flex items-center gap-4">
-            <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl transition-colors ${progress?.mission_done ? "bg-primary text-white" : "bg-secondary/20 text-primary"}`}>
-              <Sparkles className="h-6 w-6" />
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className={`text-[15px] font-bold leading-snug transition-colors ${progress?.mission_done ? "text-primary line-through opacity-80" : "text-foreground group-hover:text-primary"}`}>
-                {missionText}
-              </p>
+            <div className={`grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 transition-all ${
+              progress.mission_done 
+                ? "border-emerald-500 bg-emerald-500 text-white" 
+                : "border-muted-foreground/30 bg-transparent"
+            }`}>
+              {progress.mission_done && <Check className="h-4 w-4" strokeWidth={3} />}
             </div>
-            <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border-2 transition-all ${progress?.mission_done ? "border-primary bg-primary text-white scale-110" : "border-border bg-background"}`}>
-              {progress?.mission_done && <Check className="h-4 w-4" strokeWidth={3} />}
-            </span>
+            <div className="flex-1 min-w-0">
+              {progress.mission_done ? (
+                <p className="text-[15px] font-bold text-emerald-700">✓ Misión completada.</p>
+              ) : (
+                <p className="text-[15px] font-bold text-foreground leading-snug">{missionText}</p>
+              )}
+            </div>
           </div>
         </button>
       </section>
 
-      {/* MEGA GRID */}
-      <section className="mt-8 px-5 mb-8">
-        <div className="flex items-center justify-between mb-3 px-1">
-          <h3 className="text-sm font-bold text-foreground">Acciones Rápidas</h3>
-        </div>
+      {/* 5. GRADE DE FUNCIONALIDADES */}
+      <section className="px-5 mt-8">
+        <h3 className="text-sm font-bold text-foreground mb-3 px-1">Explorar</h3>
         <div className="grid grid-cols-2 gap-3">
           <MegaCard to="/plan" image="/mi_plan_real.webp" title="Mi Plan" subtitle="Opciones de hoy" />
-          <MegaCard to="/ejercicios" image="/ejercicios_real.webp" title="Ejercicios" subtitle="Tu rutina diaria" />
-          <MegaCard to="/compras" image="/compras_real.webp" title="Compras" subtitle="Por semana" />
-          <MegaCard to="/te" image="/te_real.webp" title="Té del Día" subtitle={(progress?.water_glasses ?? 0) > 0 ? "Consumido" : "Pendiente"} />
-          <MegaCard to="/recompensas" image="/images/recipes/botao_recompensas.jpeg" title="Recompensas" subtitle={`${unlockedRewardsCount} de 8 desbloqueadas`} />
-          <MegaCard to="/analizar" image="/calorias_ia_real.webp" title="Calorías IA" subtitle="Analizar comida" />
+          <MegaCard to="/ejercicios" image="/ejercicios_real.webp" title="Ejercicios" subtitle="Rutina diaria" />
+          <MegaCard to="/compras" image="/compras_real.webp" title="Compras" subtitle="Lista semanal" />
+          <MegaCard to="/te" image="/te_real.webp" title="Té del Día" subtitle="Infusiones" />
+          <MegaCard to="/recompensas" image="/images/recipes/botao_recompensas.jpeg" title="Recompensas" subtitle="Premios" />
+          
+          <Link to="/analizar" className="group relative flex flex-col overflow-hidden rounded-[1.5rem] bg-white shadow-sm border border-border/40" style={{ minHeight: '140px' }}>
+            <div className="absolute inset-0 z-0">
+              <img src="/calorias_ia_real.webp" alt="Calorías IA" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10" />
+            </div>
+            {/* VIP BADGE */}
+            <div className="absolute top-3 right-3 z-20 bg-gradient-to-r from-amber-200 to-yellow-400 text-yellow-900 text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-md shadow-lg flex items-center gap-1">
+              <Lock className="h-2.5 w-2.5" /> ⭐ Premium
+            </div>
+            <div className="relative z-10 mt-auto p-4">
+              <p className="text-white font-display text-xl font-black leading-tight drop-shadow-md">Calorías IA</p>
+              <p className="text-white/80 text-[10px] font-bold uppercase tracking-wider mt-0.5">Analizar comida</p>
+            </div>
+          </Link>
         </div>
       </section>
+
+      {/* 6. MÉTRICAS GAMIFICADAS */}
+      <section className="px-5 mt-8">
+        <h3 className="text-sm font-bold text-foreground mb-3 px-1">Tus Logros</h3>
+        <div className="grid grid-cols-4 gap-2">
+          <div className="rounded-2xl bg-white border border-border/50 p-3 text-center shadow-sm flex flex-col items-center">
+            <div className="h-8 w-8 rounded-full bg-orange-100 text-orange-500 grid place-items-center mb-1">
+              <Flame className="h-4 w-4" />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Racha</p>
+            <p className="text-sm font-black text-foreground">{stats.streak} <span className="text-[9px] font-medium text-muted-foreground">d.</span></p>
+          </div>
+          <div className="rounded-2xl bg-white border border-border/50 p-3 text-center shadow-sm flex flex-col items-center">
+            <div className="h-8 w-8 rounded-full bg-indigo-100 text-indigo-500 grid place-items-center mb-1">
+              <Dumbbell className="h-4 w-4" />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Treino</p>
+            <p className="text-sm font-black text-foreground">{stats.exercises}<span className="text-[9px] font-medium text-muted-foreground">/21</span></p>
+          </div>
+          <div className="rounded-2xl bg-white border border-border/50 p-3 text-center shadow-sm flex flex-col items-center">
+            <div className="h-8 w-8 rounded-full bg-cyan-100 text-cyan-500 grid place-items-center mb-1">
+              <Droplet className="h-4 w-4" />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Té</p>
+            <p className="text-sm font-black text-foreground">{stats.teas}<span className="text-[9px] font-medium text-muted-foreground">/21</span></p>
+          </div>
+          <div className="rounded-2xl bg-white border border-border/50 p-3 text-center shadow-sm flex flex-col items-center">
+            <div className="h-8 w-8 rounded-full bg-yellow-100 text-yellow-600 grid place-items-center mb-1">
+              <Gift className="h-4 w-4" />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Premios</p>
+            <p className="text-sm font-black text-foreground">{stats.unlockedRewards}<span className="text-[9px] font-medium text-muted-foreground">/8</span></p>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. PRÓXIMA RECOMPENSA */}
+      {firstLockedReward && (
+        <section className="px-5 mt-8 mb-10">
+          <div className="rounded-[1.5rem] border border-border bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 p-5 shadow-sm">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-500 mb-1 flex items-center gap-1">
+                  <Gift className="h-3 w-3" /> Próxima recompensa
+                </p>
+                <h4 className="font-display font-bold text-lg text-foreground">{firstLockedReward.name}</h4>
+                <p className="text-sm text-muted-foreground font-medium mt-1">{firstLockedReward.remainingText}</p>
+              </div>
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white dark:bg-black shadow-sm text-indigo-500 border border-indigo-100 dark:border-indigo-900">
+                <Lock className="h-5 w-5" />
+              </div>
+            </div>
+            
+            <div className="mt-4 h-2 w-full bg-indigo-100 dark:bg-indigo-950 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-indigo-500 rounded-full" 
+                style={{ width: `${Math.min(100, (firstLockedReward.current / firstLockedReward.target) * 100)}%` }} 
+              />
+            </div>
+            
+            <Link to="/recompensas" className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white dark:bg-secondary py-3 text-sm font-bold text-foreground shadow-sm border border-border transition-colors hover:bg-muted">
+              Ver recompensas <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+      )}
 
       <div className="h-10" />
     </AppShell>
@@ -540,20 +448,15 @@ function MegaCard({
     <Link
       to={to}
       className="group relative flex flex-col overflow-hidden rounded-[1.5rem] bg-white shadow-sm transition-all duration-300 hover:shadow-md active:scale-[0.98] border border-border/40"
-      style={{ minHeight: '130px' }}
+      style={{ minHeight: '140px' }}
     >
       <div className="absolute inset-0 z-0">
         <img src={image} alt={title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       </div>
-      <div className="relative z-10 mt-auto p-4 flex justify-between items-end">
-        <div>
-          <p className="text-white font-display text-lg font-bold leading-tight">{title}</p>
-          <p className="text-white/80 text-[10px] font-semibold uppercase tracking-wider">{subtitle}</p>
-        </div>
-        <div className="h-6 w-6 rounded-full bg-white/20 backdrop-blur-md grid place-items-center text-white">
-          <ChevronRight className="h-3 w-3" />
-        </div>
+      <div className="relative z-10 mt-auto p-4">
+        <p className="text-white font-display text-xl font-black leading-tight drop-shadow-md">{title}</p>
+        <p className="text-white/80 text-[10px] font-bold uppercase tracking-wider mt-0.5">{subtitle}</p>
       </div>
     </Link>
   );
