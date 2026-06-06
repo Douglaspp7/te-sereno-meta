@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, CheckCircle2, Leaf, Droplet, Flame, Coffee, Check, Heart } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Leaf, Droplet, Flame, Coffee, Check, Heart, PlayCircle, Lock } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import confetti from "canvas-confetti";
 import { teas, TeaCategory } from "@/data/teas";
 
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/te")({
 function TeDelDiaPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [isDone, setIsDone] = useState(false);
+  const timelineRef = useRef<HTMLDivElement>(null);
   
   // Obter usuário logado
   const { data: user } = useQuery({
@@ -25,65 +25,84 @@ function TeDelDiaPage() {
     },
   });
 
-  // Obter dia atual
-  const { data: profile } = useQuery({
-    queryKey: ["profile", user?.id],
-    enabled: !!user?.id,
-    queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user!.id).single();
-      if (error) throw error;
-      return data;
-    },
-  });
+  const getLocalDateString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  const currentLogDate = getLocalDateString();
 
-  const startDate = profile?.start_date ? new Date(profile.start_date) : new Date();
-  const daysSinceStart = Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-  const currentDayNum = Math.max(1, daysSinceStart);
-  const currentLogDate = new Date().toISOString().split("T")[0];
-
-  // Obter progresso de hoje
-  const { data: progress, isLoading: isProgressLoading } = useQuery({
-    queryKey: ["daily_progress", user?.id, currentDayNum, currentLogDate],
-    enabled: !!user?.id && !!currentDayNum,
+  // Fetch ALL Daily Progress
+  const { data: allProgress, isLoading: isLoadingProgress } = useQuery({
+    queryKey: ["all_daily_progress", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("daily_progress")
-        .select("*")
-        .eq("user_id", user!.id)
-        .eq("day_number", currentDayNum)
-        .eq("log_date", currentLogDate)
-        .maybeSingle();
-      
+        .select("id, day_number, water_glasses")
+        .eq("user_id", user?.id || "");
+
       if (error) throw error;
-      return data;
+      return data || [];
     },
+    enabled: !!user?.id,
   });
 
+  // Calcular dia desbloqueado
+  const unlockedDay = useMemo(() => {
+    if (!allProgress || allProgress.length === 0) return 1;
+    const completedDays = allProgress.filter(p => (p.water_glasses || 0) > 0).map(p => p.day_number || 1);
+    if (completedDays.length === 0) return 1;
+    return Math.min(21, Math.max(...completedDays) + 1);
+  }, [allProgress]);
+
+  const [selectedDayNum, setSelectedDayNum] = useState<number>(1);
+
+  // Sync automatically to the highest unlocked day when loaded or updated
   useEffect(() => {
-    if (progress) {
-      setIsDone((progress.water_glasses || 0) > 0);
+    if (unlockedDay > selectedDayNum) {
+      setSelectedDayNum(unlockedDay);
     }
-  }, [progress]);
+  }, [unlockedDay]);
+
+  const currentProgress = allProgress?.find(p => p.day_number === selectedDayNum);
+  const isDone = (currentProgress?.water_glasses || 0) > 0;
+
+  // Auto-scroll timeline to active day
+  useEffect(() => {
+    if (!isLoadingProgress && timelineRef.current) {
+      setTimeout(() => {
+        if (!timelineRef.current) return;
+        const activeElement = timelineRef.current.children[selectedDayNum - 1] as HTMLElement;
+        if (activeElement) {
+          const container = timelineRef.current;
+          const scrollLeft = activeElement.offsetLeft - container.offsetWidth / 2 + activeElement.offsetWidth / 2;
+          container.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [selectedDayNum, isLoadingProgress]);
 
   const upsertProgress = useMutation({
     mutationFn: async (newValue: boolean) => {
       const { error } = await supabase.from("daily_progress").upsert({
         user_id: user?.id || "",
-        day_number: currentDayNum,
+        day_number: selectedDayNum,
         log_date: currentLogDate,
         water_glasses: newValue ? 1 : 0, // Reuse water_glasses for tea
-        ...(progress?.id ? { id: progress.id } : {})
+        ...(currentProgress?.id ? { id: currentProgress.id } : {})
       });
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all_daily_progress", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["daily_progress"] });
     },
   });
 
   const handleComplete = () => {
     const newValue = !isDone;
-    setIsDone(newValue);
     upsertProgress.mutate(newValue);
     if (newValue) {
       confetti({
@@ -95,7 +114,7 @@ function TeDelDiaPage() {
     }
   };
 
-  const tea = teas.find(t => t.day === currentDayNum) || teas[0];
+  const tea = teas.find(t => t.day === selectedDayNum) || teas[0];
 
   const categoryIcons: Record<TeaCategory, React.ReactNode> = {
     'Energía': <Flame className="h-5 w-5 text-orange-500" />,
@@ -104,7 +123,7 @@ function TeDelDiaPage() {
     'Bienestar': <Droplet className="h-5 w-5 text-cyan-500" />
   };
 
-  if (!user || isProgressLoading) {
+  if (!user || isLoadingProgress) {
     return <div className="min-h-screen bg-background flex items-center justify-center">Cargando...</div>;
   }
 
@@ -123,11 +142,11 @@ function TeDelDiaPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80" />
         <button 
           onClick={() => navigate({ to: "/" })}
-          className="absolute top-6 left-4 h-12 w-12 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all"
+          className="absolute top-6 left-4 h-12 w-12 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all z-10"
         >
           <ArrowLeft className="h-6 w-6" />
         </button>
-        <button className="absolute top-6 right-4 h-12 w-12 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all">
+        <button className="absolute top-6 right-4 h-12 w-12 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all z-10">
           <Heart className="h-5 w-5" />
         </button>
         <div className="absolute bottom-6 left-6 right-6">
@@ -180,7 +199,7 @@ function TeDelDiaPage() {
             "Guardando..."
           ) : isDone ? (
             <>
-              <Check className="h-5 w-5" strokeWidth={3} /> Té consumido hoy
+              <Check className="h-5 w-5" strokeWidth={3} /> Té consumido
             </>
           ) : (
             "Marcar como consumido"
@@ -254,18 +273,44 @@ function TeDelDiaPage() {
           </div>
         </div>
 
-        {/* Explorar Tés */}
+        {/* 21 Days Timeline */}
         <div className="pt-6 border-t border-border">
-          <h3 className="font-display font-bold text-xl mb-4 text-foreground">Explorar Tés</h3>
-          <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x">
-            {['Energía', 'Digestión', 'Relajación', 'Bienestar'].map((cat) => (
-              <div key={cat} className="shrink-0 snap-start bg-card border border-border rounded-2xl p-4 w-32 flex flex-col items-center justify-center text-center shadow-sm">
-                <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center mb-2">
-                  {categoryIcons[cat as TeaCategory]}
+          <h4 className="font-display font-bold text-lg mb-4 text-foreground flex items-center justify-between">
+            <span>Tu Ruta de Tés</span>
+            <span className="text-sm font-normal text-muted-foreground">{selectedDayNum}/21</span>
+          </h4>
+          <div ref={timelineRef} className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {Array.from({ length: 21 }, (_, i) => i + 1).map((d) => {
+              const isPast = d < unlockedDay;
+              const isCurrent = d === selectedDayNum;
+              const isLocked = d > unlockedDay;
+              
+              return (
+                <div 
+                  key={d} 
+                  onClick={() => {
+                    if (!isLocked) setSelectedDayNum(d);
+                  }}
+                  className={`shrink-0 w-20 h-24 rounded-2xl flex flex-col items-center justify-center snap-center border transition-all ${
+                    !isLocked ? 'cursor-pointer hover:bg-secondary/80' : ''
+                  } ${
+                    isCurrent 
+                      ? 'bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105 hover:bg-primary/90' 
+                      : isPast 
+                        ? 'bg-secondary/50 border-border text-foreground' 
+                        : 'bg-secondary/20 border-border/50 text-muted-foreground opacity-60'
+                  }`}
+                >
+                  <span className="text-xs font-medium mb-1 opacity-80">Día</span>
+                  <span className={`text-2xl font-black ${isLocked ? 'opacity-50' : ''}`}>{d}</span>
+                  <div className="mt-2">
+                    {isCurrent && <PlayCircle className="h-5 w-5 fill-white text-primary" />}
+                    {isPast && <CheckCircle2 className="h-5 w-5 text-green-500" />}
+                    {isLocked && <Lock className="h-4 w-4 opacity-50" />}
+                  </div>
                 </div>
-                <span className="text-xs font-bold text-foreground">{cat}</span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
