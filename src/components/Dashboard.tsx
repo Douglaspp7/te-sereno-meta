@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Check, Sparkles, LogOut, Flame, Target, ChevronRight, Droplet, Dumbbell, Utensils, Lock, Gift, ArrowRight, Camera, Activity, FileText, RotateCcw } from "lucide-react";
+import { Check, Sparkles, LogOut, Flame, Target, ChevronRight, Droplet, Dumbbell, Utensils, Lock, Gift, ArrowRight, Camera, Activity, FileText, RotateCcw, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
 import confetti from "canvas-confetti";
@@ -14,6 +14,8 @@ type Profile = {
   goal_weight: number | null;
   plan_started_at: string | null;
   height_cm: number | null;
+  subscription_status?: string | null;
+  subscription_plan?: string | null;
 };
 
 // Recompensa definition based on recompensas.tsx
@@ -223,6 +225,15 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
     window.location.href = "/";
   };
 
+  const handleReset = async () => {
+    if (confirm("¿Estás seguro de reiniciar todo tu progreso diario?")) {
+      await supabase.from("daily_progress").delete().eq("user_id", userId);
+      await supabase.from("profiles").update({ plan_started_at: new Date().toISOString() }).eq("id", userId);
+      qc.invalidateQueries();
+      window.location.reload();
+    }
+  };
+
   // Dynamic Texts
   const heroMotivationalMessage = useMemo(() => {
     if (currentDay >= 21) return "🎉 ¡Lo lograste! Has completado el reto.";
@@ -261,9 +272,9 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           <Link to="/progreso" className="grid h-10 w-10 place-items-center rounded-full bg-secondary/80 text-foreground transition-transform active:scale-95" title="Mi Progreso">
             <Activity className="h-4 w-4" />
           </Link>
-          <button onClick={handleLogout} className="grid h-10 w-10 place-items-center rounded-full bg-secondary/80 text-foreground transition-transform active:scale-95" title="Cerrar Sesión">
-            <LogOut className="h-4 w-4" />
-          </button>
+          <Link to="/perfil" className="grid h-10 w-10 place-items-center rounded-full bg-secondary/80 text-foreground transition-transform active:scale-95" title="Mi Perfil">
+            <User className="h-4 w-4" />
+          </Link>
         </div>
       </header>
 
@@ -285,7 +296,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
                  <Link to="/recompensas" className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-3.5 text-sm font-bold text-slate-900 shadow-md">
                    <FileText className="h-4 w-4" /> Descargar certificado
                  </Link>
-                 <button className="flex w-full items-center justify-center gap-2 rounded-full bg-white/10 border border-white/20 py-3.5 text-sm font-bold text-white backdrop-blur-md">
+                 <button onClick={handleReset} className="flex w-full items-center justify-center gap-2 rounded-full bg-white/10 border border-white/20 py-3.5 text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-white/20">
                    <RotateCcw className="h-4 w-4" /> Comenzar nuevamente
                  </button>
                </div>
@@ -398,7 +409,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           <MegaCard to="/te" image={`/images/teas/tea_${currentTea.day}.jpg`} fallbackImage="/te_real.webp" title={currentTea.name} subtitle={currentTea.category} />
           <MegaCard to="/recompensas" image="/recompensas_botao.png" title="Recompensas" subtitle={`🏆 ${stats.unlockedRewards} de 8 desbloqueadas`} />
           
-          <Link to="/analizar" className="group relative flex flex-col overflow-hidden rounded-[1.5rem] bg-white shadow-sm border border-border/40 transition-all hover:-translate-y-1 hover:shadow-md" style={{ minHeight: '140px' }}>
+          <Link to={profile.subscription_plan === 'premium' ? "/analizar" : "/premium"} className="group relative flex flex-col overflow-hidden rounded-[1.5rem] bg-white shadow-sm border border-border/40 transition-all hover:-translate-y-1 hover:shadow-md" style={{ minHeight: '140px' }}>
             <div className="absolute inset-0 z-0">
               <img src="/calorias_ia_real.webp" alt="Calorías IA" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
