@@ -351,7 +351,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           <MegaCard to="/ejercicios" image="/ejercicios_real.webp" title="Ejercicios" subtitle="Rutina diaria" />
           <MegaCard to="/compras" image="/compras_real.webp" title="Compras" subtitle="Lista semanal" />
           <MegaCard to="/te" image="/te_real.webp" title="Té del Día" subtitle="Infusiones" />
-          <MegaCard to="/recompensas" image="/images/recipes/botao_recompensas.jpeg" title="Recompensas" subtitle="Premios" />
+          <MegaCard to="/recompensas" image="/recompensas_botao.png" title="Recompensas" subtitle="Premios" />
           
           <Link to="/analizar" className="group relative flex flex-col overflow-hidden rounded-[1.5rem] bg-white shadow-sm border border-border/40" style={{ minHeight: '140px' }}>
             <div className="absolute inset-0 z-0">
