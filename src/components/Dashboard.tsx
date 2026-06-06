@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { Check, Sparkles, LogOut, Flame, Target, ChevronRight, Activity, Droplet, Dumbbell, Utensils, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
-import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
@@ -14,6 +14,7 @@ type Profile = {
   current_weight: number | null;
   goal_weight: number | null;
   plan_started_at: string | null;
+  height_cm: number | null;
 };
 
 export function Dashboard({ userId, profile }: { userId: string; profile: Profile }) {
@@ -132,6 +133,22 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
     }
     return data;
   }, [profile.start_weight, allProgress]);
+
+  // BMI (IMC) Calculation
+  const imcData = useMemo(() => {
+    if (!profile.current_weight || !profile.height_cm) return null;
+    const heightM = profile.height_cm / 100;
+    const imc = profile.current_weight / (heightM * heightM);
+    let label = "";
+    let color = "";
+    
+    if (imc < 18.5) { label = "Bajo Peso"; color = "text-blue-400"; }
+    else if (imc >= 18.5 && imc < 24.9) { label = "Peso Normal"; color = "text-green-400"; }
+    else if (imc >= 25 && imc < 29.9) { label = "Sobrepeso"; color = "text-orange-400"; }
+    else { label = "Obesidad"; color = "text-red-400"; }
+    
+    return { value: imc.toFixed(1), label, color };
+  }, [profile.current_weight, profile.height_cm]);
 
   // Quick Stats computations
   const stats = useMemo(() => {
@@ -354,24 +371,35 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
             <div className="h-[120px] w-full">
               {chartData.length > 1 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                  <AreaChart data={chartData} margin={{ top: 15, right: 0, left: 0, bottom: 5 }}>
                     <defs>
                       <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#34d399" stopOpacity={0.5}/>
                         <stop offset="95%" stopColor="#34d399" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
+                    <YAxis domain={['dataMin - 1.5', 'dataMax + 1.5']} hide />
                     <RechartsTooltip 
                       contentStyle={{ borderRadius: '12px', border: 'none', background: 'rgba(15, 23, 42, 0.9)', color: '#fff', fontWeight: 'bold' }}
                       itemStyle={{ color: '#34d399' }}
                     />
+                    {profile.goal_weight && (
+                      <ReferenceLine 
+                        y={profile.goal_weight} 
+                        stroke="#3b82f6" 
+                        strokeDasharray="4 4" 
+                        strokeWidth={1.5}
+                        label={{ position: 'insideTopLeft', value: 'Meta', fill: '#60a5fa', fontSize: 10, fontWeight: 'bold' }} 
+                      />
+                    )}
                     <Area 
                       type="monotone" 
                       dataKey="peso" 
                       stroke="#34d399" 
                       strokeWidth={3}
                       fillOpacity={1} 
-                      fill="url(#colorWeight)" 
+                      fill="url(#colorWeight)"
+                      activeDot={{ r: 6, strokeWidth: 0, fill: '#34d399' }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -385,18 +413,30 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
             </div>
             
             {/* WEIGHT STATS ROW */}
-            <div className="mt-4 flex justify-between px-2">
-              <div className="text-left">
+            <div className="mt-4 flex justify-between px-2 items-center">
+              <div className="text-left w-1/3">
                 <p className="text-[10px] uppercase font-bold text-white/50 tracking-wider">Inicial</p>
-                <p className="text-lg font-bold">{profile.start_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
+                <p className="text-lg font-bold leading-tight">{profile.start_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
               </div>
-              <div className="text-center">
-                <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Actual</p>
-                <p className="text-xl font-bold text-white">{profile.current_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
+              <div className="text-center w-1/3 border-x border-white/10 flex flex-col items-center">
+                {imcData ? (
+                  <>
+                    <p className="text-[10px] uppercase font-bold text-white/50 tracking-wider">IMC</p>
+                    <p className={`text-lg font-black leading-tight ${imcData.color}`}>{imcData.value}</p>
+                    <div className={`mt-0.5 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-white/5 ${imcData.color}`}>
+                      {imcData.label}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Actual</p>
+                    <p className="text-xl font-bold text-white leading-tight">{profile.current_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
+                  </>
+                )}
               </div>
-              <div className="text-right">
+              <div className="text-right w-1/3">
                 <p className="text-[10px] uppercase font-bold text-white/50 tracking-wider">Meta</p>
-                <p className="text-lg font-bold">{profile.goal_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
+                <p className="text-lg font-bold leading-tight">{profile.goal_weight || "—"} <span className="text-xs font-normal text-white/70">kg</span></p>
               </div>
             </div>
           </div>
