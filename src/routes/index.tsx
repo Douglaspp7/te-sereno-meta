@@ -66,7 +66,7 @@ function Landing() {
       setSent(true);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Algo salió mal.";
-      alert(translateError(msg)); // Simplified toast for now, can add sonner if needed
+      alert(translateError(msg)); 
     } finally {
       setLoading(false);
     }
@@ -74,51 +74,60 @@ function Landing() {
 
   return (
     <AppShell hideNav>
-      <section className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-background px-6">
-        {/* Dynamic Background Elements */}
-        <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-secondary/20 blur-3xl" />
-        <div className="absolute -left-24 top-40 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
-        <div className="absolute bottom-0 right-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+      <section className="relative flex min-h-[100dvh] w-full flex-col justify-end overflow-hidden bg-black">
+        {/* Full Screen Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/images/entrada.jpg" 
+            alt="MiReto21 Entrada" 
+            className="h-full w-full object-cover opacity-90"
+          />
+          {/* Gradient to make the bottom text readable */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+        </div>
 
-        <div className="relative w-full max-w-[340px] animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="mb-8 flex flex-col items-center text-center">
-            <div className="mb-6 grid h-16 w-16 place-items-center rounded-2xl bg-white shadow-soft border border-border/50 text-primary">
-              {sent ? <CheckCircle2 className="h-8 w-8" /> : <Bot className="h-8 w-8" />}
-            </div>
-            <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground">
-              {sent ? "Revisa tu correo" : "MiReto21 AI"}
+        {/* Login Form at the Bottom */}
+        <div className="relative z-10 w-full animate-in fade-in slide-in-from-bottom-8 duration-700 p-6 pb-12">
+          
+          <div className="mb-6 text-center">
+            {sent && (
+              <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-white/20 backdrop-blur-md text-white">
+                <CheckCircle2 className="h-7 w-7" />
+              </div>
+            )}
+            <h1 className="font-display text-2xl font-bold tracking-tight text-white drop-shadow-md">
+              {sent ? "Revisa tu correo" : "Comienza tu transformación"}
             </h1>
-            <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+            <p className="mt-2 text-[14px] text-white/80 drop-shadow-md">
               {sent
-                ? `Te enviamos un enlace a ${email}. Ábrelo para entrar automáticamente.`
-                : "Ingresa tu correo para comenzar tu transformación de 21 días."}
+                ? `Te enviamos un enlace a ${email}. Ábrelo para entrar.`
+                : "Ingresa tu correo para acceder a tu plan de 21 días."}
             </p>
           </div>
 
           {!sent ? (
             <form onSubmit={submit} className="w-full space-y-4">
-              <div className="group flex items-center gap-3 rounded-2xl border border-border/60 bg-white/60 px-4 py-3.5 shadow-sm backdrop-blur-md transition-all focus-within:border-primary focus-within:bg-white focus-within:shadow-md">
-                <Mail className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
+                <Mail className="h-5 w-5 text-white/60 group-focus-within:text-white transition-colors" />
                 <input
                   type="email"
                   required
-                  className="w-full bg-transparent text-[15px] font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground/70"
+                  className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
                   placeholder="tu@correo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
-                  autoFocus
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading || !email}
-                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-foreground font-semibold text-background shadow-float transition-all active:scale-[0.98] disabled:opacity-60"
+                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-white font-bold text-black shadow-xl transition-all active:scale-[0.98] disabled:opacity-70"
               >
-                {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-background/30 border-t-background" />}
+                {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />}
                 Continuar
-                {!loading && <ArrowRight className="h-4 w-4" />}
+                {!loading && <ArrowRight className="h-5 w-5" />}
               </button>
             </form>
           ) : (
@@ -127,7 +136,7 @@ function Landing() {
                 setSent(false);
                 setEmail("");
               }}
-              className="mt-6 w-full text-center text-sm font-medium text-primary transition-colors hover:text-primary/80"
+              className="mt-4 w-full text-center text-sm font-semibold text-white/70 transition-colors hover:text-white"
             >
               Usar otro correo
             </button>
