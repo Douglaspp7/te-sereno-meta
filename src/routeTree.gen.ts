@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTeRouteImport } from './routes/_authenticated/te'
+import { Route as AuthenticatedRecompensasRouteImport } from './routes/_authenticated/recompensas'
 import { Route as AuthenticatedProgresoRouteImport } from './routes/_authenticated/progreso'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -21,9 +22,7 @@ import { Route as AuthenticatedGenerandoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authenticated/ejercicios'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedAnalizarRouteImport } from './routes/_authenticated/analizar'
-import { Route as AuthenticatedRecompensasRouteImport } from './routes/_authenticated/recompensas'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
-
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -49,6 +48,12 @@ const AuthenticatedTeRoute = AuthenticatedTeRouteImport.update({
   path: '/te',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRecompensasRoute =
+  AuthenticatedRecompensasRouteImport.update({
+    id: '/recompensas',
+    path: '/recompensas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProgresoRoute = AuthenticatedProgresoRouteImport.update({
   id: '/progreso',
   path: '/progreso',
@@ -84,11 +89,6 @@ const AuthenticatedAnalizarRoute = AuthenticatedAnalizarRouteImport.update({
   path: '/analizar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedRecompensasRoute = AuthenticatedRecompensasRouteImport.update({
-  id: '/recompensas',
-  path: '/recompensas',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -96,12 +96,10 @@ const LovableEmailQueueProcessRoute =
     getParentRoute: () => rootRouteImport,
   } as any)
 
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/recompensas': typeof AuthenticatedRecompensasRoute
   '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -109,15 +107,14 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
+  '/recompensas': typeof AuthenticatedRecompensasRoute
   '/te': typeof AuthenticatedTeRoute
-
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/recompensas': typeof AuthenticatedRecompensasRoute
   '/analizar': typeof AuthenticatedAnalizarRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -125,8 +122,8 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/progreso': typeof AuthenticatedProgresoRoute
+  '/recompensas': typeof AuthenticatedRecompensasRoute
   '/te': typeof AuthenticatedTeRoute
-
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -135,7 +132,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/recompensas': typeof AuthenticatedRecompensasRoute
   '/_authenticated/analizar': typeof AuthenticatedAnalizarRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/ejercicios': typeof AuthenticatedEjerciciosRoute
@@ -143,8 +139,8 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
+  '/_authenticated/recompensas': typeof AuthenticatedRecompensasRoute
   '/_authenticated/te': typeof AuthenticatedTeRoute
-
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -153,7 +149,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/recompensas'
     | '/analizar'
     | '/compras'
     | '/ejercicios'
@@ -161,15 +156,14 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/progreso'
+    | '/recompensas'
     | '/te'
-
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/recompensas'
     | '/analizar'
     | '/compras'
     | '/ejercicios'
@@ -177,8 +171,8 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/progreso'
+    | '/recompensas'
     | '/te'
-
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -186,7 +180,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
-    | '/_authenticated/recompensas'
     | '/_authenticated/analizar'
     | '/_authenticated/compras'
     | '/_authenticated/ejercicios'
@@ -194,8 +187,8 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/plan'
     | '/_authenticated/progreso'
+    | '/_authenticated/recompensas'
     | '/_authenticated/te'
-
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -242,6 +235,13 @@ declare module '@tanstack/react-router' {
       path: '/te'
       fullPath: '/te'
       preLoaderRoute: typeof AuthenticatedTeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recompensas': {
+      id: '/_authenticated/recompensas'
+      path: '/recompensas'
+      fullPath: '/recompensas'
+      preLoaderRoute: typeof AuthenticatedRecompensasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/progreso': {
@@ -293,13 +293,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnalizarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/recompensas': {
-      id: '/_authenticated/recompensas'
-      path: '/recompensas'
-      fullPath: '/recompensas'
-      preLoaderRoute: typeof AuthenticatedRecompensasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -307,14 +300,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
-
   }
 }
 
-
-
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedRecompensasRoute: typeof AuthenticatedRecompensasRoute
   AuthenticatedAnalizarRoute: typeof AuthenticatedAnalizarRoute
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedEjerciciosRoute: typeof AuthenticatedEjerciciosRoute
@@ -322,11 +311,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedProgresoRoute: typeof AuthenticatedProgresoRoute
+  AuthenticatedRecompensasRoute: typeof AuthenticatedRecompensasRoute
   AuthenticatedTeRoute: typeof AuthenticatedTeRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedRecompensasRoute: AuthenticatedRecompensasRoute,
   AuthenticatedAnalizarRoute: AuthenticatedAnalizarRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedEjerciciosRoute: AuthenticatedEjerciciosRoute,
@@ -334,6 +323,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedProgresoRoute: AuthenticatedProgresoRoute,
+  AuthenticatedRecompensasRoute: AuthenticatedRecompensasRoute,
   AuthenticatedTeRoute: AuthenticatedTeRoute,
 }
 
@@ -350,3 +340,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
