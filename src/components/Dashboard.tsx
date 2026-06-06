@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Check, Sparkles, User as UserIcon, Flame, Target, ChevronRight, Activity, Droplet, Dumbbell, Utensils, Plus } from "lucide-react";
+import { Check, Sparkles, LogOut, Flame, Target, ChevronRight, Activity, Droplet, Dumbbell, Utensils, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "./AppShell";
 import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
@@ -162,6 +162,11 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (planPct / 100) * circumference;
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
+
   return (
     <AppShell>
       {/* HEADER: Modern & Clean */}
@@ -175,9 +180,9 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
             <p className="text-xl font-display font-extrabold text-foreground leading-tight">{firstName} 👋</p>
           </div>
         </div>
-        <Link to="/auth" className="grid h-10 w-10 place-items-center rounded-full bg-secondary/50 text-foreground transition-transform active:scale-95">
-          <UserIcon className="h-4 w-4" />
-        </Link>
+        <button onClick={handleLogout} className="grid h-10 w-10 place-items-center rounded-full bg-secondary/50 text-foreground transition-transform active:scale-95" title="Cerrar Sesión">
+          <LogOut className="h-4 w-4" />
+        </button>
       </header>
 
       {/* HORIZONTAL DAY NAV */}
