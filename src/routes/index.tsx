@@ -6,6 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { useUser } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Dashboard } from "@/components/Dashboard";
+import { InstallApp } from "@/components/InstallApp";
 
 export const Route = createFileRoute("/")({
   ssr: false,
@@ -34,8 +35,8 @@ function HomeRoute() {
   if (loading || (user && profileLoading)) {
     return (
       <AppShell hideNav>
-        <div className="grid min-h-screen place-items-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <div className="grid min-h-screen place-items-center bg-black">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/50 border-t-white" />
         </div>
       </AppShell>
     );
@@ -105,6 +106,8 @@ function Landing() {
           {/* Gradient to make the bottom text readable */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
         </div>
+
+        <InstallApp />
 
         {/* Login Form at the Bottom */}
         <div className="relative z-10 w-full animate-in fade-in slide-in-from-bottom-8 duration-700 p-6 pb-12">

@@ -1,0 +1,110 @@
+import { useState, useEffect } from "react";
+import { Download, Share, PlusSquare, X } from "lucide-react";
+
+export function InstallApp() {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [showIOSPrompt, setShowIOSPrompt] = useState(false);
+
+  useEffect(() => {
+    // Check if already installed
+    const isAppMode = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    setIsStandalone(isAppMode);
+
+    if (isAppMode) return;
+
+    // Detect iOS
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+    setIsIOS(isIosDevice);
+
+    // Detect Android Install Prompt
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  if (isStandalone) return null;
+
+  const handleInstallClick = async () => {
+    if (isIOS) {
+      setShowIOSPrompt(true);
+    } else if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    }
+  };
+
+  if (!deferredPrompt && !isIOS) return null; // Browser doesn't support PWA install or already installed
+
+  return (
+    <>
+      <button
+        onClick={handleInstallClick}
+        className="absolute top-6 right-6 z-50 flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-all active:scale-95 border border-white/20"
+      >
+        <Download className="h-4 w-4" />
+        Instalar App
+      </button>
+
+      {showIOSPrompt && (
+        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center">
+          <div className="relative w-full max-w-sm rounded-t-[2rem] bg-white p-6 shadow-2xl sm:rounded-[2rem] animate-in slide-in-from-bottom-10 sm:slide-in-from-bottom-0 sm:fade-in-0 sm:zoom-in-95 duration-300">
+            <button
+              onClick={() => setShowIOSPrompt(false)}
+              className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-muted/80"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="mb-4 flex items-center justify-center">
+              <div className="grid h-16 w-16 place-items-center rounded-2xl bg-primary/10 text-primary">
+                <Download className="h-8 w-8" />
+              </div>
+            </div>
+            <h3 className="text-center font-display text-xl font-bold text-foreground">
+              Instalar en iPhone
+            </h3>
+            <p className="mt-2 text-center text-sm text-muted-foreground">
+              Para tener MiReto21 como una app nativa en tu pantalla de inicio:
+            </p>
+            <div className="mt-6 flex flex-col gap-4">
+              <div className="flex items-center gap-4 rounded-xl bg-secondary/30 p-4">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-blue-500 shadow-sm">
+                  <Share className="h-5 w-5" />
+                </div>
+                <p className="text-sm font-medium text-foreground">
+                  1. Toca el botón de <strong className="text-blue-500">Compartir</strong> en la barra de Safari.
+                </p>
+              </div>
+              <div className="flex items-center gap-4 rounded-xl bg-secondary/30 p-4">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-foreground shadow-sm">
+                  <PlusSquare className="h-5 w-5" />
+                </div>
+                <p className="text-sm font-medium text-foreground">
+                  2. Selecciona <strong>"Agregar a Inicio"</strong> en el menú.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowIOSPrompt(false)}
+              className="mt-6 w-full rounded-2xl bg-foreground py-4 text-center font-bold text-background active:scale-[0.98]"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
