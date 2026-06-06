@@ -186,8 +186,8 @@ function EjerciciosPage() {
     videoUrl = VIDEO_LINKS[selectedDayNum];
   }
 
-  // Se o URL não for youtube/vimeo e parecer um path de imagem (ex: /images/caminar_20.png)
-  const isImageUrl = videoUrl && (videoUrl.endsWith('.png') || videoUrl.endsWith('.jpg') || videoUrl.endsWith('.jpeg'));
+  // Se o URL não for youtube/vimeo e parecer um path de imagem (ex: /images/caminar_20.webp)
+  const isImageUrl = videoUrl && (videoUrl.endsWith('.png') || videoUrl.endsWith('.jpg') || videoUrl.endsWith('.jpeg') || videoUrl.endsWith('.webp'));
   const embedUrl = getEmbedUrl(videoUrl);
 
   return (

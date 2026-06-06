@@ -35,7 +35,9 @@ function FullScreenRecipeModal({
   const nutritionalBenefits = (recipe.nutritional_benefits as string[]) || [];
   const weightLossBenefits = (recipe.weight_loss_benefits as string[]) || [];
 
-  const imageUrl = recipe.image_url && recipe.image_url !== '/alimentacion_3d.png' ? recipe.image_url : `/images/recipes/${recipe.id}.jpg`;
+  const imageUrl = recipe.image_url && recipe.image_url !== '/alimentacion_3d.png' 
+    ? recipe.image_url.replace('.png', '.webp').replace('.jpg', '.webp') 
+    : `/images/recipes/${recipe.id}.webp`;
 
   return (
     <div className="fixed inset-0 z-[100] bg-background overflow-y-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -609,7 +611,12 @@ function TimelineMealCard({ recipe, isDone, onOpen }: { recipe: any, isDone: boo
       }`}
     >
       <div className="w-[140px] shrink-0 relative overflow-hidden bg-muted">
-        <img src={recipe.image_url && recipe.image_url !== '/alimentacion_3d.png' ? recipe.image_url : `/images/recipes/${recipe.id}.jpg`} alt={recipe.name} className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${isDone ? 'grayscale opacity-70' : ''}`} onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=400&auto=format&fit=crop"; }} />
+        <img 
+          src={recipe.image_url && recipe.image_url !== '/alimentacion_3d.png' ? recipe.image_url.replace('.png', '.webp').replace('.jpg', '.webp') : `/images/recipes/${recipe.id}.webp`} 
+          alt={recipe.name} 
+          className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 ${isDone ? 'grayscale opacity-70' : ''}`} 
+          onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=400&auto=format&fit=crop"; }} 
+        />
         {isDone && (
           <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-[2px]">
             <CheckCircle2 className="h-8 w-8 text-white drop-shadow-md" />

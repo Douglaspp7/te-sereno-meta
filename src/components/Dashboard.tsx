@@ -437,12 +437,12 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           <h3 className="text-sm font-bold text-foreground">Acciones Rápidas</h3>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <MegaCard to="/plan" image="/mi_plan_real.png" title="Mi Plan" subtitle="Opciones de hoy" />
-          <MegaCard to="/ejercicios" image="/ejercicios_real.png" title="Ejercicios" subtitle="Tu rutina diaria" />
-          <MegaCard to="/compras" image="/compras_real.png" title="Compras" subtitle="Por semana" />
-          <MegaCard to="/te" image="/te_real.png" title="Té del Día" subtitle={(progress?.water_glasses ?? 0) > 0 ? "Consumido" : "Pendiente"} />
+          <MegaCard to="/plan" image="/mi_plan_real.webp" title="Mi Plan" subtitle="Opciones de hoy" />
+          <MegaCard to="/ejercicios" image="/ejercicios_real.webp" title="Ejercicios" subtitle="Tu rutina diaria" />
+          <MegaCard to="/compras" image="/compras_real.webp" title="Compras" subtitle="Por semana" />
+          <MegaCard to="/te" image="/te_real.webp" title="Té del Día" subtitle={(progress?.water_glasses ?? 0) > 0 ? "Consumido" : "Pendiente"} />
           <MegaCard to="/academia" image="https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=1000&auto=format&fit=crop" title="Academia" subtitle="Aprende hábitos" />
-          <MegaCard to="/analizar" image="/calorias_ia_real.png" title="Calorías IA" subtitle="Analizar comida" />
+          <MegaCard to="/analizar" image="/calorias_ia_real.webp" title="Calorías IA" subtitle="Analizar comida" />
         </div>
       </section>
 
