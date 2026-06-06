@@ -18,7 +18,7 @@ export interface TeaRecipe {
 export const teas: TeaRecipe[] = [
   {
     day: 1,
-    imageUrl: '/images/teas/te_dia_1.png',
+    imageUrl: '/images/teas/t_verde_con_limn.png',
     name: "Té Verde con Limón",
     category: "Energía",
     shortDescription: "Apoio ao bem-estar diário e energia natural.",
@@ -43,7 +43,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 2,
-    imageUrl: '/images/teas/te_dia_2.png',
+    imageUrl: '/images/teas/t_de_canela.png',
     name: "Té de Canela",
     category: "Digestión",
     shortDescription: "Toque dulce y especiado para reconfortar tu tarde.",
@@ -67,7 +67,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 3,
-    imageUrl: '/images/teas/te_dia_3.png',
+    imageUrl: '/images/teas/t_de_hibisco.png',
     name: "Té de Hibisco",
     category: "Bienestar",
     shortDescription: "Fresco, vibrante y lleno de antioxidantes.",
@@ -90,7 +90,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 4,
-    imageUrl: '/images/teas/te_dia_4.png',
+    imageUrl: '/images/teas/t_de_jengibre.png',
     name: "Té de Jengibre",
     category: "Digestión",
     shortDescription: "Un abrazo cálido y digestivo para tu estómago.",
@@ -114,7 +114,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 5,
-    imageUrl: '/images/teas/te_dia_5.png',
+    imageUrl: '/images/teas/t_de_menta.png',
     name: "Té de Menta",
     category: "Digestión",
     shortDescription: "Frescura pura para aliviar la mente y el cuerpo.",
@@ -137,7 +137,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 6,
-    imageUrl: '/images/teas/te_dia_6.png',
+    imageUrl: '/images/teas/t_de_manzanilla.png',
     name: "Té de Manzanilla",
     category: "Relajación",
     shortDescription: "Un clásico suave para calmar y preparar el descanso.",
@@ -160,7 +160,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 7,
-    imageUrl: '/images/teas/te_dia_7.png',
+    imageUrl: '/images/teas/t_de_lavanda.png',
     name: "Té de Lavanda",
     category: "Relajación",
     shortDescription: "Aroma floral para calmar profundamente la ansiedad.",
@@ -183,7 +183,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 8,
-    imageUrl: '/images/teas/te_dia_8.png',
+    imageUrl: '/images/teas/t_de_rooibos.png',
     name: "Té de Rooibos",
     category: "Bienestar",
     shortDescription: "Una infusión libre de cafeína pero llena de color y sabor.",
@@ -206,7 +206,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 9,
-    imageUrl: '/images/teas/te_dia_9.png',
+    imageUrl: '/images/teas/t_matcha_premium.png',
     name: "Té Matcha Premium",
     category: "Energía",
     shortDescription: "La concentración más pura y poderosa de la hoja del té.",
@@ -230,7 +230,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 10,
-    imageUrl: '/images/teas/te_dia_10.png',
+    imageUrl: '/images/teas/t_de_crcuma_y_pimienta.png',
     name: "Té de Cúrcuma y Pimienta",
     category: "Bienestar",
     shortDescription: "Un antiinflamatorio natural con un toque dorado intenso.",
@@ -254,7 +254,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 11,
-    imageUrl: '/images/teas/te_dia_11.png',
+    imageUrl: '/images/teas/t_chai_especiado.png',
     name: "Té Chai Especiado",
     category: "Energía",
     shortDescription: "Mezcla de especias vibrantes para despertar el alma.",
@@ -278,7 +278,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 12,
-    imageUrl: '/images/teas/te_dia_12.png',
+    imageUrl: '/images/teas/infusin_de_romero.png',
     name: "Infusión de Romero",
     category: "Bienestar",
     shortDescription: "Aroma de pinar para estimular la memoria y el bienestar.",
@@ -301,7 +301,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 13,
-    imageUrl: '/images/teas/te_dia_13.png',
+    imageUrl: '/images/teas/t_oolong.png',
     name: "Té Oolong",
     category: "Digestión",
     shortDescription: "Té azul semi-oxidado, suave y sofisticado.",
@@ -324,7 +324,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 14,
-    imageUrl: '/images/teas/te_dia_14.png',
+    imageUrl: '/images/teas/t_de_frutos_rojos_silvestres.png',
     name: "Té de Frutos Rojos Silvestres",
     category: "Bienestar",
     shortDescription: "Vibrante, afrutado y lleno de vitamina C.",
@@ -347,7 +347,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 15,
-    imageUrl: '/images/teas/te_dia_15.png',
+    imageUrl: '/images/teas/infusin_de_manzana_y_canela.png',
     name: "Infusión de Manzana y Canela",
     category: "Relajación",
     shortDescription: "Como un postre cálido y reconfortante hecho bebida.",
@@ -370,7 +370,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 16,
-    imageUrl: '/images/teas/te_dia_16.png',
+    imageUrl: '/images/teas/t_blanco_imperial.png',
     name: "Té Blanco Imperial",
     category: "Bienestar",
     shortDescription: "El té menos procesado, con notas florales y delicadas.",
@@ -393,7 +393,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 17,
-    imageUrl: '/images/teas/te_dia_17.png',
+    imageUrl: '/images/teas/t_de_toronjil_melissa.png',
     name: "Té de Toronjil (Melissa)",
     category: "Relajación",
     shortDescription: "Dulce sabor a limón suave para apagar el estrés.",
@@ -416,7 +416,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 18,
-    imageUrl: '/images/teas/te_dia_18.png',
+    imageUrl: '/images/teas/t_de_moringa.png',
     name: "Té de Moringa",
     category: "Energía",
     shortDescription: "Un superalimento en infusión, denso en nutrientes.",
@@ -439,7 +439,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 19,
-    imageUrl: '/images/teas/te_dia_19.png',
+    imageUrl: '/images/teas/t_pu-erh_t_rojo.png',
     name: "Té Pu-erh (Té Rojo)",
     category: "Digestión",
     shortDescription: "Té fermentado y maduro con aroma a tierra húmeda.",
@@ -462,7 +462,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 20,
-    imageUrl: '/images/teas/te_dia_20.png',
+    imageUrl: '/images/teas/agua_con_limn_y_chia.png',
     name: "Agua con Limón y Chia",
     category: "Bienestar",
     shortDescription: "Un cóctel de fibra soluble e hidratación profunda.",
@@ -486,7 +486,7 @@ export const teas: TeaRecipe[] = [
   },
   {
     day: 21,
-    imageUrl: '/images/teas/te_dia_21.png',
+    imageUrl: '/images/teas/mezcla_especial_mireto21.png',
     name: "Mezcla Especial MiReto21",
     category: "Energía",
     shortDescription: "La celebración dorada de tu triunfo tras 21 días.",
