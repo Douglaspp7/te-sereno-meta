@@ -197,26 +197,7 @@ function VSLScreen() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-20">
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-sm">
-            <h3 className="text-2xl font-bold text-white mb-6">Tu plan incluye:</h3>
-            <ul className="space-y-4">
-              {[
-                "Plan diario durante 21 días",
-                "Recetas saludables",
-                "Té del día",
-                "Ejercicios sencillos",
-                "Sistema de recompensas",
-                "Acceso desde cualquier dispositivo"
-              ].map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-white/80 font-medium">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
+        <div className="max-w-md mx-auto mb-20">
           <div className="relative bg-gradient-to-b from-emerald-500/10 to-transparent border border-emerald-500/30 rounded-3xl p-8 backdrop-blur-sm flex flex-col justify-center shadow-2xl">
             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50 rounded-t-3xl" />
             <div className="text-center mb-6">
