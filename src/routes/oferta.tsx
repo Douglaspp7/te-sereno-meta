@@ -262,15 +262,16 @@ function VSLScreen() {
           </p>
         </div>
         
-        <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-white/5 border border-white/10 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] mb-12 group">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center backdrop-blur-md border border-emerald-500/50 group-hover:scale-110 transition-transform cursor-pointer z-10">
-              <Play className="w-8 h-8 text-emerald-500 ml-1" />
-            </div>
-          </div>
-          <div className="absolute bottom-4 left-0 right-0 text-center text-white/50 text-sm font-medium z-10">
-            (Vídeo de Vendas aqui)
-          </div>
+        <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-black border border-emerald-500/30 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] mb-12">
+          <video 
+            src="/vsl.mp4" 
+            controls 
+            playsInline
+            controlsList="nodownload"
+            className="w-full h-full object-contain"
+          >
+            Tu navegador no soporta el elemento de video.
+          </video>
         </div>
 
         <div className="max-w-md mx-auto mb-20">
