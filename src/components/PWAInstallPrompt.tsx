@@ -24,7 +24,7 @@ export function PWAInstallPrompt() {
       window.navigator.standalone === true;
     if (standalone) return;
 
-    if (localStorage.getItem(DISMISS_KEY) === "1") return;
+    // Always prompt if not installed
 
     const ua = window.navigator.userAgent.toLowerCase();
     const iOS = /iphone|ipad|ipod/.test(ua) && !/crios|fxios/.test(ua);
@@ -64,7 +64,6 @@ export function PWAInstallPrompt() {
 
   const handleClose = () => {
     setVisible(false);
-    localStorage.setItem(DISMISS_KEY, "1");
   };
 
   if (!visible) return null;

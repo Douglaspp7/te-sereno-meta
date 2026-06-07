@@ -106,7 +106,7 @@ function AdminPage() {
                 <tbody>
                   {emails.map((row, i) => (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                      <td className="p-4 font-medium">{row.email}</td>
+                      <td className="p-4 font-medium">{row.buyer_email || row.email}</td>
                       <td className="p-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-bold ${row.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
                           {row.status || 'active'}
@@ -117,7 +117,7 @@ function AdminPage() {
                       </td>
                       <td className="p-4 text-right">
                         <button 
-                          onClick={() => handleDelete(row.email)}
+                          onClick={() => handleDelete(row.buyer_email || row.email)}
                           disabled={loading}
                           className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-colors"
                         >

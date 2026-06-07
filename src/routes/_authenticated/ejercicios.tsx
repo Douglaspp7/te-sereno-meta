@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { PlayCircle, Clock, Flame, Check, Lock, CheckCircle2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CustomVideoPlayer } from "@/components/ui/CustomVideoPlayer";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/lib/auth";
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -206,14 +207,18 @@ function EjerciciosPage() {
               <div className="aspect-video w-full rounded-2xl bg-black/5 flex items-center justify-center relative overflow-hidden mb-5 border border-border/50 shadow-inner group">
                 {isClient && videoUrl && !isImageUrl ? (
                   <div className="absolute inset-0 z-10 w-full h-full bg-black/90">
-                    <iframe
-                      className="w-full h-full"
-                      src={embedUrl}
-                      title="Video Player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    ></iframe>
+                    {videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.includes('supabase.co') ? (
+                      <CustomVideoPlayer url={videoUrl} />
+                    ) : (
+                      <iframe
+                        className="w-full h-full"
+                        src={embedUrl}
+                        title="Video Player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      ></iframe>
+                    )}
                   </div>
                 ) : (
                   <>

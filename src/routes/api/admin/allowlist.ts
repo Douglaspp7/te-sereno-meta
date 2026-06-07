@@ -6,9 +6,8 @@ export const Route = createFileRoute("/api/admin/allowlist")({
       GET: async () => {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data, error } = await supabaseAdmin
-          .from("hotmart_allowlist")
+          .from("hotmart_purchases")
           .select("*")
-          .order("created_at", { ascending: false });
         
         if (error) {
           return new Response(JSON.stringify({ error: error.message }), { status: 500 });
@@ -25,9 +24,9 @@ export const Route = createFileRoute("/api/admin/allowlist")({
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { error } = await supabaseAdmin
-          .from("hotmart_allowlist")
+          .from("hotmart_purchases")
           .delete()
-          .eq("email", email);
+          .eq("buyer_email", email);
           
         if (error) {
           return new Response(JSON.stringify({ error: error.message }), { status: 500 });

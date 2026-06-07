@@ -72,17 +72,17 @@ export const Route = createFileRoute("/api/public/hotmart/webhook")({
 
         if (ACTIVATING_EVENTS.has(event)) {
           await supabaseAdmin
-            .from("hotmart_allowlist")
+            .from("hotmart_purchases")
             .upsert(
               {
-                email,
+                buyer_email: email,
                 transaction_id: transactionId ?? null,
                 plan: plan ?? null,
                 status: "active",
                 purchased_at: new Date().toISOString(),
                 raw_payload: payload,
               },
-              { onConflict: "email" },
+              { onConflict: "buyer_email" },
             );
 
           await supabaseAdmin
@@ -100,15 +100,15 @@ export const Route = createFileRoute("/api/public/hotmart/webhook")({
 
         if (DEACTIVATING_EVENTS.has(event)) {
           await supabaseAdmin
-            .from("hotmart_allowlist")
+            .from("hotmart_purchases")
             .upsert(
               {
-                email,
+                buyer_email: email,
                 transaction_id: transactionId ?? null,
                 status: event === "PURCHASE_REFUNDED" ? "refunded" : "cancelled",
                 raw_payload: payload,
               },
-              { onConflict: "email" },
+              { onConflict: "buyer_email" },
             );
 
           await supabaseAdmin
