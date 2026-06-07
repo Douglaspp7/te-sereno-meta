@@ -8,29 +8,29 @@ export const Route = createFileRoute('/oferta')({
 
 const quizData = {
   1: {
-    title: "¿Cuál es tu principal objetivo?",
+    title: "¿Cuál es tu principal objetivo en los próximos 21 días?",
     image: "/quiz/quiz_1.png",
-    options: ["Perder peso", "Reducir barriga", "Crear hábitos saludables", "Sentirme con más energía"]
+    options: ["Perder grasa localizada", "Reducir medidas en el abdomen", "Desintoxicar el organismo", "Mejorar digestión y energía"]
   },
   2: {
-    title: "¿Cuántas veces has intentado adelgazar?",
+    title: "¿A qué hora sueles sentir más ansiedad por comer dulces o pan?",
     image: "/quiz/quiz_2.png",
-    options: ["Nunca", "1 a 2 veces", "3 a 5 veces", "Muchas veces"]
+    options: ["A media mañana", "Después del almuerzo", "Al final de la tarde/noche", "Antes de dormir"]
   },
   3: {
-    title: "¿Cuál es tu mayor dificultad?",
+    title: "¿Cómo describirías tu metabolismo actualmente?",
     image: "/quiz/quiz_3.png",
-    options: ["Ansiedad", "Falta de tiempo", "No sé qué comer", "No consigo ser constante"]
+    options: ["Rápido (Pierdo peso fácil)", "Normal (Pierdo si me cuido)", "Lento (Me cuesta adelgazar)", "Estancado (No bajo nada)"]
   },
   4: {
-    title: "¿Cuánto peso te gustaría perder?",
+    title: "¿Cuánta agua pura logras consumir al día?",
     image: "/quiz/quiz_4.png",
-    options: ["Menos de 5 kg", "5 a 10 kg", "10 a 20 kg", "Más de 20 kg"]
+    options: ["Menos de 1 litro", "Entre 1 y 2 litros", "Más de 2 litros", "Casi no tomo agua pura"]
   },
   5: {
-    title: "¿Estás dispuesta a seguir un plan durante 21 días?",
+    title: "Estamos listos para calcular tu plan. ¿Te comprometes a seguir el método 100% por 21 días?",
     image: "/quiz/quiz_5.png",
-    options: ["Sí", "Claro que sí"]
+    options: ["Sí, estoy 100% comprometida", "¡Lista para empezar ahora!"]
   }
 }
 
@@ -262,7 +262,7 @@ function VSLScreen() {
           </p>
         </div>
         
-        <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-black border border-emerald-500/30 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] mb-12">
+        <div className="relative w-full max-w-sm mx-auto aspect-[9/16] rounded-3xl overflow-hidden bg-black border border-emerald-500/30 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] mb-12">
           <video 
             src="/vsl.mp4" 
             controls 
