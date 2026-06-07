@@ -293,6 +293,7 @@ export type Database = {
         Row: {
           buyer_email: string
           created_at: string | null
+          phone: string | null
           plan: string | null
           plan_type: string | null
           purchased_at: string | null
@@ -303,6 +304,7 @@ export type Database = {
         Insert: {
           buyer_email: string
           created_at?: string | null
+          phone?: string | null
           plan?: string | null
           plan_type?: string | null
           purchased_at?: string | null
@@ -313,6 +315,7 @@ export type Database = {
         Update: {
           buyer_email?: string
           created_at?: string | null
+          phone?: string | null
           plan?: string | null
           plan_type?: string | null
           purchased_at?: string | null
@@ -386,6 +389,7 @@ export type Database = {
           main_difficulty: string | null
           main_goal: string | null
           onboarding_completed: boolean
+          phone: string | null
           plan_started_at: string | null
           points: number
           premium_access: boolean
@@ -413,6 +417,7 @@ export type Database = {
           main_difficulty?: string | null
           main_goal?: string | null
           onboarding_completed?: boolean
+          phone?: string | null
           plan_started_at?: string | null
           points?: number
           premium_access?: boolean
@@ -440,6 +445,7 @@ export type Database = {
           main_difficulty?: string | null
           main_goal?: string | null
           onboarding_completed?: boolean
+          phone?: string | null
           plan_started_at?: string | null
           points?: number
           premium_access?: boolean
