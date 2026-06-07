@@ -169,9 +169,84 @@ function LoadingItem({ text, active }: { text: string; active: boolean }) {
   )
 }
 
+function CountdownTimer() {
+  const [timeLeft, setTimeLeft] = useState(15 * 60);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
+  return (
+    <div className="bg-red-600/90 backdrop-blur-sm text-white text-center py-3 font-bold text-sm md:text-base px-4 sticky top-0 z-40 border-b border-red-500 shadow-[0_4px_20px_rgba(220,38,38,0.4)] flex items-center justify-center gap-2">
+      <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+      ¡OFERTA EXCLUSIVA! Termina en: {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+    </div>
+  )
+}
+
+const fakeBuyers = [
+  { name: "Lucía M.", location: "Colombia", time: "hace 2 min" },
+  { name: "Sofía R.", location: "México", time: "hace 4 min" },
+  { name: "Valentina P.", location: "Chile", time: "hace 1 min" },
+  { name: "Camila G.", location: "Argentina", time: "hace 3 min" },
+  { name: "Martina V.", location: "España", time: "hace 5 min" },
+  { name: "Isabella C.", location: "Perú", time: "hace 1 min" },
+  { name: "Valeria S.", location: "Ecuador", time: "hace 2 min" },
+];
+
+function PurchaseNotifications() {
+  const [currentNotif, setCurrentNotif] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Start the first one quickly to hook the user
+    const firstTimeout = setTimeout(() => {
+      setIsVisible(true);
+      setTimeout(() => setIsVisible(false), 6000);
+    }, 8000);
+
+    // Then pop up every 45 seconds (approx 2.5 per 2 minutes)
+    const interval = setInterval(() => {
+      setCurrentNotif(Math.floor(Math.random() * fakeBuyers.length));
+      setIsVisible(true);
+      setTimeout(() => setIsVisible(false), 6000);
+    }, 45000);
+
+    return () => {
+      clearTimeout(firstTimeout);
+      clearInterval(interval);
+    };
+  }, []);
+
+  if (!isVisible) return null;
+
+  const notif = fakeBuyers[currentNotif];
+
+  return (
+    <div className="fixed bottom-6 left-4 md:left-6 z-50 bg-black/90 backdrop-blur-md border border-emerald-500/30 rounded-2xl p-4 flex items-center gap-4 shadow-[0_10px_40px_rgba(16,185,129,0.3)] animate-in slide-in-from-bottom-8 fade-in duration-500">
+      <div className="bg-emerald-500 rounded-full p-2 shrink-0">
+        <CheckCircle2 className="w-5 h-5 text-black" />
+      </div>
+      <div>
+        <p className="text-white text-sm font-bold">{notif.name} <span className="text-white/60 font-medium">compró MiReto21</span></p>
+        <p className="text-emerald-400 text-xs font-medium mt-0.5">{notif.time} • {notif.location}</p>
+      </div>
+    </div>
+  )
+}
+
 function VSLScreen() {
   return (
-    <div className="min-h-screen bg-black text-slate-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-black text-slate-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative">
+      <CountdownTimer />
+      <PurchaseNotifications />
+      
       <div className="bg-emerald-500 text-black text-center py-2 font-bold text-sm px-4">
         ¡Tu plan personalizado ha sido generado con éxito!
       </div>
