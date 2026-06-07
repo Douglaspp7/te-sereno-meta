@@ -330,7 +330,7 @@ function VSLScreen() {
         
         <div className="relative w-full max-w-sm mx-auto aspect-[9/16] rounded-3xl overflow-hidden bg-black border border-emerald-500/30 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] mb-12">
           <video 
-            src="/vsl.mp4" 
+            src="/vsl2.mp4" 
             controls 
             playsInline
             controlsList="nodownload"
