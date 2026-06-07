@@ -195,12 +195,7 @@ function VSLScreen() {
           <div className="absolute bottom-4 left-0 right-0 text-center text-white/50 text-sm font-medium z-10">
             (Vídeo de Vendas aqui)
           </div>
-        </div>
 
-        {/* Promo Image Placeholder */}
-        <div className="mb-16 text-center">
-          <img src="/promocional.png" alt="MiReto21 App" className="w-full max-w-md mx-auto rounded-3xl shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] border border-white/10" />
-        </div>
 
         <div className="grid md:grid-cols-2 gap-8 mb-20">
           <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-sm">
@@ -225,7 +220,10 @@ function VSLScreen() {
           <div className="relative bg-gradient-to-b from-emerald-500/10 to-transparent border border-emerald-500/30 rounded-3xl p-8 backdrop-blur-sm flex flex-col justify-center shadow-2xl">
             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50 rounded-t-3xl" />
             <div className="text-center mb-6">
-              <h3 className="text-xl text-white/80 font-medium mb-2">Acceso Completo a MiReto21</h3>
+              <h3 className="text-xl text-white/80 font-medium mb-4">Acceso Completo a MiReto21</h3>
+              
+              <img src="/promocional.png" alt="Aplicativo MiReto21" className="w-full max-w-xs mx-auto rounded-xl shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)] border border-emerald-500/20 mb-6" />
+
               <div className="flex items-center justify-center gap-2 mb-2">
                 <span className="text-5xl font-extrabold text-white">$9</span>
                 <span className="text-xl text-white/60 mt-2">USD</span>
