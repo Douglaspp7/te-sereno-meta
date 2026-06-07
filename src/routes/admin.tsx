@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Trash2, ShieldCheck, Lock, RefreshCcw } from "lucide-react";
-import { getAllowlist, deleteAllowlistEmail } from "@/lib/admin.functions";
-import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute('/admin')({
   component: AdminPage,
@@ -14,9 +12,6 @@ function AdminPage() {
   const [emails, setEmails] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
-  
-  const fetchListFn = useServerFn(getAllowlist)
-  const deleteFn = useServerFn(deleteAllowlistEmail)
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +26,8 @@ function AdminPage() {
   const loadData = async () => {
     setRefreshing(true)
     try {
-      const data = await fetchListFn()
+      const res = await fetch('/api/admin/allowlist')
+      const data = await res.json()
       setEmails(data || [])
     } catch (err) {
       console.error(err)
@@ -44,7 +40,11 @@ function AdminPage() {
     if (!confirm(`Tem certeza que deseja apagar o acesso de ${email}?`)) return;
     setLoading(true)
     try {
-      await deleteFn({ data: email })
+      await fetch('/api/admin/allowlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      })
       await loadData()
     } catch (err) {
       console.error(err)
