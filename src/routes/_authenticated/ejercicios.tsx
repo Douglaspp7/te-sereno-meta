@@ -158,28 +158,30 @@ function EjerciciosPage() {
     return url;
   };
   
+  // Usa os vídeos nativos hospedados no Supabase Storage
+  const supabaseUrl = "https://euwckzpwmvbzliifcmyp.supabase.co/storage/v1/object/public/videos";
   const VIDEO_LINKS: Record<number, string> = {
-    1: 'https://youtu.be/YFAuNBwvugY',
-    2: 'https://youtu.be/21C7hlYOnwE',
-    3: 'https://youtu.be/LZORkCJf9ow',
-    4: 'https://youtu.be/B4Ef_BaAZuk',
-    5: 'https://youtu.be/qeFt1gZeOWg',
-    6: 'https://youtu.be/-HZvbHUot78',
-    7: 'https://youtu.be/tz0ffHMmloQ',
-    8: 'https://youtu.be/9kKZII96YPc',
-    9: 'https://youtu.be/75S19ireC0w',
-    10: 'https://youtu.be/9o0UPuDBM8M',
-    11: 'https://youtu.be/e6C0Ia5Cazo',
-    12: 'https://youtu.be/bVNDdQ7xc5U',
-    13: 'https://youtu.be/YhGrKAOT-rQ',
-    14: 'https://youtu.be/coy1trQFQCU',
-    15: 'https://youtu.be/07UozcXXOXY',
-    16: 'https://youtu.be/_fBLOyRbzzs',
-    17: 'https://youtu.be/39PzNPzDL_g',
-    18: 'https://youtu.be/d-TjzCjVBLg',
-    19: 'https://youtu.be/5lDNqN7eZ4A',
-    20: 'https://youtu.be/hEt3YCJILOs',
-    21: 'https://youtu.be/2sHRAQO4J8k',
+    1: `${supabaseUrl}/dia1.mp4`,
+    2: `${supabaseUrl}/dia2.mp4`,
+    3: `${supabaseUrl}/dia3.mp4`,
+    4: `${supabaseUrl}/dia4.mp4`,
+    5: `${supabaseUrl}/dia5.mp4`,
+    6: `${supabaseUrl}/dia6.mp4`,
+    7: `${supabaseUrl}/dia7.mp4`,
+    8: `${supabaseUrl}/dia8.mp4`,
+    9: `${supabaseUrl}/dia9.mp4`,
+    10: `${supabaseUrl}/dia10.mp4`,
+    11: `${supabaseUrl}/dia11.mp4`,
+    12: `${supabaseUrl}/dia12.mp4`,
+    13: `${supabaseUrl}/dia13.mp4`,
+    14: `${supabaseUrl}/dia14.mp4`,
+    15: `${supabaseUrl}/dia15.mp4`,
+    16: `${supabaseUrl}/dia16.mp4`,
+    17: `${supabaseUrl}/dia17.mp4`,
+    18: `${supabaseUrl}/dia18.mp4`,
+    19: `${supabaseUrl}/dia19.mp4`,
+    20: `${supabaseUrl}/dia20.mp4`,
+    21: `${supabaseUrl}/dia21.mp4`,
   };
   
   // Forçar os URLs de vídeo mapeados, caso contrário, usa o do banco de dados
