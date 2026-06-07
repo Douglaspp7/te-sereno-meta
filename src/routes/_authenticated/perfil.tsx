@@ -12,6 +12,7 @@ function PerfilPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showQuizConfirm, setShowQuizConfirm] = useState(false);
 
   // Obter usuário logado
   const { data: user } = useQuery({
@@ -56,6 +57,23 @@ function PerfilPage() {
     onSuccess: () => {
       queryClient.invalidateQueries();
       navigate({ to: "/" });
+    }
+  });
+
+  const redoQuiz = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error("No user");
+      
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ onboarding_completed: false })
+        .eq("id", user.id);
+
+      if (updateError) throw updateError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+      navigate({ to: "/onboarding" });
     }
   });
 
@@ -165,6 +183,41 @@ function PerfilPage() {
                     className="flex-1 h-10 bg-destructive text-white rounded-lg text-sm font-bold disabled:opacity-50"
                   >
                     {resetProgress.isPending ? "Reiniciando..." : "Sí, reiniciar"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="h-px bg-border my-6" />
+
+            <h4 className="font-bold text-foreground mb-1">Rehacer Cuestionario</h4>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Vuelve a realizar el cuestionario inicial para actualizar tus metas, peso objetivo y condición física.
+            </p>
+
+            {!showQuizConfirm ? (
+              <button 
+                onClick={() => setShowQuizConfirm(true)}
+                className="w-full h-12 border border-border text-foreground font-bold rounded-xl hover:bg-muted transition-colors flex items-center justify-center gap-2"
+              >
+                Volver a evaluar
+              </button>
+            ) : (
+              <div className="bg-muted rounded-xl p-4 border border-border/50 animate-in fade-in zoom-in-95 duration-200">
+                <p className="text-sm font-bold text-foreground mb-4 text-center">¿Deseas rehacer el cuestionario ahora?</p>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setShowQuizConfirm(false)}
+                    className="flex-1 h-10 bg-background border border-border rounded-lg text-sm font-bold text-foreground"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    onClick={() => redoQuiz.mutate()}
+                    disabled={redoQuiz.isPending}
+                    className="flex-1 h-10 bg-primary text-primary-foreground rounded-lg text-sm font-bold disabled:opacity-50"
+                  >
+                    {redoQuiz.isPending ? "Cargando..." : "Sí, rehacer"}
                   </button>
                 </div>
               </div>
