@@ -293,21 +293,30 @@ export type Database = {
         Row: {
           buyer_email: string
           created_at: string | null
+          plan: string | null
           plan_type: string | null
+          purchased_at: string | null
+          raw_payload: Json | null
           status: string
           transaction_id: string | null
         }
         Insert: {
           buyer_email: string
           created_at?: string | null
+          plan?: string | null
           plan_type?: string | null
+          purchased_at?: string | null
+          raw_payload?: Json | null
           status: string
           transaction_id?: string | null
         }
         Update: {
           buyer_email?: string
           created_at?: string | null
+          plan?: string | null
           plan_type?: string | null
+          purchased_at?: string | null
+          raw_payload?: Json | null
           status?: string
           transaction_id?: string | null
         }
