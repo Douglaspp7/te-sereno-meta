@@ -10,27 +10,32 @@ const quizData = {
   1: {
     title: "¿Cuál es tu principal objetivo en los próximos 21 días?",
     image: "/quiz/quiz_1.png",
-    options: ["Perder grasa localizada", "Reducir medidas en el abdomen", "Desintoxicar el organismo", "Mejorar digestión y energía"]
+    options: ["Perder grasa localizada", "Reducir medidas en el abdomen", "Desintoxicar el organismo", "Mejorar digestión y energía"],
+    feedback: "Estamos analizando tu perfil metabólico..."
   },
   2: {
     title: "¿A qué hora sueles sentir más ansiedad por comer dulces o pan?",
     image: "/quiz/quiz_2.png",
-    options: ["A media mañana", "Después del almuerzo", "Al final de la tarde/noche", "Antes de dormir"]
+    options: ["A media mañana", "Después del almuerzo", "Al final de la tarde/noche", "Antes de dormir"],
+    feedback: "Excelente. Identificando tus patrones de hábitos..."
   },
   3: {
     title: "¿Cómo describirías tu metabolismo actualmente?",
     image: "/quiz/quiz_3.png",
-    options: ["Rápido (Pierdo peso fácil)", "Normal (Pierdo si me cuido)", "Lento (Me cuesta adelgazar)", "Estancado (No bajo nada)"]
+    options: ["Rápido (Pierdo peso fácil)", "Normal (Pierdo si me cuido)", "Lento (Me cuesta adelgazar)", "Estancado (No bajo nada)"],
+    feedback: "Esto nos ayuda a personalizar tu recomendación..."
   },
   4: {
     title: "¿Cuánta agua pura logras consumir al día?",
     image: "/quiz/quiz_4.png",
-    options: ["Menos de 1 litro", "Entre 1 y 2 litros", "Más de 2 litros", "Casi no tomo agua pura"]
+    options: ["Menos de 1 litro", "Entre 1 y 2 litros", "Más de 2 litros", "Casi no tomo agua pura"],
+    feedback: "Entendido. Ajustando los parámetros de hidratación..."
   },
   5: {
     title: "Estamos listos para calcular tu plan. ¿Te comprometes a seguir el método 100% por 21 días?",
     image: "/quiz/quiz_5.png",
-    options: ["Sí, estoy 100% comprometida", "¡Lista para empezar ahora!"]
+    options: ["Sí, estoy 100% comprometida", "¡Lista para empezar ahora!"],
+    feedback: "Generando tu plan personalizado de 21 días..."
   }
 }
 
@@ -94,48 +99,109 @@ function HeroScreen({ onNext }: { onNext: () => void }) {
 function QuizScreen({ step, onNext }: { step: number; onNext: () => void }) {
   const data = quizData[step as keyof typeof quizData];
   const progress = (step / 5) * 100;
+  
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  useEffect(() => {
+    setSelectedOption(null);
+    setShowFeedback(false);
+  }, [step]);
+
+  const handleOptionClick = (index: number) => {
+    if (selectedOption !== null) return;
+    
+    setSelectedOption(index);
+    
+    setTimeout(() => {
+      setShowFeedback(true);
+      
+      setTimeout(() => {
+        onNext();
+      }, 2000);
+      
+    }, 500);
+  };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col transition-opacity duration-500">
-      <div className="w-full bg-white/10 h-2">
-        <div 
-          className="bg-emerald-500 h-2 transition-all duration-500"
-          style={{ width: `${progress}%` }}
-        />
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm">
+        <div className="h-1.5 w-full bg-white/10">
+          <div 
+            className="h-full bg-emerald-500 transition-all duration-700 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </div>
       
-      <div className="flex-1 flex flex-col md:flex-row">
-        <div className="w-full md:w-1/2 h-[30vh] md:h-auto relative">
-          <img src={data.image} alt="Quiz" className="w-full h-full object-cover opacity-80" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent md:bg-gradient-to-r md:from-transparent md:to-black" />
+      {showFeedback ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-background animate-in fade-in zoom-in-95 duration-500 z-40">
+          <div className="w-20 h-20 mb-8 rounded-full bg-emerald-500/10 flex items-center justify-center animate-pulse">
+            <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+          </div>
+          <h3 className="text-2xl md:text-3xl font-bold text-foreground text-center max-w-md leading-tight animate-in slide-in-from-bottom-4 duration-700">
+            {data.feedback}
+          </h3>
         </div>
-        
-        <div className="w-full md:w-1/2 flex flex-col justify-center px-6 py-10 md:p-12 relative z-10 -mt-10 md:mt-0">
-          <div className="max-w-md w-full mx-auto">
-            <span className="text-emerald-500 font-bold tracking-widest text-sm uppercase mb-2 block">
-              Pregunta {step} de 5
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 drop-shadow-md">
-              {data.title}
-            </h2>
-            
-            <div className="space-y-4">
-              {data.options.map((opt, i) => (
-                <button
-                  key={i}
-                  onClick={onNext}
-                  className="w-full text-left p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all text-white font-medium text-lg flex items-center justify-between group shadow-lg backdrop-blur-md"
-                >
-                  {opt}
-                  <div className="w-6 h-6 rounded-full border border-white/30 group-hover:border-emerald-500 group-hover:bg-emerald-500 flex items-center justify-center transition-all">
-                    <Check className="w-4 h-4 text-transparent group-hover:text-black" />
-                  </div>
-                </button>
-              ))}
+      ) : (
+        <div className="flex flex-col md:flex-row h-screen animate-in fade-in duration-500">
+          <div className="w-full h-[40vh] md:h-full md:w-5/12 relative flex-shrink-0">
+            <img src={data.image} alt="Quiz" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent md:bg-gradient-to-r md:from-transparent md:to-background" />
+          </div>
+          
+          <div className="flex-1 bg-background flex flex-col px-6 pb-10 pt-6 md:pt-10 md:justify-center relative z-10 -mt-10 md:mt-0 rounded-t-[2.5rem] md:rounded-none shadow-[0_-20px_40px_rgba(0,0,0,0.3)] md:shadow-none">
+            <div className="max-w-md w-full mx-auto animate-in slide-in-from-bottom-8 duration-700 delay-100 fill-mode-both">
+              
+              <div className="flex items-center gap-2 mb-4">
+                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-500 font-bold text-sm">
+                  {step}
+                </span>
+                <span className="text-muted-foreground font-medium text-sm tracking-wide">
+                  de 5
+                </span>
+              </div>
+
+              <h2 className="text-2xl md:text-4xl font-extrabold text-foreground mb-8 leading-tight">
+                {data.title}
+              </h2>
+              
+              <div className="space-y-3">
+                {data.options.map((opt, i) => {
+                  const isSelected = selectedOption === i;
+                  const isDisabled = selectedOption !== null && !isSelected;
+                  
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handleOptionClick(i)}
+                      disabled={selectedOption !== null}
+                      className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 flex items-center justify-between group 
+                        ${isSelected 
+                          ? 'bg-emerald-500 border-emerald-500 text-black scale-[0.98] shadow-[0_0_20px_rgba(16,185,129,0.4)]' 
+                          : 'bg-card border-border hover:border-emerald-500/50 hover:bg-emerald-500/5 text-foreground'
+                        }
+                        ${isDisabled ? 'opacity-40 scale-[0.98]' : 'opacity-100'}
+                      `}
+                    >
+                      <span className="font-semibold text-base md:text-lg pr-4">{opt}</span>
+                      
+                      <div className={`w-6 h-6 rounded-full flex-shrink-0 border flex items-center justify-center transition-colors
+                        ${isSelected 
+                          ? 'border-black bg-black' 
+                          : 'border-muted-foreground/30 group-hover:border-emerald-500/50'
+                        }
+                      `}>
+                        {isSelected && <Check className="w-4 h-4 text-emerald-500" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
