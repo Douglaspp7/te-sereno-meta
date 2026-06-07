@@ -356,7 +356,7 @@ export function Dashboard({ userId, profile }: { userId: string; profile: Profil
           <MegaCard to="/plan" image="/mi_plan_real.webp" title="Mi Plan" subtitle={pendingMealText} />
           <MegaCard to="/ejercicios" image="/ejercicios_real.webp" title="Ejercicios" subtitle="Rutina diaria" />
           <MegaCard to="/compras" image="/compras_real.webp" title="Compras" subtitle="Lista semanal" />
-          <MegaCard to="/te" image={`/images/teas/tea_${currentTea.day}.jpg`} fallbackImage="/te_real.webp" title={currentTea.name} subtitle={currentTea.category} />
+          <MegaCard to="/te" image={currentTea.imageUrl || "/te_real.webp"} fallbackImage="/te_real.webp" title={currentTea.name} subtitle={currentTea.category} />
           <MegaCard to="/recompensas" image="/recompensas_botao.png" title="Recompensas" subtitle={`${stats.unlockedRewards} de 8 desbloqueadas`} />
           
           <Link to={profile.subscription_plan === 'premium' ? "/analizar" : "/premium"} className="group relative flex flex-col overflow-hidden rounded-[1.5rem] bg-white shadow-sm border border-border/40 transition-all active:scale-95" style={{ minHeight: '140px' }}>

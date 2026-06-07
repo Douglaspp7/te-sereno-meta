@@ -132,7 +132,7 @@ function TeDelDiaPage() {
       {/* Imagem Herói com botão Voltar */}
       <div className="relative h-[40vh] w-full bg-muted">
         <img 
-          src={`/images/teas/tea_${tea.day}.jpg`} 
+          src={tea.imageUrl} 
           alt={tea.name} 
           className="h-full w-full object-cover" 
           onError={(e) => {
