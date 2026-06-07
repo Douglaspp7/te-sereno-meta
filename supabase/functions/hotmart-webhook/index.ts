@@ -67,12 +67,28 @@ serve(async (req) => {
         .eq('email', email)
         .select();
 
-      // 2. Se o usuário não existir (profileData vazio), a gente pode adicionar numa tabela temporária
-      // No Lovable/Supabase, a autenticação por Magic Link criará o usuário e o trigger
-      // cuidará do resto. Para simplificar, poderemos usar a Edge Function para registrar a aprovação em log ou numa tabela dedicada se houver.
-      console.log(`Compra aprovada processada para ${email}`);
+      // 2. Se o profile não existe, salvar na tabela pendente
+      if (!profileData || profileData.length === 0) {
+        const { error: insertError } = await supabase
+          .from('hotmart_purchases')
+          .upsert({
+            buyer_email: email,
+            transaction_id: data.transaction || 'unknown',
+            status: 'approved',
+            plan_type: 'premium'
+          });
+          
+        if (insertError) {
+          console.error("Erro ao registrar compra pendente:", insertError);
+        } else {
+          console.log(`Compra registrada como pendente para novo usuário: ${email}`);
+        }
+      } else {
+        console.log(`Conta de usuário atualizada para VIP: ${email}`);
+      }
 
     } else if (event === "PURCHASE_CANCELED" || event === "PURCHASE_REFUNDED" || event === "PURCHASE_CHARGEBACK") {
+      // Tentar atualizar o profile
       await supabase
         .from('profiles')
         .update({
@@ -80,7 +96,13 @@ serve(async (req) => {
         })
         .eq('email', email);
         
-      console.log(`Acesso bloqueado processado para ${email} (Evento: ${event})`);
+      // Atualizar também a tabela de compras, caso ele ainda nem tenha criado conta
+      await supabase
+        .from('hotmart_purchases')
+        .update({ status: 'refunded' })
+        .eq('buyer_email', email);
+
+      console.log(`Acesso revogado para ${email} (Evento: ${event})`);
     }
 
     return new Response(JSON.stringify({ success: true }), {
