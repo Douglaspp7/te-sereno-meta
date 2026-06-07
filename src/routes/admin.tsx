@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Trash2, ShieldCheck, Lock, RefreshCcw } from 'lucide-react'
 import { getAllowlist, deleteAllowlistEmail } from '@/lib/admin.functions'
-import { useServerFn } from '@tanstack/start'
+import { useServerFn } from '@tanstack/react-start'
 
 export const Route = createFileRoute('/admin')({
   component: AdminPage,
