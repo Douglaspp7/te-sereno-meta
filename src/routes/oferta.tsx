@@ -197,6 +197,11 @@ function VSLScreen() {
           </div>
         </div>
 
+        {/* Promo Image Placeholder */}
+        <div className="mb-16 text-center">
+          <img src="/promocional.png" alt="MiReto21 App" className="w-full max-w-md mx-auto rounded-3xl shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] border border-white/10" />
+        </div>
+
         <div className="grid md:grid-cols-2 gap-8 mb-20">
           <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-sm">
             <h3 className="text-2xl font-bold text-white mb-6">Tu plan incluye:</h3>
