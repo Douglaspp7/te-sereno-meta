@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as OfertaRouteImport } from './routes/oferta'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTeRouteImport } from './routes/_authenticated/te'
@@ -26,6 +27,7 @@ import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authentic
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedAnalizarRouteImport } from './routes/_authenticated/analizar'
 import { Route as AuthenticatedActivateRouteImport } from './routes/_authenticated/activate'
+import { Route as ApiAdminAllowlistRouteImport } from './routes/api/admin/allowlist'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -44,6 +46,11 @@ const OfertaRoute = OfertaRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -116,6 +123,11 @@ const AuthenticatedActivateRoute = AuthenticatedActivateRouteImport.update({
   path: '/activate',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiAdminAllowlistRoute = ApiAdminAllowlistRouteImport.update({
+  id: '/api/admin/allowlist',
+  path: '/api/admin/allowlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -140,6 +152,7 @@ const ApiPublicHotmartWebhookRoute = ApiPublicHotmartWebhookRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/oferta': typeof OfertaRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -155,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/progreso': typeof AuthenticatedProgresoRoute
   '/recompensas': typeof AuthenticatedRecompensasRoute
   '/te': typeof AuthenticatedTeRoute
+  '/api/admin/allowlist': typeof ApiAdminAllowlistRoute
   '/api/public/hotmart/webhook': typeof ApiPublicHotmartWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -162,6 +176,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/oferta': typeof OfertaRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -177,6 +192,7 @@ export interface FileRoutesByTo {
   '/progreso': typeof AuthenticatedProgresoRoute
   '/recompensas': typeof AuthenticatedRecompensasRoute
   '/te': typeof AuthenticatedTeRoute
+  '/api/admin/allowlist': typeof ApiAdminAllowlistRoute
   '/api/public/hotmart/webhook': typeof ApiPublicHotmartWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -186,6 +202,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/oferta': typeof OfertaRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -201,6 +218,7 @@ export interface FileRoutesById {
   '/_authenticated/progreso': typeof AuthenticatedProgresoRoute
   '/_authenticated/recompensas': typeof AuthenticatedRecompensasRoute
   '/_authenticated/te': typeof AuthenticatedTeRoute
+  '/api/admin/allowlist': typeof ApiAdminAllowlistRoute
   '/api/public/hotmart/webhook': typeof ApiPublicHotmartWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -210,6 +228,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auth'
     | '/oferta'
     | '/reset-password'
@@ -225,6 +244,7 @@ export interface FileRouteTypes {
     | '/progreso'
     | '/recompensas'
     | '/te'
+    | '/api/admin/allowlist'
     | '/api/public/hotmart/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -232,6 +252,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/auth'
     | '/oferta'
     | '/reset-password'
@@ -247,6 +268,7 @@ export interface FileRouteTypes {
     | '/progreso'
     | '/recompensas'
     | '/te'
+    | '/api/admin/allowlist'
     | '/api/public/hotmart/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -255,6 +277,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/admin'
     | '/auth'
     | '/oferta'
     | '/reset-password'
@@ -270,6 +293,7 @@ export interface FileRouteTypes {
     | '/_authenticated/progreso'
     | '/_authenticated/recompensas'
     | '/_authenticated/te'
+    | '/api/admin/allowlist'
     | '/api/public/hotmart/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -279,9 +303,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   OfertaRoute: typeof OfertaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiAdminAllowlistRoute: typeof ApiAdminAllowlistRoute
   ApiPublicHotmartWebhookRoute: typeof ApiPublicHotmartWebhookRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -309,6 +335,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -409,6 +442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedActivateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/admin/allowlist': {
+      id: '/api/admin/allowlist'
+      path: '/api/admin/allowlist'
+      fullPath: '/api/admin/allowlist'
+      preLoaderRoute: typeof ApiAdminAllowlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -476,9 +516,11 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   OfertaRoute: OfertaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiAdminAllowlistRoute: ApiAdminAllowlistRoute,
   ApiPublicHotmartWebhookRoute: ApiPublicHotmartWebhookRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
