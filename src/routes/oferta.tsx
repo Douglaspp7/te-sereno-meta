@@ -195,7 +195,7 @@ function VSLScreen() {
           <div className="absolute bottom-4 left-0 right-0 text-center text-white/50 text-sm font-medium z-10">
             (Vídeo de Vendas aqui)
           </div>
-
+        </div>
 
         <div className="grid md:grid-cols-2 gap-8 mb-20">
           <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-sm">
