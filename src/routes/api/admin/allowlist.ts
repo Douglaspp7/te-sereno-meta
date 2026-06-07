@@ -11,7 +11,7 @@ export const Route = createFileRoute("/api/admin/allowlist")({
           
         const { data: profiles, error: err2 } = await supabaseAdmin
           .from("profiles")
-          .select("email, subscription_status, created_at")
+          .select("email, subscription_status, created_at, phone")
           .eq("subscription_status", "active")
         
         if (err1 || err2) {
@@ -25,7 +25,8 @@ export const Route = createFileRoute("/api/admin/allowlist")({
             buyer_email: p.buyer_email,
             status: p.status,
             created_at: p.created_at || p.purchased_at,
-            source: 'hotmart_purchases'
+            source: 'hotmart_purchases',
+            phone: p.phone
           }));
         }
         
@@ -36,7 +37,8 @@ export const Route = createFileRoute("/api/admin/allowlist")({
                 buyer_email: p.email,
                 status: p.subscription_status,
                 created_at: p.created_at,
-                source: 'profiles'
+                source: 'profiles',
+                phone: p.phone
               });
             }
           });
@@ -49,7 +51,7 @@ export const Route = createFileRoute("/api/admin/allowlist")({
       },
       POST: async ({ request }) => {
         const body = await request.json();
-        const email = body.email;
+        const { email, action } = body;
         
         if (!email) {
           return new Response(JSON.stringify({ error: "Email required" }), { status: 400 });
@@ -57,14 +59,30 @@ export const Route = createFileRoute("/api/admin/allowlist")({
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         
+        if (action === 'reset_password') {
+          // Busca o ID do usuário
+          const { data: profile } = await supabaseAdmin.from("profiles").select("id").eq("email", email).single();
+          if (!profile) {
+            return new Response(JSON.stringify({ error: "Usuário não encontrado no aplicativo (ele ainda não fez o primeiro login)" }), { status: 404 });
+          }
+          
+          // Reseta a senha para 123456
+          const { error } = await supabaseAdmin.auth.admin.updateUserById(profile.id, { password: "123456" });
+          if (error) {
+            return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+          }
+          return Response.json({ success: true, message: "Senha redefinida para 123456 com sucesso!" });
+        }
+        
+        // Ação padrão (Deletar acesso)
         // Deleta da sala de espera
-        const { error } = await supabaseAdmin
+        await supabaseAdmin
           .from("hotmart_purchases")
           .delete()
           .eq("buyer_email", email);
           
         // Desativa no aplicativo se já tiver conta
-        await supabaseAdmin
+        const { error } = await supabaseAdmin
           .from("profiles")
           .update({ subscription_status: "inactive" })
           .eq("email", email);

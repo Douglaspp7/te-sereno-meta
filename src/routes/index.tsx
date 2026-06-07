@@ -49,14 +49,12 @@ function HomeRoute() {
 
 function Landing() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [otp, setOtp] = useState("");
-
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const isTestEmail = email.toLowerCase() === "douglasp7@hotmail.com";
 
-  const submitEmail = async (e: React.FormEvent) => {
+  const submitAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -73,6 +71,7 @@ function Landing() {
         if (error) throw error;
       } else {
         const emailClean = email.trim().toLowerCase();
+        
         // 1. Verificar se o usuário tem permissão (comprou ou já é VIP)
         const { data: hasAccess, error: accessError } = await supabase.rpc('check_email_access', { check_email: emailClean });
         
@@ -82,16 +81,25 @@ function Landing() {
           return;
         }
 
-        // 2. Enviar o Magic Link
-        const { error } = await supabase.auth.signInWithOtp({
+        // 2. Tentar Login
+        const { error: signInError } = await supabase.auth.signInWithPassword({
           email: emailClean,
-          options: {
-            emailRedirectTo: window.location.origin,
-            shouldCreateUser: true,
-          },
+          password: password,
         });
-        if (error) throw error;
-        setSent(true);
+
+        // 3. Se der erro de credenciais, significa que é o primeiro acesso (conta não existe)
+        if (signInError && signInError.message.toLowerCase().includes('invalid login credentials')) {
+          // Criar a conta
+          const { error: signUpError } = await supabase.auth.signUp({
+            email: emailClean,
+            password: password,
+          });
+          
+          if (signUpError) throw signUpError;
+          // Após o signUp o usuário já é logado automaticamente (se confirm email estiver desligado)
+        } else if (signInError) {
+          throw signInError;
+        }
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Algo salió mal.";
@@ -101,24 +109,7 @@ function Landing() {
     }
   };
 
-  const verifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email: email.trim().toLowerCase(),
-        token: otp,
-        type: 'email',
-      });
-      if (error) throw error;
-      // User is now logged in, the `useUser` hook will detect the session change
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Código incorrecto.";
-      alert(translateError(msg));
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   return (
     <AppShell hideNav>
@@ -141,69 +132,51 @@ function Landing() {
         <div className="relative z-10 w-full animate-in fade-in slide-in-from-bottom-8 duration-700 p-6 pb-12">
           
           <div className="mb-6 text-center">
-            {sent && (
-              <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-white/20 backdrop-blur-md text-white">
-                <CheckCircle2 className="h-7 w-7" />
-              </div>
-            )}
             <h1 className="font-display text-2xl font-bold tracking-tight text-white drop-shadow-md">
-              {sent ? "Revisa tu correo" : "Comienza tu transformación"}
+              Comienza tu transformación
             </h1>
             <p className="mt-2 text-[14px] text-white/80 drop-shadow-md">
-              {sent
-                ? `Te hemos enviado un enlace mágico. Haz clic en él para entrar.`
-                : "Ingresa tu correo para acceder a tu plan de 21 días."}
+              Ingresa el correo de tu compra para acceder y crea una contraseña.
             </p>
           </div>
 
-          {!sent ? (
-            <form onSubmit={submitEmail} className="w-full space-y-4">
-              <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
-                <Mail className="h-5 w-5 text-white/60 group-focus-within:text-white transition-colors" />
-                <input
-                  type="email"
-                  required
-                  className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
-                  placeholder="tu@correo.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                />
-              </div>
+          <form onSubmit={submitAuth} className="w-full space-y-4">
+            <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
+              <Mail className="h-5 w-5 text-white/60 group-focus-within:text-white transition-colors" />
+              <input
+                type="email"
+                required
+                className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
+                placeholder="Correo usado en Hotmart"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
 
-              {isTestEmail && (
-                <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <Lock className="h-5 w-5 text-white/60 group-focus-within:text-white transition-colors" />
-                  <input
-                    type="password"
-                    required={isTestEmail}
-                    className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
-                    placeholder="Contraseña de administrador"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-              )}
+            <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
+              <Lock className="h-5 w-5 text-white/60 group-focus-within:text-white transition-colors" />
+              <input
+                type="password"
+                required
+                className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
+                placeholder="Crea o ingresa tu contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
+            </div>
 
-              <button
-                type="submit"
-                disabled={loading || !email}
-                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-white font-bold text-black shadow-xl transition-all active:scale-[0.98] disabled:opacity-70"
-              >
-                {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />}
-                Continuar
-                {!loading && <ArrowRight className="h-5 w-5" />}
-              </button>
-            </form>
-          ) : (
             <button
-              type="button"
-              onClick={() => setSent(false)}
-              className="mt-4 w-full text-center text-sm font-semibold text-white/70 transition-colors hover:text-white"
+              type="submit"
+              disabled={loading || !email || !password}
+              className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-white font-bold text-black shadow-xl transition-all active:scale-[0.98] disabled:opacity-70"
             >
-              Usar otro correo
+              {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />}
+              Continuar
+              {!loading && <ArrowRight className="h-5 w-5" />}
             </button>
-          )}
+          </form>
         </div>
       </section>
     </AppShell>

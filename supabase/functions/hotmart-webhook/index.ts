@@ -56,13 +56,17 @@ serve(async (req) => {
     // Lógica com base no evento
     // Eventos mais comuns da Hotmart V2: PURCHASE_APPROVED, PURCHASE_CANCELED, PURCHASE_REFUNDED
     if (event === "PURCHASE_APPROVED") {
+      // Extrair o telefone (pode vir em phone ou checkoutPhone)
+      const phone = data.buyer.checkoutPhone || data.buyer.phone || null;
+
       // 1. Tentar atualizar o profile se o usuário já existir
       const { data: profileData } = await supabase
         .from('profiles')
         .update({
           subscription_status: 'active',
           subscription_plan: 'premium',
-          subscription_started_at: new Date().toISOString()
+          subscription_started_at: new Date().toISOString(),
+          phone: phone
         })
         .eq('email', email)
         .select();
@@ -75,7 +79,8 @@ serve(async (req) => {
             buyer_email: email,
             transaction_id: data.transaction || 'unknown',
             status: 'approved',
-            plan_type: 'premium'
+            plan_type: 'premium',
+            phone: phone
           });
           
         if (insertError) {

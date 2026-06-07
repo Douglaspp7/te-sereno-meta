@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Trash2, ShieldCheck, Lock, RefreshCcw } from "lucide-react";
+import { Trash2, ShieldCheck, Lock, RefreshCcw, Key } from "lucide-react";
 
 export const Route = createFileRoute('/admin')({
   component: AdminPage,
@@ -53,6 +53,28 @@ function AdminPage() {
     setLoading(false)
   }
 
+  const handleResetPassword = async (email: string) => {
+    if (!confirm(`Tem certeza que deseja resetar a senha de ${email} para '123456'?`)) return;
+    setLoading(true)
+    try {
+      const res = await fetch('/api/admin/allowlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, action: 'reset_password' })
+      })
+      const data = await res.json()
+      if (data.error) {
+        alert("Erro: " + data.error)
+      } else {
+        alert("Senha redefinida com sucesso para: 123456")
+      }
+    } catch (err) {
+      console.error(err)
+      alert("Erro ao redefinir senha")
+    }
+    setLoading(false)
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
@@ -98,6 +120,7 @@ function AdminPage() {
                 <thead className="bg-white/5 border-b border-white/10">
                   <tr>
                     <th className="p-4 font-medium text-white/60">E-mail</th>
+                    <th className="p-4 font-medium text-white/60">Telefone</th>
                     <th className="p-4 font-medium text-white/60">Status</th>
                     <th className="p-4 font-medium text-white/60">Data</th>
                     <th className="p-4 font-medium text-right text-white/60">Ações</th>
@@ -107,18 +130,30 @@ function AdminPage() {
                   {emails.map((row, i) => (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       <td className="p-4 font-medium">{row.buyer_email || row.email}</td>
+                      <td className="p-4 text-white/70">{row.phone || '-'}</td>
                       <td className="p-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${row.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${row.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : row.status === 'approved' ? 'bg-blue-500/20 text-blue-400' : 'bg-red-500/20 text-red-400'}`}>
                           {row.status || 'active'}
                         </span>
                       </td>
                       <td className="p-4 text-white/50 text-sm">
                         {new Date(row.created_at || row.purchased_at || Date.now()).toLocaleDateString('pt-BR')}
                       </td>
-                      <td className="p-4 text-right">
+                      <td className="p-4 text-right flex justify-end gap-2">
+                        {row.source === 'profiles' && (
+                          <button 
+                            onClick={() => handleResetPassword(row.buyer_email || row.email)}
+                            disabled={loading}
+                            title="Resetar senha para 123456"
+                            className="p-2 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-500/20 rounded-lg transition-colors"
+                          >
+                            <Key className="w-5 h-5" />
+                          </button>
+                        )}
                         <button 
                           onClick={() => handleDelete(row.buyer_email || row.email)}
                           disabled={loading}
+                          title="Revogar acesso"
                           className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />
