@@ -179,13 +179,14 @@ function CountdownTimer() {
     return () => clearInterval(timer);
   }, []);
 
-  const minutes = Math.floor(timeLeft / 60);
+  const hours = Math.floor(timeLeft / 3600);
+  const minutes = Math.floor((timeLeft % 3600) / 60);
   const seconds = timeLeft % 60;
 
   return (
     <div className="bg-red-600/90 backdrop-blur-sm text-white text-center py-3 font-bold text-sm md:text-base px-4 sticky top-0 z-40 border-b border-red-500 shadow-[0_4px_20px_rgba(220,38,38,0.4)] flex items-center justify-center gap-2">
       <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-      ¡OFERTA EXCLUSIVA! Termina en: {String(minutes).padStart(2, '0')}m {String(seconds).padStart(2, '0')}s
+      ¡OFERTA EXCLUSIVA! Termina en: <span className="notranslate" translate="no">{hours}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}</span>
     </div>
   )
 }
