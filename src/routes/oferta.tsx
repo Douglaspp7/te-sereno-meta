@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Star, CheckCircle2, ChevronRight, Play, Check, Lock, ChevronDown } from 'lucide-react'
+import { Star, CheckCircle2, ChevronRight, Play, Check, Lock, ChevronDown, Utensils, Leaf, PlayCircle, CalendarDays, Trophy, ListChecks, TrendingUp, Zap } from 'lucide-react'
 
 export const Route = createFileRoute('/oferta')({
   component: QuizFunnel,
@@ -242,6 +242,132 @@ function VSLScreen() {
             <p className="text-xs text-white/40 text-center flex items-center justify-center gap-1">
               <Lock className="w-3 h-3" /> Pago 100% seguro a través de Hotmart
             </p>
+          </div>
+        </div>
+
+        {/* Nueva Sección de Value Stacking */}
+        <div className="mb-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 drop-shadow-lg">
+              🎁 Todo lo que recibirás hoy
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {[
+              {
+                img: "/quiz/box_1.png",
+                icon: Utensils,
+                title: "63 Recetas Premium",
+                desc: "Desayunos, almuerzos y cenas para los 21 días del programa."
+              },
+              {
+                img: "/quiz/box_2.png",
+                icon: Leaf,
+                title: "21 Tés Funcionales",
+                desc: "Una receta diferente cada día para complementar tu rutina saludable."
+              },
+              {
+                img: "/quiz/box_3.png",
+                icon: PlayCircle,
+                title: "Biblioteca de Ejercicios",
+                desc: "Vídeos guiados para principiantes y nivel intermedio."
+              },
+              {
+                img: "/quiz/box_4.png",
+                icon: CalendarDays,
+                title: "Plan Diario de 21 Días",
+                desc: "Sabrás exactamente qué hacer cada día."
+              },
+              {
+                img: "/quiz/box_5.png",
+                icon: Trophy,
+                title: "Sistema de Recompensas",
+                desc: "Desbloquea contenido especial conforme avances."
+              },
+              {
+                img: "/quiz/box_6.png",
+                icon: ListChecks,
+                title: "Lista Inteligente de Compras",
+                desc: "Todos los ingredientes organizados para cada semana."
+              },
+              {
+                img: "/quiz/box_7.png",
+                icon: TrendingUp,
+                title: "Seguimiento de Progreso",
+                desc: "Monitorea tu avance durante los 21 días."
+              },
+              {
+                img: "/quiz/box_8.png",
+                icon: Zap,
+                title: "Acceso Inmediato",
+                desc: "Disponible desde tu móvil, tablet o computadora."
+              }
+            ].map((box, i) => (
+              <div key={i} className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:bg-white/10 hover:border-emerald-500/30 hover:-translate-y-2 transition-all duration-300 group flex flex-col">
+                <div className="relative aspect-[4/3] w-full overflow-hidden">
+                  <img src={box.img} alt={box.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-sm text-black text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg border border-emerald-400">
+                    ⭐ Incluido
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-3 w-10 h-10 bg-black/50 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
+                    <box.icon className="w-5 h-5 text-emerald-400" />
+                  </div>
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">{box.title}</h3>
+                  <p className="text-white/70 text-sm flex-1">{box.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="max-w-2xl mx-auto bg-gradient-to-b from-white/10 to-transparent border border-white/20 rounded-3xl p-8 md:p-12 backdrop-blur-lg shadow-2xl relative">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-500 text-black font-extrabold px-6 py-2 rounded-full text-sm tracking-wide shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-300">
+              VALOR TOTAL INCLUIDO
+            </div>
+            
+            <div className="space-y-4 mb-8 mt-4">
+              {[
+                { name: "63 Recetas Premium", price: "US$29" },
+                { name: "21 Recetas de Té", price: "US$19" },
+                { name: "Biblioteca de Ejercicios", price: "US$27" },
+                { name: "Sistema de Recompensas", price: "US$17" },
+                { name: "Planificador de 21 Días", price: "US$37" }
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <span className="text-white/80 font-medium">{item.name}</span>
+                  <span className="text-emerald-400 font-bold">{item.price}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col items-center justify-center border-t border-white/20 pt-8 mb-8">
+              <div className="text-white/50 text-lg font-medium flex items-center gap-2 mb-2">
+                Valor Total: <span className="line-through decoration-red-500/70 decoration-2">US$129</span>
+              </div>
+              <div className="flex items-end gap-3">
+                <span className="text-white/80 text-xl font-medium pb-2">Hoy destacado:</span>
+                <div className="flex items-start gap-1">
+                  <span className="text-6xl font-black text-emerald-400 drop-shadow-[0_0_30px_rgba(16,185,129,0.6)]">US$9</span>
+                </div>
+              </div>
+            </div>
+
+            <a 
+              href="https://pay.hotmart.com/G106177128D" 
+              className="group relative flex items-center justify-center w-full bg-gradient-to-r from-emerald-600 to-emerald-400 hover:from-emerald-500 hover:to-emerald-300 text-black font-extrabold text-2xl py-6 rounded-2xl transition-all hover:scale-[1.03] active:scale-[0.98] shadow-[0_0_50px_-10px_rgba(16,185,129,0.8)] border border-emerald-300/50 mb-4 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              <span className="relative z-10 flex items-center gap-3">
+                QUIERO ACCEDER AHORA <ChevronRight className="w-7 h-7 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </a>
+            
+            <div className="flex items-center justify-center gap-2 text-white/50 text-xs font-medium">
+              <Lock className="w-3 h-3" /> Acceso inmediato • Pago único • Disponible 24/7
+            </div>
           </div>
         </div>
 
