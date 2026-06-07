@@ -289,6 +289,30 @@ export type Database = {
         }
         Relationships: []
       }
+      hotmart_purchases: {
+        Row: {
+          buyer_email: string
+          created_at: string | null
+          plan_type: string | null
+          status: string
+          transaction_id: string | null
+        }
+        Insert: {
+          buyer_email: string
+          created_at?: string | null
+          plan_type?: string | null
+          status: string
+          transaction_id?: string | null
+        }
+        Update: {
+          buyer_email?: string
+          created_at?: string | null
+          plan_type?: string | null
+          status?: string
+          transaction_id?: string | null
+        }
+        Relationships: []
+      }
       plan_days: {
         Row: {
           breakfast: Json | null
