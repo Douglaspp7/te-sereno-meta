@@ -356,16 +356,26 @@ function VSLScreen() {
           <h3 className="text-2xl font-bold text-center text-white mb-10">Más de 10,000 personas ya lo lograron</h3>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { name: "María S.", text: "Increíble. Perdí 4 kilos y nunca me sentí tan llena de energía. ¡Súper recomendado!" },
-              { name: "Laura G.", text: "Las recetas son súper fáciles de hacer y ricas. El grupo de apoyo es lo mejor." },
-              { name: "Ana P.", text: "Había intentado todo, pero estos 21 días me cambiaron la vida. Ya no sufro por la comida." }
+              { name: "María S.", avatar: "https://randomuser.me/api/portraits/women/44.jpg", text: "Increíble. Perdí 4 kilos y nunca me sentí tan llena de energía. ¡Súper recomendado!" },
+              { name: "Laura G.", avatar: "https://randomuser.me/api/portraits/women/68.jpg", text: "Las recetas son súper fáciles de hacer y ricas. El grupo de apoyo es lo mejor." },
+              { name: "Ana P.", avatar: "https://randomuser.me/api/portraits/women/90.jpg", text: "Había intentado todo, pero estos 21 días me cambiaron la vida. Ya no sufro por la comida." }
             ].map((testi, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                <div className="flex gap-1 mb-3">
-                  {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-amber-500 text-amber-500" />)}
+              <div key={i} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col justify-between hover:bg-white/10 transition-colors duration-300">
+                <div>
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-amber-500 text-amber-500" />)}
+                  </div>
+                  <p className="text-white/90 text-sm italic mb-6 leading-relaxed">"{testi.text}"</p>
                 </div>
-                <p className="text-white/80 text-sm italic mb-4">"{testi.text}"</p>
-                <div className="font-bold text-white text-sm">{testi.name}</div>
+                <div className="flex items-center gap-3 border-t border-white/10 pt-4">
+                  <img src={testi.avatar} alt={testi.name} className="w-10 h-10 rounded-full border border-emerald-500/50 object-cover" />
+                  <div>
+                    <div className="font-bold text-white text-sm flex items-center gap-1">
+                      {testi.name} <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                    </div>
+                    <div className="text-white/40 text-xs">Compradora verificada</div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
