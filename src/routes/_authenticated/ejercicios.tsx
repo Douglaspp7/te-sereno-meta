@@ -220,7 +220,7 @@ function EjerciciosPage() {
   }, [videoUrl]);
 
   // Se o URL não for youtube/vimeo e parecer um path de imagem (ex: /images/caminar_20.webp)
-  const isImageUrl = signedVideoUrl && (signedVideoUrl.endsWith('.png') || signedVideoUrl.endsWith('.jpg') || signedVideoUrl.endsWith('.jpeg') || signedVideoUrl.endsWith('.webp') || signedVideoUrl.includes('token='));
+  const isImageUrl = signedVideoUrl && (signedVideoUrl.endsWith('.png') || signedVideoUrl.endsWith('.jpg') || signedVideoUrl.endsWith('.jpeg') || signedVideoUrl.endsWith('.webp'));
   const embedUrl = getEmbedUrl(signedVideoUrl || videoUrl);
 
   return (
