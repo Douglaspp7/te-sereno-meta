@@ -16,7 +16,7 @@ serve(async (req) => {
     console.log("Recebido payload da Hotmart:", JSON.stringify(payload, null, 2));
 
     // Hotmart envia o token de segurança no header ou no payload
-    const hottok = req.headers.get("hottok") || payload.hottok;
+    const hottok = req.headers.get("x-hotmart-hottok") || req.headers.get("hottok") || payload.hottok;
     const expectedToken = Deno.env.get("HOTMART_HOTTOK");
 
     if (!expectedToken) {
