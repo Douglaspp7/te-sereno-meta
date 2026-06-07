@@ -72,6 +72,16 @@ function Landing() {
         });
         if (error) throw error;
       } else {
+        // 1. Verificar se o usuário tem permissão (comprou ou já é VIP)
+        const { data: hasAccess, error: accessError } = await supabase.rpc('check_email_access', { check_email: email });
+        
+        if (!hasAccess) {
+          alert("Correo no registrado. Por favor, adquiere el desafío de 21 días en Hotmart primero.");
+          setLoading(false);
+          return;
+        }
+
+        // 2. Enviar o Magic Link
         const { error } = await supabase.auth.signInWithOtp({
           email,
           options: {
