@@ -13,6 +13,7 @@ function PerfilPage() {
   const queryClient = useQueryClient();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showQuizConfirm, setShowQuizConfirm] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Obter usuário logado
   const { data: user } = useQuery({
@@ -76,6 +77,12 @@ function PerfilPage() {
       navigate({ to: "/onboarding" });
     }
   });
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    queryClient.clear();
+    navigate({ to: "/" });
+  };
 
   if (!profile) return null;
 
@@ -218,6 +225,43 @@ function PerfilPage() {
                     className="flex-1 h-10 bg-primary text-primary-foreground rounded-lg text-sm font-bold disabled:opacity-50"
                   >
                     {redoQuiz.isPending ? "Cargando..." : "Sí, rehacer"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Cerrar Sesión */}
+        <div className="pt-4">
+          <div className="bg-background rounded-2xl border border-border shadow-sm p-5">
+            <h4 className="font-bold text-foreground mb-1">Cerrar Sesión</h4>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Saldrás de tu cuenta en este dispositivo. Necesitarás un nuevo enlace mágico para volver a entrar.
+            </p>
+
+            {!showLogoutConfirm ? (
+              <button 
+                onClick={() => setShowLogoutConfirm(true)}
+                className="w-full h-12 border border-destructive/50 text-destructive font-bold rounded-xl hover:bg-destructive/5 transition-colors flex items-center justify-center"
+              >
+                Cerrar sesión
+              </button>
+            ) : (
+              <div className="bg-destructive/10 rounded-xl p-4 border border-destructive/20 animate-in fade-in zoom-in-95 duration-200">
+                <p className="text-sm font-bold text-destructive mb-4 text-center">¿Estás seguro de que quieres salir?</p>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setShowLogoutConfirm(false)}
+                    className="flex-1 h-10 bg-white border border-border rounded-lg text-sm font-bold text-foreground"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    onClick={handleLogout}
+                    className="flex-1 h-10 bg-destructive text-white rounded-lg text-sm font-bold"
+                  >
+                    Sí, salir
                   </button>
                 </div>
               </div>
