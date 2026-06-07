@@ -161,27 +161,27 @@ function EjerciciosPage() {
   // Usa os vídeos nativos hospedados no Supabase Storage
   const supabaseUrl = "https://euwckzpwmvbzliifcmyp.supabase.co/storage/v1/object/public/videos";
   const VIDEO_LINKS: Record<number, string> = {
-    1: `${supabaseUrl}/dia1.mp4`,
-    2: `${supabaseUrl}/dia2.mp4`,
-    3: `${supabaseUrl}/dia3.mp4`,
-    4: `${supabaseUrl}/dia4.mp4`,
-    5: `${supabaseUrl}/dia5.mp4`,
-    6: `${supabaseUrl}/dia6.mp4`,
-    7: `${supabaseUrl}/dia7.mp4`,
-    8: `${supabaseUrl}/dia8.mp4`,
-    9: `${supabaseUrl}/dia9.mp4`,
-    10: `${supabaseUrl}/dia10.mp4`,
-    11: `${supabaseUrl}/dia11.mp4`,
-    12: `${supabaseUrl}/dia12.mp4`,
-    13: `${supabaseUrl}/dia13.mp4`,
-    14: `${supabaseUrl}/dia14.mp4`,
-    15: `${supabaseUrl}/dia15.mp4`,
-    16: `${supabaseUrl}/dia16.mp4`,
-    17: `${supabaseUrl}/dia17.mp4`,
-    18: `${supabaseUrl}/dia18.mp4`,
-    19: `${supabaseUrl}/dia19.mp4`,
-    20: `${supabaseUrl}/dia20.mp4`,
-    21: `${supabaseUrl}/dia21.mp4`,
+    1: `dia1.mp4`,
+    2: `dia2.mp4`,
+    3: `dia3.mp4`,
+    4: `dia4.mp4`,
+    5: `dia5.mp4`,
+    6: `dia6.mp4`,
+    7: `dia7.mp4`,
+    8: `dia8.mp4`,
+    9: `dia9.mp4`,
+    10: `dia10.mp4`,
+    11: `dia11.mp4`,
+    12: `dia12.mp4`,
+    13: `dia13.mp4`,
+    14: `dia14.mp4`,
+    15: `dia15.mp4`,
+    16: `dia16.mp4`,
+    17: `dia17.mp4`,
+    18: `dia18.mp4`,
+    19: `dia19.mp4`,
+    20: `dia20.mp4`,
+    21: `dia21.mp4`,
   };
   
   // Forçar os URLs de vídeo mapeados, caso contrário, usa o do banco de dados
@@ -189,9 +189,39 @@ function EjerciciosPage() {
     videoUrl = VIDEO_LINKS[selectedDayNum];
   }
 
+  const [signedVideoUrl, setSignedVideoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadVideoUrl() {
+      if (!videoUrl) {
+        setSignedVideoUrl(null);
+        return;
+      }
+      
+      // Se for apenas o nome do arquivo (ex: dia1.mp4), gera a Signed URL segura
+      if (videoUrl.endsWith('.mp4') && !videoUrl.startsWith('http')) {
+        const { data, error } = await supabase.storage.from('videos').createSignedUrl(videoUrl, 60 * 60 * 24 * 7); // 7 dias
+        if (data?.signedUrl && isMounted) {
+          setSignedVideoUrl(data.signedUrl);
+        } else if (isMounted) {
+          setSignedVideoUrl(videoUrl);
+        }
+      } else {
+        if (isMounted) setSignedVideoUrl(videoUrl);
+      }
+    }
+    
+    loadVideoUrl();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [videoUrl]);
+
   // Se o URL não for youtube/vimeo e parecer um path de imagem (ex: /images/caminar_20.webp)
-  const isImageUrl = videoUrl && (videoUrl.endsWith('.png') || videoUrl.endsWith('.jpg') || videoUrl.endsWith('.jpeg') || videoUrl.endsWith('.webp'));
-  const embedUrl = getEmbedUrl(videoUrl);
+  const isImageUrl = signedVideoUrl && (signedVideoUrl.endsWith('.png') || signedVideoUrl.endsWith('.jpg') || signedVideoUrl.endsWith('.jpeg') || signedVideoUrl.endsWith('.webp') || signedVideoUrl.includes('token='));
+  const embedUrl = getEmbedUrl(signedVideoUrl || videoUrl);
 
   return (
     <AppShell>
@@ -207,10 +237,10 @@ function EjerciciosPage() {
             <>
               {/* Video Player Area */}
               <div className="aspect-video w-full rounded-2xl bg-black/5 flex items-center justify-center relative overflow-hidden mb-5 border border-border/50 shadow-inner group">
-                {isClient && videoUrl && !isImageUrl ? (
+                {isClient && signedVideoUrl && !isImageUrl ? (
                   <div className="absolute inset-0 z-10 w-full h-full bg-black/90">
-                    {videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.includes('supabase.co') ? (
-                      <CustomVideoPlayer url={videoUrl} />
+                    {signedVideoUrl.endsWith('.mp4') || signedVideoUrl.endsWith('.webm') || signedVideoUrl.includes('supabase.co') ? (
+                      <CustomVideoPlayer url={signedVideoUrl} />
                     ) : (
                       <iframe
                         className="w-full h-full"
