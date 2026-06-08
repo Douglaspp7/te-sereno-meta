@@ -43,6 +43,16 @@ function QuizFunnel() {
   const [step, setStep] = useState(0) // 0: Hero, 1-5: Quiz, 6: Loading, 7: VSL
   const [loadingStep, setLoadingStep] = useState(0)
 
+  // UTMify tracking
+  useEffect(() => {
+    (window as any).pixelId = "6a2605a7414b09948518b289";
+    const a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
+  }, []);
+
   const nextStep = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
     setStep(s => s + 1)
