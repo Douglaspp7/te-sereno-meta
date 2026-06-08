@@ -51,33 +51,13 @@ function Landing() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isFirstTime, setIsFirstTime] = useState<boolean | null>(null);
-  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [hasLoggedInBefore, setHasLoggedInBefore] = useState(true);
 
-  // Verifica se o e-mail já tem conta criada (debounced)
   useEffect(() => {
-    const clean = email.trim().toLowerCase();
-    if (!clean || !clean.includes("@") || !clean.includes(".")) {
-      setIsFirstTime(null);
-      return;
-    }
-    setCheckingEmail(true);
-    const t = setTimeout(async () => {
-      try {
-        const { data } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("email", clean)
-          .maybeSingle();
-        setIsFirstTime(!data);
-      } catch {
-        setIsFirstTime(null);
-      } finally {
-        setCheckingEmail(false);
-      }
-    }, 500);
-    return () => clearTimeout(t);
-  }, [email]);
+    try {
+      setHasLoggedInBefore(localStorage.getItem("mireto21:has-logged-in") === "1");
+    } catch {}
+  }, []);
 
   const isTestEmail = email.toLowerCase() === "douglasp7@hotmail.com";
 
