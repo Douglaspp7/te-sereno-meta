@@ -170,10 +170,10 @@ function Landing() {
             </p>
           </div>
 
-          {!hasLoggedInBefore && (
+          {isFirstTime && (
             <div className="mb-4 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 backdrop-blur-xl">
               <p className="text-[13px] leading-snug text-white/90">
-                <span className="font-bold text-emerald-300">¿Primera vez aquí?</span> Crea tu propia contraseña ahora — la usarás para entrar las próximas veces. Si ya tienes cuenta, ingresa la contraseña que creaste.
+                <span className="font-bold text-emerald-300">¡Bienvenida! Es tu primer acceso.</span> Crea una contraseña ahora (mínimo 6 caracteres) y confírmala. La usarás para entrar las próximas veces.
               </p>
             </div>
           )}
@@ -190,6 +190,9 @@ function Landing() {
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
               />
+              {checking && (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              )}
             </div>
 
             <div className="group flex flex-col gap-2">
@@ -198,28 +201,48 @@ function Landing() {
                 <input
                   type="password"
                   required
+                  minLength={isFirstTime ? 6 : undefined}
                   className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
-                  placeholder="Crea o ingresa tu contraseña"
+                  placeholder={isFirstTime ? "Crea una contraseña (mín. 6)" : "Tu contraseña"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
+                  autoComplete={isFirstTime ? "new-password" : "current-password"}
                 />
               </div>
-              <div className="flex justify-end px-2">
-                <a 
-                  href="https://wa.me/5513988331980?text=Hola,%20olvidé%20mi%20contraseña%20de%20MiReto21." 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-white/60 hover:text-emerald-400 transition-colors"
-                >
-                  ¿Olvidaste tu contraseña?
-                </a>
-              </div>
+
+              {isFirstTime && (
+                <div className="flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
+                  <Lock className="h-5 w-5 text-white/60" />
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
+                    placeholder="Repite la contraseña"
+                    value={passwordConfirm}
+                    onChange={(e) => setPasswordConfirm(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                </div>
+              )}
+
+              {!isFirstTime && (
+                <div className="flex justify-end px-2">
+                  <a
+                    href="https://wa.me/5513988331980?text=Hola,%20olvidé%20mi%20contraseña%20de%20MiReto21."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-white/60 hover:text-emerald-400 transition-colors"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={loading || !email || !password}
+              disabled={loading || !email || !password || (isFirstTime && !passwordConfirm)}
               className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-white font-bold text-black shadow-xl transition-all active:scale-[0.98] disabled:opacity-70"
             >
               {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />}
