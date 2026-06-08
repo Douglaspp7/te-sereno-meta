@@ -51,6 +51,13 @@ function QuizFunnel() {
     a.setAttribute("defer", "");
     a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
     document.head.appendChild(a);
+
+    const b = document.createElement("script");
+    b.setAttribute("async", "");
+    b.setAttribute("defer", "");
+    b.setAttribute("data-utmify-prevent-subids", "");
+    b.setAttribute("src", "https://cdn.utmify.com.br/scripts/utms/latest.js");
+    document.head.appendChild(b);
   }, []);
 
   const nextStep = () => {
