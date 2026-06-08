@@ -49,6 +49,15 @@ export function InstallApp() {
     setDismissed(true);
   };
 
+  // Auto-dismiss after 5 seconds so it doesn't block the login form
+  useEffect(() => {
+    if (isStandalone || dismissed) return;
+    if (!deferredPrompt && !isIOS) return;
+    if (showIOSPrompt) return;
+    const t = setTimeout(() => setDismissed(true), 5000);
+    return () => clearTimeout(t);
+  }, [isStandalone, dismissed, deferredPrompt, isIOS, showIOSPrompt]);
+
   if (isStandalone || dismissed) return null;
 
   // Show only when we have something useful to do:
@@ -77,7 +86,7 @@ export function InstallApp() {
 
   return (
     <>
-      <div className="absolute top-6 right-6 z-50 flex items-center gap-2">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-300">
         <button
           onClick={handleInstallClick}
           className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-all active:scale-95 border border-white/20"
