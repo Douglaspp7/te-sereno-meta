@@ -5,6 +5,7 @@ import {
   Flame, Target, Clock, Heart, ArrowLeft, CheckCircle2, Droplet, 
   Sun, Sunset, Moon, Dumbbell, Sparkles, Utensils, ChevronLeft, ChevronRight
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import confetti from "canvas-confetti";
@@ -395,7 +396,17 @@ function PlanPage() {
   return (
     <AppShell>
       {/* HEADER: Focus on Today */}
-      <div className="px-5 pt-10 pb-6 bg-background sticky top-0 z-10 backdrop-blur-xl bg-opacity-90 border-b border-border/30">
+      <div className="px-5 pt-8 pb-6 bg-background sticky top-0 z-10 backdrop-blur-xl bg-opacity-90 border-b border-border/30">
+        
+        {/* Back to Home Button */}
+        <div className="flex items-center justify-between mb-4">
+          <Link to="/" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-white shadow-sm transition hover:bg-secondary active:scale-[0.98]">
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </Link>
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mi Plan de Acción</span>
+          <div className="w-10" /> {/* Spacer for centering */}
+        </div>
+
         <div className="flex items-center justify-between mb-2">
           <button 
             onClick={() => setSelectedDayNum(Math.max(1, selectedDayNum - 1))}
