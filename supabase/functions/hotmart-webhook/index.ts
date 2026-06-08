@@ -64,7 +64,7 @@ serve(async (req) => {
         .from('profiles')
         .update({
           subscription_status: 'active',
-          subscription_plan: 'premium',
+          subscription_plan: 'basico',
           subscription_started_at: new Date().toISOString(),
           phone: phone
         })
@@ -79,7 +79,7 @@ serve(async (req) => {
             buyer_email: email,
             transaction_id: data.transaction || 'unknown',
             status: 'approved',
-            plan_type: 'premium',
+            plan_type: 'basico',
             phone: phone
           });
           

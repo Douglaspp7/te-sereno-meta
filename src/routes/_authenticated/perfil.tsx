@@ -139,8 +139,8 @@ function PerfilPage() {
                 </div>
               </div>
             </div>
-            
-            {!isPremium && (
+            {/* Upsell escondido por enquanto, já que a IA ainda não foi implementada */}
+            {/* !isPremium && (
               <div className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50">
                 <p className="text-sm text-amber-900 font-medium mb-4">
                   Desbloquea herramientas de inteligencia artificial y maximiza tus resultados.
@@ -152,7 +152,7 @@ function PerfilPage() {
                   Actualizar a Premium
                 </button>
               </div>
-            )}
+            ) */}
           </div>
         </div>
 
