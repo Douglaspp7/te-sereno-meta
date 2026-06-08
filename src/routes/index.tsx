@@ -136,7 +136,13 @@ function Landing() {
               Comienza tu transformación
             </h1>
             <p className="mt-2 text-[14px] text-white/80 drop-shadow-md">
-              Ingresa el correo de tu compra para acceder y crea una contraseña.
+              Ingresa el correo de tu compra para acceder.
+            </p>
+          </div>
+
+          <div className="mb-4 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 backdrop-blur-xl">
+            <p className="text-[13px] leading-snug text-white/90">
+              <span className="font-bold text-emerald-300">¿Primera vez aquí?</span> Crea tu propia contraseña ahora — la usarás para entrar las próximas veces. Si ya tienes cuenta, ingresa la contraseña que creaste.
             </p>
           </div>
 
