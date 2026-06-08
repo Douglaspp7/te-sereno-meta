@@ -49,6 +49,15 @@ export function InstallApp() {
     setDismissed(true);
   };
 
+  // Auto-dismiss after 5 seconds so it doesn't block the login form
+  useEffect(() => {
+    if (isStandalone || dismissed) return;
+    if (!deferredPrompt && !isIOS) return;
+    if (showIOSPrompt) return;
+    const t = setTimeout(() => setDismissed(true), 5000);
+    return () => clearTimeout(t);
+  }, [isStandalone, dismissed, deferredPrompt, isIOS, showIOSPrompt]);
+
   if (isStandalone || dismissed) return null;
 
   // Show only when we have something useful to do:
