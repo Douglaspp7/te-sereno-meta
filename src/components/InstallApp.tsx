@@ -86,7 +86,7 @@ export function InstallApp() {
 
   return (
     <>
-      <div className="absolute top-6 right-6 z-50 flex items-center gap-2">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-300">
         <button
           onClick={handleInstallClick}
           className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-all active:scale-95 border border-white/20"
