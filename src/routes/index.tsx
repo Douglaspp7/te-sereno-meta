@@ -154,17 +154,29 @@ function Landing() {
               />
             </div>
 
-            <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
-              <Lock className="h-5 w-5 text-white/60 group-focus-within:text-white transition-colors" />
-              <input
-                type="password"
-                required
-                className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
-                placeholder="Crea o ingresa tu contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-              />
+            <div className="group flex flex-col gap-2">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
+                <Lock className="h-5 w-5 text-white/60 group-focus-within:text-white transition-colors" />
+                <input
+                  type="password"
+                  required
+                  className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
+                  placeholder="Crea o ingresa tu contraseña"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                />
+              </div>
+              <div className="flex justify-end px-2">
+                <a 
+                  href="https://wa.me/5513988331980?text=Hola,%20olvidé%20mi%20contraseña%20de%20MiReto21." 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-white/60 hover:text-emerald-400 transition-colors"
+                >
+                  ¿Olvidaste tu contraseña?
+                </a>
+              </div>
             </div>
 
             <button
