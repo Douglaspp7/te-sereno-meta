@@ -54,7 +54,7 @@ export function InstallApp() {
     if (isStandalone || dismissed) return;
     if (!deferredPrompt && !isIOS) return;
     if (showIOSPrompt) return;
-    const t = setTimeout(() => setDismissed(true), 5000);
+    const t = setTimeout(() => markSeen(), 5000);
     return () => clearTimeout(t);
   }, [isStandalone, dismissed, deferredPrompt, isIOS, showIOSPrompt]);
 
