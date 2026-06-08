@@ -1,18 +1,29 @@
 import { useState, useEffect } from "react";
 import { Download, Share, PlusSquare, X } from "lucide-react";
 
+const DISMISS_KEY = "mireto21:install-prompt-seen";
+
 export function InstallApp() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showIOSPrompt, setShowIOSPrompt] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     // Check if already installed
-    const isAppMode = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    const isAppMode =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone;
     setIsStandalone(isAppMode);
-
     if (isAppMode) return;
+
+    // Already seen the prompt before? Don't show again.
+    try {
+      if (localStorage.getItem(DISMISS_KEY) === "1") {
+        setDismissed(true);
+      }
+    } catch {}
 
     // Detect iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -25,44 +36,72 @@ export function InstallApp() {
       setDeferredPrompt(e);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     };
   }, []);
 
-  if (isStandalone) return null;
+  const markSeen = () => {
+    try {
+      localStorage.setItem(DISMISS_KEY, "1");
+    } catch {}
+    setDismissed(true);
+  };
+
+  if (isStandalone || dismissed) return null;
+
+  // Show only when we have something useful to do:
+  // - Android: a native install prompt is available
+  // - iOS: we can show manual instructions
+  if (!deferredPrompt && !isIOS) return null;
 
   const handleInstallClick = async () => {
     if (isIOS) {
       setShowIOSPrompt(true);
-    } else if (deferredPrompt) {
+      return;
+    }
+    if (deferredPrompt) {
       deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-      }
+      try {
+        await deferredPrompt.userChoice;
+      } catch {}
+      setDeferredPrompt(null);
+      markSeen();
     }
   };
 
-  if (!deferredPrompt && !isIOS) return null; // Browser doesn't support PWA install or already installed
+  const handleClose = () => {
+    markSeen();
+  };
 
   return (
     <>
-      <button
-        onClick={handleInstallClick}
-        className="absolute top-6 right-6 z-50 flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-all active:scale-95 border border-white/20"
-      >
-        <Download className="h-4 w-4" />
-        Instalar App
-      </button>
+      <div className="absolute top-6 right-6 z-50 flex items-center gap-2">
+        <button
+          onClick={handleInstallClick}
+          className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-all active:scale-95 border border-white/20"
+        >
+          <Download className="h-4 w-4" />
+          Instalar App
+        </button>
+        <button
+          onClick={handleClose}
+          aria-label="Cerrar"
+          className="grid h-9 w-9 place-items-center rounded-full bg-white/20 text-white shadow-lg backdrop-blur-md border border-white/20 active:scale-95"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
 
       {showIOSPrompt && (
         <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center">
           <div className="relative w-full max-w-sm rounded-t-[2rem] bg-white p-6 shadow-2xl sm:rounded-[2rem] animate-in slide-in-from-bottom-10 sm:slide-in-from-bottom-0 sm:fade-in-0 sm:zoom-in-95 duration-300">
             <button
-              onClick={() => setShowIOSPrompt(false)}
+              onClick={() => {
+                setShowIOSPrompt(false);
+                markSeen();
+              }}
               className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-muted/80"
             >
               <X className="h-4 w-4" />
@@ -97,7 +136,10 @@ export function InstallApp() {
               </div>
             </div>
             <button
-              onClick={() => setShowIOSPrompt(false)}
+              onClick={() => {
+                setShowIOSPrompt(false);
+                markSeen();
+              }}
               className="mt-6 w-full rounded-2xl bg-foreground py-4 text-center font-bold text-background active:scale-[0.98]"
             >
               Entendido
