@@ -51,6 +51,13 @@ function Landing() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hasLoggedInBefore, setHasLoggedInBefore] = useState(true);
+
+  useEffect(() => {
+    try {
+      setHasLoggedInBefore(localStorage.getItem("mireto21:has-logged-in") === "1");
+    } catch {}
+  }, []);
 
   const isTestEmail = email.toLowerCase() === "douglasp7@hotmail.com";
 
@@ -101,6 +108,7 @@ function Landing() {
           throw signInError;
         }
       }
+      try { localStorage.setItem("mireto21:has-logged-in", "1"); } catch {}
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Algo salió mal.";
       alert(translateError(msg)); 
@@ -140,11 +148,13 @@ function Landing() {
             </p>
           </div>
 
-          <div className="mb-4 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 backdrop-blur-xl">
-            <p className="text-[13px] leading-snug text-white/90">
-              <span className="font-bold text-emerald-300">¿Primera vez aquí?</span> Crea tu propia contraseña ahora — la usarás para entrar las próximas veces. Si ya tienes cuenta, ingresa la contraseña que creaste.
-            </p>
-          </div>
+          {!hasLoggedInBefore && (
+            <div className="mb-4 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 backdrop-blur-xl">
+              <p className="text-[13px] leading-snug text-white/90">
+                <span className="font-bold text-emerald-300">¿Primera vez aquí?</span> Crea tu propia contraseña ahora — la usarás para entrar las próximas veces. Si ya tienes cuenta, ingresa la contraseña que creaste.
+              </p>
+            </div>
+          )}
 
           <form onSubmit={submitAuth} className="w-full space-y-4">
             <div className="group flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
