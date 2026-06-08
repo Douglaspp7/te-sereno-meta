@@ -108,6 +108,7 @@ function Landing() {
           throw signInError;
         }
       }
+      try { localStorage.setItem("mireto21:has-logged-in", "1"); } catch {}
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Algo salió mal.";
       alert(translateError(msg)); 
