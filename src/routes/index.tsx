@@ -185,8 +185,10 @@ function Landing() {
 
 function translateError(msg: string) {
   const m = msg.toLowerCase();
-  if (m.includes("rate limit") || m.includes("too many")) return "Demasiados intentos. Intenta en unos minutos.";
+  if (m.includes("rate limit") || m.includes("too many") || m.includes("security purposes")) return "Por seguridad, intenta de nuevo en 1 minuto.";
   if (m.includes("invalid email")) return "Correo inválido.";
   if (m.includes("signups not allowed")) return "Los registros están desactivados.";
+  if (m.includes("password should be at least")) return "La contraseña debe tener al menos 6 caracteres.";
+  if (m.includes("already registered")) return "Este correo ya está registrado. Si olvidaste tu contraseña, contacta a soporte.";
   return msg;
 }
