@@ -552,6 +552,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      account_exists_for_email: {
+        Args: { check_email: string }
+        Returns: boolean
+      }
       check_email_access: { Args: { check_email: string }; Returns: boolean }
       delete_email: {
         Args: { message_id: number; queue_name: string }

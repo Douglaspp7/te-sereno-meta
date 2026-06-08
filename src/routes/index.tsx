@@ -50,68 +50,90 @@ function HomeRoute() {
 function Landing() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
-  const [hasLoggedInBefore, setHasLoggedInBefore] = useState(true);
-
-  useEffect(() => {
-    try {
-      setHasLoggedInBefore(localStorage.getItem("mireto21:has-logged-in") === "1");
-    } catch {}
-  }, []);
+  // null = ainda não sabemos; true = conta já existe; false = primeiro acesso
+  const [accountExists, setAccountExists] = useState<boolean | null>(null);
+  const [checking, setChecking] = useState(false);
 
   const isTestEmail = email.toLowerCase() === "douglasp7@hotmail.com";
+
+  // Verifica (debounced) se já existe conta para o e-mail digitado
+  useEffect(() => {
+    const clean = email.trim().toLowerCase();
+    if (!clean || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) {
+      setAccountExists(null);
+      return;
+    }
+    if (isTestEmail) {
+      setAccountExists(true);
+      return;
+    }
+    setChecking(true);
+    const t = setTimeout(async () => {
+      try {
+        const { data } = await supabase.rpc("account_exists_for_email", { check_email: clean });
+        setAccountExists(Boolean(data));
+      } catch {
+        setAccountExists(null);
+      } finally {
+        setChecking(false);
+      }
+    }, 450);
+    return () => clearTimeout(t);
+  }, [email, isTestEmail]);
+
+  const isFirstTime = accountExists === false;
 
   const submitAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      const emailClean = email.trim().toLowerCase();
+
       if (isTestEmail) {
         if (!password) {
           alert("Por favor, ingresa la contraseña para el correo de prueba.");
           setLoading(false);
           return;
         }
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim().toLowerCase(),
-          password
-        });
+        const { error } = await supabase.auth.signInWithPassword({ email: emailClean, password });
         if (error) throw error;
       } else {
-        const emailClean = email.trim().toLowerCase();
-        
-        // 1. Verificar se o usuário tem permissão (comprou ou já é VIP)
-        const { data: hasAccess, error: accessError } = await supabase.rpc('check_email_access', { check_email: emailClean });
-        
+        // 1. Verificar permissão (comprou ou já é VIP)
+        const { data: hasAccess } = await supabase.rpc("check_email_access", { check_email: emailClean });
         if (!hasAccess) {
           alert("Correo no registrado. Por favor, adquiere el desafío de 21 días en Hotmart primero.");
           setLoading(false);
           return;
         }
 
-        // 2. Tentar Login
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: emailClean,
-          password: password,
-        });
-
-        // 3. Se der erro de credenciais, significa que é o primeiro acesso (conta não existe)
-        if (signInError && signInError.message.toLowerCase().includes('invalid login credentials')) {
-          // Criar a conta
-          const { error: signUpError } = await supabase.auth.signUp({
-            email: emailClean,
-            password: password,
-          });
-          
+        if (isFirstTime) {
+          // Primeiro acesso: validar confirmação e criar conta
+          if (password.length < 6) {
+            alert("La contraseña debe tener al menos 6 caracteres.");
+            setLoading(false);
+            return;
+          }
+          if (password !== passwordConfirm) {
+            alert("Las contraseñas no coinciden. Por favor, escríbelas iguales.");
+            setLoading(false);
+            return;
+          }
+          const { error: signUpError } = await supabase.auth.signUp({ email: emailClean, password });
           if (signUpError) throw signUpError;
-          // Após o signUp o usuário já é logado automaticamente (se confirm email estiver desligado)
-        } else if (signInError) {
-          throw signInError;
+        } else {
+          // Já existe conta: login normal
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: emailClean,
+            password,
+          });
+          if (signInError) throw signInError;
         }
       }
-      try { localStorage.setItem("mireto21:has-logged-in", "1"); } catch {}
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Algo salió mal.";
-      alert(translateError(msg)); 
+      alert(translateError(msg));
     } finally {
       setLoading(false);
     }
@@ -148,10 +170,10 @@ function Landing() {
             </p>
           </div>
 
-          {!hasLoggedInBefore && (
+          {isFirstTime && (
             <div className="mb-4 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 backdrop-blur-xl">
               <p className="text-[13px] leading-snug text-white/90">
-                <span className="font-bold text-emerald-300">¿Primera vez aquí?</span> Crea tu propia contraseña ahora — la usarás para entrar las próximas veces. Si ya tienes cuenta, ingresa la contraseña que creaste.
+                <span className="font-bold text-emerald-300">¡Bienvenida! Es tu primer acceso.</span> Crea una contraseña ahora (mínimo 6 caracteres) y confírmala. La usarás para entrar las próximas veces.
               </p>
             </div>
           )}
@@ -168,6 +190,9 @@ function Landing() {
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
               />
+              {checking && (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              )}
             </div>
 
             <div className="group flex flex-col gap-2">
@@ -176,32 +201,52 @@ function Landing() {
                 <input
                   type="password"
                   required
+                  minLength={isFirstTime ? 6 : undefined}
                   className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
-                  placeholder="Crea o ingresa tu contraseña"
+                  placeholder={isFirstTime ? "Crea una contraseña (mín. 6)" : "Tu contraseña"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
+                  autoComplete={isFirstTime ? "new-password" : "current-password"}
                 />
               </div>
-              <div className="flex justify-end px-2">
-                <a 
-                  href="https://wa.me/5513988331980?text=Hola,%20olvidé%20mi%20contraseña%20de%20MiReto21." 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-white/60 hover:text-emerald-400 transition-colors"
-                >
-                  ¿Olvidaste tu contraseña?
-                </a>
-              </div>
+
+              {isFirstTime && (
+                <div className="flex items-center gap-3 rounded-2xl border border-white/20 bg-black/40 px-4 py-3.5 shadow-lg backdrop-blur-xl transition-all focus-within:border-white/50 focus-within:bg-black/60">
+                  <Lock className="h-5 w-5 text-white/60" />
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    className="w-full bg-transparent text-[16px] font-medium text-white outline-none placeholder:font-normal placeholder:text-white/50"
+                    placeholder="Repite la contraseña"
+                    value={passwordConfirm}
+                    onChange={(e) => setPasswordConfirm(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                </div>
+              )}
+
+              {!isFirstTime && (
+                <div className="flex justify-end px-2">
+                  <a
+                    href="https://wa.me/5513988331980?text=Hola,%20olvidé%20mi%20contraseña%20de%20MiReto21."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-white/60 hover:text-emerald-400 transition-colors"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={loading || !email || !password}
+              disabled={loading || !email || !password || (isFirstTime && !passwordConfirm)}
               className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-white font-bold text-black shadow-xl transition-all active:scale-[0.98] disabled:opacity-70"
             >
               {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />}
-              Continuar
+              {isFirstTime ? "Crear mi cuenta" : "Entrar"}
               {!loading && <ArrowRight className="h-5 w-5" />}
             </button>
           </form>
