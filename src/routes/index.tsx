@@ -50,68 +50,90 @@ function HomeRoute() {
 function Landing() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
-  const [hasLoggedInBefore, setHasLoggedInBefore] = useState(true);
-
-  useEffect(() => {
-    try {
-      setHasLoggedInBefore(localStorage.getItem("mireto21:has-logged-in") === "1");
-    } catch {}
-  }, []);
+  // null = ainda não sabemos; true = conta já existe; false = primeiro acesso
+  const [accountExists, setAccountExists] = useState<boolean | null>(null);
+  const [checking, setChecking] = useState(false);
 
   const isTestEmail = email.toLowerCase() === "douglasp7@hotmail.com";
+
+  // Verifica (debounced) se já existe conta para o e-mail digitado
+  useEffect(() => {
+    const clean = email.trim().toLowerCase();
+    if (!clean || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) {
+      setAccountExists(null);
+      return;
+    }
+    if (isTestEmail) {
+      setAccountExists(true);
+      return;
+    }
+    setChecking(true);
+    const t = setTimeout(async () => {
+      try {
+        const { data } = await supabase.rpc("account_exists_for_email", { check_email: clean });
+        setAccountExists(Boolean(data));
+      } catch {
+        setAccountExists(null);
+      } finally {
+        setChecking(false);
+      }
+    }, 450);
+    return () => clearTimeout(t);
+  }, [email, isTestEmail]);
+
+  const isFirstTime = accountExists === false;
 
   const submitAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      const emailClean = email.trim().toLowerCase();
+
       if (isTestEmail) {
         if (!password) {
           alert("Por favor, ingresa la contraseña para el correo de prueba.");
           setLoading(false);
           return;
         }
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim().toLowerCase(),
-          password
-        });
+        const { error } = await supabase.auth.signInWithPassword({ email: emailClean, password });
         if (error) throw error;
       } else {
-        const emailClean = email.trim().toLowerCase();
-        
-        // 1. Verificar se o usuário tem permissão (comprou ou já é VIP)
-        const { data: hasAccess, error: accessError } = await supabase.rpc('check_email_access', { check_email: emailClean });
-        
+        // 1. Verificar permissão (comprou ou já é VIP)
+        const { data: hasAccess } = await supabase.rpc("check_email_access", { check_email: emailClean });
         if (!hasAccess) {
           alert("Correo no registrado. Por favor, adquiere el desafío de 21 días en Hotmart primero.");
           setLoading(false);
           return;
         }
 
-        // 2. Tentar Login
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: emailClean,
-          password: password,
-        });
-
-        // 3. Se der erro de credenciais, significa que é o primeiro acesso (conta não existe)
-        if (signInError && signInError.message.toLowerCase().includes('invalid login credentials')) {
-          // Criar a conta
-          const { error: signUpError } = await supabase.auth.signUp({
-            email: emailClean,
-            password: password,
-          });
-          
+        if (isFirstTime) {
+          // Primeiro acesso: validar confirmação e criar conta
+          if (password.length < 6) {
+            alert("La contraseña debe tener al menos 6 caracteres.");
+            setLoading(false);
+            return;
+          }
+          if (password !== passwordConfirm) {
+            alert("Las contraseñas no coinciden. Por favor, escríbelas iguales.");
+            setLoading(false);
+            return;
+          }
+          const { error: signUpError } = await supabase.auth.signUp({ email: emailClean, password });
           if (signUpError) throw signUpError;
-          // Após o signUp o usuário já é logado automaticamente (se confirm email estiver desligado)
-        } else if (signInError) {
-          throw signInError;
+        } else {
+          // Já existe conta: login normal
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: emailClean,
+            password,
+          });
+          if (signInError) throw signInError;
         }
       }
-      try { localStorage.setItem("mireto21:has-logged-in", "1"); } catch {}
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Algo salió mal.";
-      alert(translateError(msg)); 
+      alert(translateError(msg));
     } finally {
       setLoading(false);
     }
