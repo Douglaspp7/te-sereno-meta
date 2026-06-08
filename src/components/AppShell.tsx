@@ -1,13 +1,11 @@
 import type { ReactNode } from "react";
-import { PWAInstallPrompt } from "./PWAInstallPrompt";
 import { Link, useLocation } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
-export function AppShell({ children, hideNav = false }: { children: ReactNode; hideNav?: boolean }) {
+export function AppShell({ children }: { children: ReactNode; hideNav?: boolean }) {
   return (
     <div className="mx-auto min-h-screen w-full max-w-md bg-background pb-8">
       {children}
-      {!hideNav && <PWAInstallPrompt />}
     </div>
   );
 }
