@@ -435,11 +435,6 @@ function PlanPage() {
       </div>
 
       <div className="px-5 pb-24 space-y-10 mt-2 relative">
-        <TeDelDiaCard 
-          currentDayNum={selectedDayNum} 
-          isDone={(progress?.water_glasses || 0) > 0} 
-        />
-
         {/* Decorative Timeline Line */}
         <div className="absolute left-9 top-60 bottom-0 w-0.5 bg-gradient-to-b from-primary/30 via-border to-transparent -z-10" />
 
@@ -504,6 +499,12 @@ function PlanPage() {
                 onOpen={() => { setSelectedRecipe(day.lunch); setSelectedMealType('lunch'); }} 
               />
             )}
+
+            {/* Té del Día */}
+            <TeDelDiaCard 
+              currentDayNum={selectedDayNum} 
+              isDone={(progress?.water_glasses || 0) > 0} 
+            />
 
             {/* Exercise */}
             {day.exercise && (
