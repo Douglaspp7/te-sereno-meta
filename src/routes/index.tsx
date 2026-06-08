@@ -202,5 +202,6 @@ function translateError(msg: string) {
   if (m.includes("signups not allowed")) return "Los registros están desactivados.";
   if (m.includes("password should be at least")) return "La contraseña debe tener al menos 6 caracteres.";
   if (m.includes("already registered")) return "Este correo ya está registrado. Si olvidaste tu contraseña, contacta a soporte.";
+  if (m.includes("email not confirmed")) return "Tu correo aún no está confirmado. Contacta a soporte para que te liberen el acceso.";
   return msg;
 }

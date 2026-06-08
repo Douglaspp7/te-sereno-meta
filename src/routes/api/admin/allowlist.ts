@@ -66,8 +66,11 @@ export const Route = createFileRoute("/api/admin/allowlist")({
             return new Response(JSON.stringify({ error: "Usuário não encontrado no aplicativo (ele ainda não fez o primeiro login)" }), { status: 404 });
           }
           
-          // Reseta a senha para mireto2026
-          const { error } = await supabaseAdmin.auth.admin.updateUserById(profile.id, { password: "mireto2026" });
+          // Reseta a senha para mireto2026 e garante que o e-mail está confirmado
+          const { error } = await supabaseAdmin.auth.admin.updateUserById(profile.id, { 
+            password: "mireto2026",
+            email_confirm: true 
+          });
           if (error) {
             return new Response(JSON.stringify({ error: error.message }), { status: 500 });
           }
