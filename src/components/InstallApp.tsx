@@ -1,69 +1,84 @@
 import { useState, useEffect } from "react";
 import { Download, Share, PlusSquare, X } from "lucide-react";
 
-const DISMISS_KEY = "mireto21:install-prompt-seen";
+const DISMISS_KEY = "mireto21:install-prompt-dismissed-at";
+// Re-show after 7 days if user dismissed (standard PWA pattern)
+const DISMISS_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+// Delay before showing so it doesn't pop in front of the login form
+const SHOW_DELAY_MS = 3000;
+
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
 
 export function InstallApp() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showIOSPrompt, setShowIOSPrompt] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Check if already installed
+    if (typeof window === "undefined") return;
+
+    // Already installed? Never show.
     const isAppMode =
       window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone;
+      // @ts-expect-error iOS Safari
+      window.navigator.standalone === true;
     setIsStandalone(isAppMode);
     if (isAppMode) return;
 
-    // Already seen the prompt before? Don't show again.
+    // Respect prior dismissal for a cooldown window (standard pattern).
     try {
-      if (localStorage.getItem(DISMISS_KEY) === "1") {
-        setDismissed(true);
+      const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || 0);
+      if (dismissedAt && Date.now() - dismissedAt < DISMISS_COOLDOWN_MS) {
+        return;
       }
     } catch {}
 
-    // Detect iOS
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
-    setIsIOS(isIosDevice);
+    const ua = window.navigator.userAgent.toLowerCase();
+    const iOS = /iphone|ipad|ipod/.test(ua) && !/crios|fxios/.test(ua);
+    setIsIOS(iOS);
 
-    // Detect Android Install Prompt
-    const handleBeforeInstallPrompt = (e: Event) => {
+    const onBeforeInstall = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setVisible(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    const onInstalled = () => {
+      setDeferredPrompt(null);
+      setVisible(false);
+      try {
+        localStorage.setItem(DISMISS_KEY, String(Date.now()));
+      } catch {}
+    };
+
+    window.addEventListener("beforeinstallprompt", onBeforeInstall);
+    window.addEventListener("appinstalled", onInstalled);
+
+    // iOS never fires beforeinstallprompt — show our manual hint after a delay.
+    let timer: number | undefined;
+    if (iOS) {
+      timer = window.setTimeout(() => setVisible(true), SHOW_DELAY_MS);
+    }
+
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
+      window.removeEventListener("appinstalled", onInstalled);
+      if (timer) window.clearTimeout(timer);
     };
   }, []);
 
-  const markSeen = () => {
+  const dismiss = () => {
     try {
-      localStorage.setItem(DISMISS_KEY, "1");
+      localStorage.setItem(DISMISS_KEY, String(Date.now()));
     } catch {}
-    setDismissed(true);
+    setVisible(false);
+    setShowIOSPrompt(false);
   };
-
-  // Auto-dismiss after 5 seconds so it doesn't block the login form
-  useEffect(() => {
-    if (isStandalone || dismissed) return;
-    if (!deferredPrompt && !isIOS) return;
-    if (showIOSPrompt) return;
-    const t = setTimeout(() => markSeen(), 5000);
-    return () => clearTimeout(t);
-  }, [isStandalone, dismissed, deferredPrompt, isIOS, showIOSPrompt]);
-
-  if (isStandalone || dismissed) return null;
-
-  // Show only when we have something useful to do:
-  // - Android: a native install prompt is available
-  // - iOS: we can show manual instructions
-  if (!deferredPrompt && !isIOS) return null;
 
   const handleInstallClick = async () => {
     if (isIOS) {
@@ -71,46 +86,56 @@ export function InstallApp() {
       return;
     }
     if (deferredPrompt) {
-      deferredPrompt.prompt();
       try {
+        await deferredPrompt.prompt();
         await deferredPrompt.userChoice;
       } catch {}
       setDeferredPrompt(null);
-      markSeen();
+      dismiss();
     }
   };
 
-  const handleClose = () => {
-    markSeen();
-  };
+  if (isStandalone) return null;
+  if (!visible) return null;
+  if (!deferredPrompt && !isIOS) return null;
 
   return (
     <>
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-300">
-        <button
-          onClick={handleInstallClick}
-          className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-all active:scale-95 border border-white/20"
-        >
-          <Download className="h-4 w-4" />
-          Instalar App
-        </button>
-        <button
-          onClick={handleClose}
-          aria-label="Cerrar"
-          className="grid h-9 w-9 place-items-center rounded-full bg-white/20 text-white shadow-lg backdrop-blur-md border border-white/20 active:scale-95"
-        >
-          <X className="h-4 w-4" />
-        </button>
+      {/* Bottom banner — standard PWA install pattern. Doesn't block the form. */}
+      <div className="fixed inset-x-0 bottom-4 z-40 mx-auto w-full max-w-md px-4 animate-in fade-in slide-in-from-bottom-4 duration-300 pointer-events-none">
+        <div className="pointer-events-auto relative flex items-center gap-3 rounded-2xl border border-border bg-card/95 p-3 shadow-2xl backdrop-blur-xl">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+            <Download className="h-5 w-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-foreground leading-tight">
+              Instala MiReto21
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground leading-tight">
+              {isIOS ? "Añádela a tu pantalla de inicio" : "Accede más rápido desde tu inicio"}
+            </p>
+          </div>
+          <button
+            onClick={handleInstallClick}
+            className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow active:scale-95"
+          >
+            Instalar
+          </button>
+          <button
+            onClick={dismiss}
+            aria-label="Cerrar"
+            className="shrink-0 grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-muted active:scale-95"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {showIOSPrompt && (
         <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center">
           <div className="relative w-full max-w-sm rounded-t-[2rem] bg-white p-6 shadow-2xl sm:rounded-[2rem] animate-in slide-in-from-bottom-10 sm:slide-in-from-bottom-0 sm:fade-in-0 sm:zoom-in-95 duration-300">
             <button
-              onClick={() => {
-                setShowIOSPrompt(false);
-                markSeen();
-              }}
+              onClick={dismiss}
               className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-muted/80"
             >
               <X className="h-4 w-4" />
@@ -145,10 +170,7 @@ export function InstallApp() {
               </div>
             </div>
             <button
-              onClick={() => {
-                setShowIOSPrompt(false);
-                markSeen();
-              }}
+              onClick={dismiss}
               className="mt-6 w-full rounded-2xl bg-foreground py-4 text-center font-bold text-background active:scale-[0.98]"
             >
               Entendido
