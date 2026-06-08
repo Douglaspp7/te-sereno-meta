@@ -54,7 +54,7 @@ function AdminPage() {
   }
 
   const handleResetPassword = async (email: string) => {
-    if (!confirm(`Tem certeza que deseja resetar a senha de ${email} para '123456'?`)) return;
+    if (!confirm(`Tem certeza que deseja resetar a senha de ${email} para 'mireto2026'?`)) return;
     setLoading(true)
     try {
       const res = await fetch('/api/admin/allowlist', {
@@ -66,7 +66,7 @@ function AdminPage() {
       if (data.error) {
         alert("Erro: " + data.error)
       } else {
-        alert("Senha redefinida com sucesso para: 123456")
+        alert("Senha redefinida com sucesso para: mireto2026")
       }
     } catch (err) {
       console.error(err)
@@ -144,7 +144,7 @@ function AdminPage() {
                           <button 
                             onClick={() => handleResetPassword(row.buyer_email || row.email)}
                             disabled={loading}
-                            title="Resetar senha para 123456"
+                            title="Resetar senha para mireto2026"
                             className="p-2 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-500/20 rounded-lg transition-colors"
                           >
                             <Key className="w-5 h-5" />

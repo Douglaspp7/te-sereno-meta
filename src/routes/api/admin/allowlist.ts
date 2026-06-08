@@ -66,12 +66,12 @@ export const Route = createFileRoute("/api/admin/allowlist")({
             return new Response(JSON.stringify({ error: "Usuário não encontrado no aplicativo (ele ainda não fez o primeiro login)" }), { status: 404 });
           }
           
-          // Reseta a senha para 123456
-          const { error } = await supabaseAdmin.auth.admin.updateUserById(profile.id, { password: "123456" });
+          // Reseta a senha para mireto2026
+          const { error } = await supabaseAdmin.auth.admin.updateUserById(profile.id, { password: "mireto2026" });
           if (error) {
             return new Response(JSON.stringify({ error: error.message }), { status: 500 });
           }
-          return Response.json({ success: true, message: "Senha redefinida para 123456 com sucesso!" });
+          return Response.json({ success: true, message: "Senha redefinida para mireto2026 com sucesso!" });
         }
         
         // Ação padrão (Deletar acesso)
