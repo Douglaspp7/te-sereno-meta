@@ -246,7 +246,7 @@ function Landing() {
               className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-white font-bold text-black shadow-xl transition-all active:scale-[0.98] disabled:opacity-70"
             >
               {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />}
-              Continuar
+              {isFirstTime ? "Crear mi cuenta" : "Entrar"}
               {!loading && <ArrowRight className="h-5 w-5" />}
             </button>
           </form>
