@@ -423,7 +423,9 @@ function PlanPage() {
         <div className="mt-5">
           <div className="flex justify-between items-end mb-1.5">
             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Progreso del Día</span>
-            <span className="text-sm font-black text-primary">{progressPercent}%</span>
+            <span className="text-sm font-black text-primary" translate="no">
+              {progressPercent}%
+            </span>
           </div>
           <div className="h-2.5 w-full bg-secondary rounded-full overflow-hidden">
             <div 
