@@ -9,7 +9,7 @@ const STORAGE_UTM = "mireto21:utm";
 const STORAGE_SID = "mireto21:sid";
 
 const META_CUSTOM_EVENTS = new Set([
-  "QuizView", "QuizStart", "QuizComplete", "VSLView", "VSL75", "OfferView",
+  "LandingView", "AdClick", "QuizView", "QuizStart", "QuizComplete", "VSLView", "VSL75", "OfferView",
 ]);
 const META_STANDARD_EVENTS: Record<string, string> = {
   InitiateCheckout: "InitiateCheckout",
@@ -65,6 +65,8 @@ export function clearStoredUtms() {
 }
 
 export type TrackEventName =
+  | "LandingView"
+  | "AdClick"
   | "QuizView"
   | "QuizStart"
   | "QuizComplete"
