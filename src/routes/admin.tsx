@@ -240,6 +240,8 @@ function FunnelPanel() {
 
   const unique = data.uniqueCounts || {};
   const total = data.totalCounts || {};
+  const adClick = unique.AdClick || 0;
+  const landing = unique.LandingView || 0;
   const vsl75 = unique.VSL75 || 0;
   const checkout = unique.InitiateCheckout || 0;
   const purchase = total.Purchase || 0;
@@ -258,6 +260,27 @@ function FunnelPanel() {
             {d}d
           </button>
         ))}
+        <button onClick={load} disabled={loading} className="ml-auto p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
+          <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin text-emerald-500' : 'text-white/60'}`} />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <BigStat label="Cliques no anúncio" value={adClick} help="Sessões únicas chegando com utm_source / fbclid / gclid" />
+        <BigStat label="Entradas no site" value={landing} help="Sessões únicas (todas as fontes, incluindo direto)" />
+        <BigStat label="Assistiram 75% do vídeo" value={vsl75} help="Pessoas únicas que chegaram aos 75% da VSL" />
+        <BigStat label="Clicaram em Comprar" value={checkout} help="Pessoas únicas que clicaram em algum botão de compra" />
+        <BigStat label="Compraram" value={purchase} help="Compras confirmadas (webhook Hotmart)" highlight />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Metric label="Assistiram 75% / Entraram" value={pct(vsl75, landing)} />
+        <Metric label="Clicaram / Assistiram 75%" value={pct(checkout, vsl75)} />
+        <Metric label="Compraram / Clicaram" value={pct(purchase, checkout)} highlight />
+      </div>
+    </div>
+  );
+}
         <button onClick={load} disabled={loading} className="ml-auto p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
           <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin text-emerald-500' : 'text-white/60'}`} />
         </button>
