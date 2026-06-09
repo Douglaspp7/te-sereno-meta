@@ -281,24 +281,6 @@ function FunnelPanel() {
     </div>
   );
 }
-        <button onClick={load} disabled={loading} className="ml-auto p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
-          <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin text-emerald-500' : 'text-white/60'}`} />
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <BigStat label="Assistiram 75% do vídeo" value={vsl75} help="Pessoas únicas que chegaram aos 75% da VSL" />
-        <BigStat label="Clicaram em Comprar" value={checkout} help="Pessoas únicas que clicaram em algum botão de compra" />
-        <BigStat label="Compraram" value={purchase} help="Compras confirmadas (webhook Hotmart)" highlight />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <Metric label="Clicaram / Assistiram 75%" value={pct(checkout, vsl75)} />
-        <Metric label="Compraram / Clicaram" value={pct(purchase, checkout)} highlight />
-      </div>
-    </div>
-  );
-}
 
 function BigStat({ label, value, help, highlight }: { label: string; value: number; help: string; highlight?: boolean }) {
   return (
