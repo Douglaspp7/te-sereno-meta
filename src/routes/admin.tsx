@@ -216,17 +216,6 @@ function AccessTable({ emails, loading, handleDelete, handleResetPassword }: {
   );
 }
 
-const FUNNEL_EVENTS: { key: string; label: string }[] = [
-  { key: 'QuizView', label: 'Quiz View' },
-  { key: 'QuizStart', label: 'Quiz Start' },
-  { key: 'QuizComplete', label: 'Quiz Complete' },
-  { key: 'VSLView', label: 'VSL View' },
-  { key: 'VSL75', label: 'VSL 75%' },
-  { key: 'OfferView', label: 'Offer View' },
-  { key: 'InitiateCheckout', label: 'Initiate Checkout' },
-  { key: 'Purchase', label: 'Purchase' },
-];
-
 function FunnelPanel() {
   const [days, setDays] = useState(30);
   const [data, setData] = useState<any>(null);
@@ -249,10 +238,12 @@ function FunnelPanel() {
     return <div className="text-white/60 p-8 text-center">{loading ? 'Carregando…' : 'Sem dados.'}</div>;
   }
 
-  const total = data.totalCounts || {};
   const unique = data.uniqueCounts || {};
-  const conv = data.conversions || {};
-  const baseline = unique.QuizView || 0;
+  const total = data.totalCounts || {};
+  const vsl75 = unique.VSL75 || 0;
+  const checkout = unique.InitiateCheckout || 0;
+  const purchase = total.Purchase || 0;
+  const pct = (a: number, b: number) => (b > 0 ? ((a / b) * 100).toFixed(1) + '%' : '—');
 
   return (
     <div className="space-y-6">
@@ -272,52 +263,35 @@ function FunnelPanel() {
         </button>
       </div>
 
-      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
-        <table className="w-full text-left">
-          <thead className="bg-white/5 border-b border-white/10">
-            <tr>
-              <th className="p-4 font-medium text-white/60">Evento</th>
-              <th className="p-4 font-medium text-white/60 text-right">Total</th>
-              <th className="p-4 font-medium text-white/60 text-right">Únicos (sessões)</th>
-              <th className="p-4 font-medium text-white/60 text-right">% do topo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {FUNNEL_EVENTS.map(e => {
-              const u = unique[e.key] || 0;
-              const pct = baseline > 0 ? ((u / baseline) * 100).toFixed(1) : '—';
-              return (
-                <tr key={e.key} className="border-b border-white/5">
-                  <td className="p-4 font-medium">{e.label}</td>
-                  <td className="p-4 text-right text-white/80">{total[e.key] || 0}</td>
-                  <td className="p-4 text-right text-emerald-400 font-bold">{u}</td>
-                  <td className="p-4 text-right text-white/60">{pct === '—' ? '—' : `${pct}%`}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <BigStat label="Assistiram 75% do vídeo" value={vsl75} help="Pessoas únicas que chegaram aos 75% da VSL" />
+        <BigStat label="Clicaram em Comprar" value={checkout} help="Pessoas únicas que clicaram em algum botão de compra" />
+        <BigStat label="Compraram" value={purchase} help="Compras confirmadas (webhook Hotmart)" highlight />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Metric label="Quiz Start / View" value={conv.quizStartRate} />
-        <Metric label="Quiz Complete / Start" value={conv.quizCompleteRate} />
-        <Metric label="VSL View / Complete" value={conv.vslViewRate} />
-        <Metric label="VSL 75% / View" value={conv.vsl75Rate} />
-        <Metric label="Offer View / Quiz View" value={conv.offerViewRate} />
-        <Metric label="Checkout / Offer View" value={conv.checkoutRate} />
-        <Metric label="Purchase / Checkout" value={conv.purchaseRate} highlight />
-        <Metric label="Purchase / Quiz View" value={conv.overall} highlight />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <Metric label="Clicaram / Assistiram 75%" value={pct(checkout, vsl75)} />
+        <Metric label="Compraram / Clicaram" value={pct(purchase, checkout)} highlight />
       </div>
     </div>
   );
 }
 
-function Metric({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
+function BigStat({ label, value, help, highlight }: { label: string; value: number; help: string; highlight?: boolean }) {
+  return (
+    <div className={`p-6 rounded-2xl border backdrop-blur-md ${highlight ? 'bg-emerald-500/10 border-emerald-500/40' : 'bg-white/5 border-white/10'}`}>
+      <div className="text-sm text-white/60 mb-2">{label}</div>
+      <div className={`text-5xl font-extrabold ${highlight ? 'text-emerald-400' : 'text-white'}`}>{value}</div>
+      <div className="text-xs text-white/40 mt-2">{help}</div>
+    </div>
+  );
+}
+
+function Metric({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className={`p-4 rounded-2xl border backdrop-blur-md ${highlight ? 'bg-emerald-500/10 border-emerald-500/40' : 'bg-white/5 border-white/10'}`}>
       <div className="text-xs text-white/60 mb-1">{label}</div>
-      <div className={`text-2xl font-extrabold ${highlight ? 'text-emerald-400' : 'text-white'}`}>{value ?? 0}%</div>
+      <div className={`text-2xl font-extrabold ${highlight ? 'text-emerald-400' : 'text-white'}`}>{value}</div>
     </div>
   );
 }
