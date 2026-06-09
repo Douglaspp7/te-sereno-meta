@@ -67,6 +67,27 @@ function QuizFunnel() {
     trackEvent("QuizView");
     // /oferta route access also counts as the offer page entry.
     trackEvent("OfferView");
+
+    // One-per-session "landing" and "ad click" events for funnel top.
+    try {
+      const sid = localStorage.getItem("mireto21:sid") || "";
+      const landedKey = `mireto21:landed:${sid}`;
+      if (!localStorage.getItem(landedKey)) {
+        localStorage.setItem(landedKey, "1");
+        trackEvent("LandingView", {
+          metadata: { referrer: document.referrer || null, path: window.location.pathname },
+        });
+        const params = new URLSearchParams(window.location.search);
+        const utmSource = params.get("utm_source");
+        const fbclid = params.get("fbclid");
+        const gclid = params.get("gclid");
+        if (utmSource || fbclid || gclid) {
+          trackEvent("AdClick", {
+            metadata: { utm_source: utmSource, fbclid, gclid },
+          });
+        }
+      }
+    } catch {}
   }, []);
 
   const nextStep = () => {
