@@ -26,13 +26,12 @@ function isBrowser() {
 
 export function getSessionId(): string {
   if (!isBrowser()) return "";
-  let sid = localStorage.getItem(STORAGE_SID);
-  if (!sid) {
-    sid =
-      (crypto as any)?.randomUUID?.() ??
-      `sid_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
-    localStorage.setItem(STORAGE_SID, sid);
-  }
+  const existing = localStorage.getItem(STORAGE_SID);
+  if (existing) return existing;
+  const sid: string =
+    (crypto as any)?.randomUUID?.() ??
+    `sid_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+  localStorage.setItem(STORAGE_SID, sid);
   return sid;
 }
 
