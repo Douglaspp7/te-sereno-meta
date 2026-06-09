@@ -402,8 +402,10 @@ function VSLScreen() {
             src="/vsl2.mp4" 
             poster="/vsl2_poster.jpg"
             controls 
+            autoPlay
+            muted
             playsInline
-            preload="metadata"
+            preload="auto"
             controlsList="nodownload"
             onTimeUpdate={handleTimeUpdate}
             className="w-full h-full object-contain"
