@@ -95,6 +95,13 @@ export const Route = createFileRoute("/api/public/hotmart/webhook")({
             })
             .ilike("email", email);
 
+          // Funnel analytics: record the Purchase event for conversion reports.
+          await supabaseAdmin.from("tracking_events").insert({
+            event_name: "Purchase",
+            session_id: null,
+            metadata: { email, transaction_id: transactionId ?? null, plan: plan ?? null } as any,
+          });
+
           return Response.json({ ok: true, action: "activated", email });
         }
 
