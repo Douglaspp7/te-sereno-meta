@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Star, CheckCircle2, ChevronRight, Play, Check, Lock, ChevronDown, Utensils, Leaf, PlayCircle, CalendarDays, Trophy, ListChecks, TrendingUp, Zap } from 'lucide-react'
+import { trackEvent, captureUtmsFromUrl } from '@/lib/tracking'
 
 export const Route = createFileRoute('/oferta')({
   component: QuizFunnel,
@@ -42,9 +43,12 @@ const quizData = {
 function QuizFunnel() {
   const [step, setStep] = useState(0) // 0: Hero, 1-5: Quiz, 6: Loading, 7: VSL
   const [loadingStep, setLoadingStep] = useState(0)
+  const quizStartedRef = useRef(false)
 
-  // UTMify tracking
+  // UTMify + funnel-entry events
   useEffect(() => {
+    captureUtmsFromUrl();
+
     (window as any).pixelId = "6a2605a7414b09948518b289";
     const a = document.createElement("script");
     a.setAttribute("async", "");
@@ -58,6 +62,11 @@ function QuizFunnel() {
     b.setAttribute("data-utmify-prevent-subids", "");
     b.setAttribute("src", "https://cdn.utmify.com.br/scripts/utms/latest.js");
     document.head.appendChild(b);
+
+    // Fired on the very first page of the quiz funnel.
+    trackEvent("QuizView");
+    // /oferta route access also counts as the offer page entry.
+    trackEvent("OfferView");
   }, []);
 
   const nextStep = () => {
@@ -81,7 +90,9 @@ function QuizFunnel() {
   }, [step])
 
   if (step === 0) return <HeroScreen onNext={nextStep} />
-  if (step >= 1 && step <= 5) return <QuizScreen step={step} onNext={nextStep} />
+  if (step >= 1 && step <= 5) return <QuizScreen step={step} onNext={nextStep} onFirstAnswer={() => {
+    if (!quizStartedRef.current) { quizStartedRef.current = true; trackEvent("QuizStart"); }
+  }} />
   if (step === 6) return <LoadingScreen loadingStep={loadingStep} />
   if (step === 7) return <VSLScreen />
 
@@ -113,7 +124,7 @@ function HeroScreen({ onNext }: { onNext: () => void }) {
   )
 }
 
-function QuizScreen({ step, onNext }: { step: number; onNext: () => void }) {
+function QuizScreen({ step, onNext, onFirstAnswer }: { step: number; onNext: () => void; onFirstAnswer: () => void }) {
   const data = quizData[step as keyof typeof quizData];
   const progress = (step / 5) * 100;
   
@@ -127,16 +138,22 @@ function QuizScreen({ step, onNext }: { step: number; onNext: () => void }) {
 
   const handleOptionClick = (index: number) => {
     if (selectedOption !== null) return;
-    
+
+    if (step === 1) onFirstAnswer();
+
     setSelectedOption(index);
-    
+
     setTimeout(() => {
       setShowFeedback(true);
-      
+
+      if (step === 5) {
+        trackEvent("QuizComplete", { metadata: { last_option: index } });
+      }
+
       setTimeout(() => {
         onNext();
       }, 2000);
-      
+
     }, 500);
   };
 
@@ -326,6 +343,20 @@ function PurchaseNotifications() {
 }
 
 function VSLScreen() {
+  const vsl75FiredRef = useRef(false);
+
+  useEffect(() => {
+    trackEvent("VSLView");
+  }, []);
+
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const v = e.currentTarget;
+    if (!vsl75FiredRef.current && v.duration > 0 && v.currentTime / v.duration >= 0.75) {
+      vsl75FiredRef.current = true;
+      trackEvent("VSL75", { metadata: { duration: v.duration, current_time: v.currentTime } });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-slate-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative">
       <CountdownTimer />
@@ -353,11 +384,13 @@ function VSLScreen() {
             playsInline
             preload="metadata"
             controlsList="nodownload"
+            onTimeUpdate={handleTimeUpdate}
             className="w-full h-full object-contain"
           >
             Tu navegador no soporta el elemento de video.
           </video>
         </div>
+
 
         <div className="max-w-md mx-auto mb-20">
           <div className="relative bg-gradient-to-b from-emerald-500/10 to-transparent border border-emerald-500/30 rounded-3xl p-8 backdrop-blur-sm flex flex-col justify-center shadow-2xl">
@@ -378,6 +411,7 @@ function VSLScreen() {
             
             <a 
               href="https://pay.hotmart.com/G106177128D" 
+              onClick={() => trackEvent("InitiateCheckout", { metadata: { cta: "primary_top" } })}
               className="block w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xl py-5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] text-center mb-4"
             >
               Quiero Empezar Ahora
@@ -500,6 +534,7 @@ function VSLScreen() {
 
             <a 
               href="https://pay.hotmart.com/G106177128D" 
+              onClick={() => trackEvent("InitiateCheckout", { metadata: { cta: "value_stack" } })}
               className="group relative flex items-center justify-center w-full bg-gradient-to-r from-emerald-600 to-emerald-400 hover:from-emerald-500 hover:to-emerald-300 text-black font-extrabold text-2xl py-6 rounded-2xl transition-all hover:scale-[1.03] active:scale-[0.98] shadow-[0_0_50px_-10px_rgba(16,185,129,0.8)] border border-emerald-300/50 mb-4 overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />

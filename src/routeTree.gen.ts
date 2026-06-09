@@ -27,6 +27,8 @@ import { Route as AuthenticatedEjerciciosRouteImport } from './routes/_authentic
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedAnalizarRouteImport } from './routes/_authenticated/analizar'
 import { Route as AuthenticatedActivateRouteImport } from './routes/_authenticated/activate'
+import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
+import { Route as ApiAdminMetricsRouteImport } from './routes/api/admin/metrics'
 import { Route as ApiAdminAllowlistRouteImport } from './routes/api/admin/allowlist'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -123,6 +125,16 @@ const AuthenticatedActivateRoute = AuthenticatedActivateRouteImport.update({
   path: '/activate',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
+  id: '/api/public/track',
+  path: '/api/public/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminMetricsRoute = ApiAdminMetricsRouteImport.update({
+  id: '/api/admin/metrics',
+  path: '/api/admin/metrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminAllowlistRoute = ApiAdminAllowlistRouteImport.update({
   id: '/api/admin/allowlist',
   path: '/api/admin/allowlist',
@@ -169,6 +181,8 @@ export interface FileRoutesByFullPath {
   '/recompensas': typeof AuthenticatedRecompensasRoute
   '/te': typeof AuthenticatedTeRoute
   '/api/admin/allowlist': typeof ApiAdminAllowlistRoute
+  '/api/admin/metrics': typeof ApiAdminMetricsRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
   '/api/public/hotmart/webhook': typeof ApiPublicHotmartWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -193,6 +207,8 @@ export interface FileRoutesByTo {
   '/recompensas': typeof AuthenticatedRecompensasRoute
   '/te': typeof AuthenticatedTeRoute
   '/api/admin/allowlist': typeof ApiAdminAllowlistRoute
+  '/api/admin/metrics': typeof ApiAdminMetricsRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
   '/api/public/hotmart/webhook': typeof ApiPublicHotmartWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -219,6 +235,8 @@ export interface FileRoutesById {
   '/_authenticated/recompensas': typeof AuthenticatedRecompensasRoute
   '/_authenticated/te': typeof AuthenticatedTeRoute
   '/api/admin/allowlist': typeof ApiAdminAllowlistRoute
+  '/api/admin/metrics': typeof ApiAdminMetricsRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
   '/api/public/hotmart/webhook': typeof ApiPublicHotmartWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -245,6 +263,8 @@ export interface FileRouteTypes {
     | '/recompensas'
     | '/te'
     | '/api/admin/allowlist'
+    | '/api/admin/metrics'
+    | '/api/public/track'
     | '/api/public/hotmart/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -269,6 +289,8 @@ export interface FileRouteTypes {
     | '/recompensas'
     | '/te'
     | '/api/admin/allowlist'
+    | '/api/admin/metrics'
+    | '/api/public/track'
     | '/api/public/hotmart/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -294,6 +316,8 @@ export interface FileRouteTypes {
     | '/_authenticated/recompensas'
     | '/_authenticated/te'
     | '/api/admin/allowlist'
+    | '/api/admin/metrics'
+    | '/api/public/track'
     | '/api/public/hotmart/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -308,6 +332,8 @@ export interface RootRouteChildren {
   OfertaRoute: typeof OfertaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiAdminAllowlistRoute: typeof ApiAdminAllowlistRoute
+  ApiAdminMetricsRoute: typeof ApiAdminMetricsRoute
+  ApiPublicTrackRoute: typeof ApiPublicTrackRoute
   ApiPublicHotmartWebhookRoute: typeof ApiPublicHotmartWebhookRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -442,6 +468,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedActivateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/track': {
+      id: '/api/public/track'
+      path: '/api/public/track'
+      fullPath: '/api/public/track'
+      preLoaderRoute: typeof ApiPublicTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/metrics': {
+      id: '/api/admin/metrics'
+      path: '/api/admin/metrics'
+      fullPath: '/api/admin/metrics'
+      preLoaderRoute: typeof ApiAdminMetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/allowlist': {
       id: '/api/admin/allowlist'
       path: '/api/admin/allowlist'
@@ -521,6 +561,8 @@ const rootRouteChildren: RootRouteChildren = {
   OfertaRoute: OfertaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiAdminAllowlistRoute: ApiAdminAllowlistRoute,
+  ApiAdminMetricsRoute: ApiAdminMetricsRoute,
+  ApiPublicTrackRoute: ApiPublicTrackRoute,
   ApiPublicHotmartWebhookRoute: ApiPublicHotmartWebhookRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
@@ -529,3 +571,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
