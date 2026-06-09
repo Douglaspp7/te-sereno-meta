@@ -534,6 +534,7 @@ function VSLScreen() {
 
             <a 
               href="https://pay.hotmart.com/G106177128D" 
+              onClick={() => trackEvent("InitiateCheckout", { metadata: { cta: "value_stack" } })}
               className="group relative flex items-center justify-center w-full bg-gradient-to-r from-emerald-600 to-emerald-400 hover:from-emerald-500 hover:to-emerald-300 text-black font-extrabold text-2xl py-6 rounded-2xl transition-all hover:scale-[1.03] active:scale-[0.98] shadow-[0_0_50px_-10px_rgba(16,185,129,0.8)] border border-emerald-300/50 mb-4 overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
