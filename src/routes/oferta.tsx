@@ -90,7 +90,9 @@ function QuizFunnel() {
   }, [step])
 
   if (step === 0) return <HeroScreen onNext={nextStep} />
-  if (step >= 1 && step <= 5) return <QuizScreen step={step} onNext={nextStep} />
+  if (step >= 1 && step <= 5) return <QuizScreen step={step} onNext={nextStep} onFirstAnswer={() => {
+    if (!quizStartedRef.current) { quizStartedRef.current = true; trackEvent("QuizStart"); }
+  }} />
   if (step === 6) return <LoadingScreen loadingStep={loadingStep} />
   if (step === 7) return <VSLScreen />
 
