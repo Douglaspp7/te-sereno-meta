@@ -41,7 +41,7 @@ const quizData = {
 }
 
 function QuizFunnel() {
-  const [step, setStep] = useState(0) // 0: Hero, 1-5: Quiz, 6: Loading, 7: VSL
+  const [step, setStep] = useState(7) // SKIP quiz — go straight to VSL (0: Hero, 1-5: Quiz, 6: Loading, 7: VSL)
   const [loadingStep, setLoadingStep] = useState(0)
   const quizStartedRef = useRef(false)
 
