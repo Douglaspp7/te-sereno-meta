@@ -122,7 +122,7 @@ function HeroScreen({ onNext }: { onNext: () => void }) {
   )
 }
 
-function QuizScreen({ step, onNext }: { step: number; onNext: () => void }) {
+function QuizScreen({ step, onNext, onFirstAnswer }: { step: number; onNext: () => void; onFirstAnswer: () => void }) {
   const data = quizData[step as keyof typeof quizData];
   const progress = (step / 5) * 100;
   
@@ -136,16 +136,22 @@ function QuizScreen({ step, onNext }: { step: number; onNext: () => void }) {
 
   const handleOptionClick = (index: number) => {
     if (selectedOption !== null) return;
-    
+
+    if (step === 1) onFirstAnswer();
+
     setSelectedOption(index);
-    
+
     setTimeout(() => {
       setShowFeedback(true);
-      
+
+      if (step === 5) {
+        trackEvent("QuizComplete", { metadata: { last_option: index } });
+      }
+
       setTimeout(() => {
         onNext();
       }, 2000);
-      
+
     }, 500);
   };
 
