@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Trash2, ShieldCheck, Lock, RefreshCcw, Key } from "lucide-react";
+import { Trash2, ShieldCheck, Lock, RefreshCcw, Key, BarChart3, Users } from "lucide-react";
 
 export const Route = createFileRoute('/admin')({
   component: AdminPage,
