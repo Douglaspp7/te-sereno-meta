@@ -34,7 +34,7 @@ export const Route = createFileRoute("/api/public/track")({
             page_url: data.page_url ?? null,
             referrer: data.referrer ?? null,
             user_agent: ua,
-            metadata: data.metadata ?? null,
+            metadata: (data.metadata ?? null) as any,
           });
           if (error) {
             return new Response(JSON.stringify({ error: error.message }), { status: 500 });
