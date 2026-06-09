@@ -43,9 +43,12 @@ const quizData = {
 function QuizFunnel() {
   const [step, setStep] = useState(0) // 0: Hero, 1-5: Quiz, 6: Loading, 7: VSL
   const [loadingStep, setLoadingStep] = useState(0)
+  const quizStartedRef = useRef(false)
 
-  // UTMify tracking
+  // UTMify + funnel-entry events
   useEffect(() => {
+    captureUtmsFromUrl();
+
     (window as any).pixelId = "6a2605a7414b09948518b289";
     const a = document.createElement("script");
     a.setAttribute("async", "");
@@ -59,6 +62,11 @@ function QuizFunnel() {
     b.setAttribute("data-utmify-prevent-subids", "");
     b.setAttribute("src", "https://cdn.utmify.com.br/scripts/utms/latest.js");
     document.head.appendChild(b);
+
+    // Fired on the very first page of the quiz funnel.
+    trackEvent("QuizView");
+    // /oferta route access also counts as the offer page entry.
+    trackEvent("OfferView");
   }, []);
 
   const nextStep = () => {
