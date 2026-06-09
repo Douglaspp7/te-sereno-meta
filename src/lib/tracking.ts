@@ -65,6 +65,8 @@ export function clearStoredUtms() {
 }
 
 export type TrackEventName =
+  | "LandingView"
+  | "AdClick"
   | "QuizView"
   | "QuizStart"
   | "QuizComplete"
