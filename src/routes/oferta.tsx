@@ -411,6 +411,7 @@ function VSLScreen() {
             
             <a 
               href="https://pay.hotmart.com/G106177128D" 
+              onClick={() => trackEvent("InitiateCheckout", { metadata: { cta: "primary_top" } })}
               className="block w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xl py-5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] text-center mb-4"
             >
               Quiero Empezar Ahora
