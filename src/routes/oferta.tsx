@@ -343,6 +343,20 @@ function PurchaseNotifications() {
 }
 
 function VSLScreen() {
+  const vsl75FiredRef = useRef(false);
+
+  useEffect(() => {
+    trackEvent("VSLView");
+  }, []);
+
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const v = e.currentTarget;
+    if (!vsl75FiredRef.current && v.duration > 0 && v.currentTime / v.duration >= 0.75) {
+      vsl75FiredRef.current = true;
+      trackEvent("VSL75", { metadata: { duration: v.duration, current_time: v.currentTime } });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-slate-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative">
       <CountdownTimer />
@@ -370,11 +384,13 @@ function VSLScreen() {
             playsInline
             preload="metadata"
             controlsList="nodownload"
+            onTimeUpdate={handleTimeUpdate}
             className="w-full h-full object-contain"
           >
             Tu navegador no soporta el elemento de video.
           </video>
         </div>
+
 
         <div className="max-w-md mx-auto mb-20">
           <div className="relative bg-gradient-to-b from-emerald-500/10 to-transparent border border-emerald-500/30 rounded-3xl p-8 backdrop-blur-sm flex flex-col justify-center shadow-2xl">
