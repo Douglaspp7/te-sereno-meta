@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 const EVENTS = [
+  "LandingView",
+  "AdClick",
   "QuizView",
   "QuizStart",
   "QuizComplete",
