@@ -608,9 +608,9 @@ function VSLScreen() {
           <h3 className="text-2xl font-bold text-center text-white mb-10">Más de 10,000 personas ya lo lograron</h3>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { name: "María S.", avatar: "https://randomuser.me/api/portraits/women/44.jpg", text: "Increíble. Perdí 4 kilos y nunca me sentí tan llena de energía. ¡Súper recomendado!" },
-              { name: "Laura G.", avatar: "https://randomuser.me/api/portraits/women/68.jpg", text: "Las recetas son súper fáciles de hacer y ricas. El grupo de apoyo es lo mejor." },
-              { name: "Ana P.", avatar: "https://randomuser.me/api/portraits/women/90.jpg", text: "Había intentado todo, pero estos 21 días me cambiaron la vida. Ya no sufro por la comida." }
+              { name: "María S.", avatar: "/testimonials/maria.jpg", text: "Increíble. Perdí 4 kilos y nunca me sentí tan llena de energía. ¡Súper recomendado!" },
+              { name: "Laura G.", avatar: "/testimonials/laura.jpg", text: "Las recetas son súper fáciles de hacer y ricas. El grupo de apoyo es lo mejor." },
+              { name: "Ana P.", avatar: "/testimonials/ana.jpg", text: "Había intentado todo, pero estos 21 días me cambiaron la vida. Ya no sufro por la comida." }
             ].map((testi, i) => (
               <div key={i} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col justify-between hover:bg-white/10 transition-colors duration-300">
                 <div>
