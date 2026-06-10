@@ -590,8 +590,16 @@ function VSLScreen() {
               </span>
             </a>
             
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
+                ✓ Garantía de 7 días
+              </span>
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-white/80 bg-white/5 border border-white/15 px-3 py-1 rounded-full">
+                ✓ Pago único · Sin suscripción
+              </span>
+            </div>
             <div className="flex items-center justify-center gap-2 text-white/50 text-xs font-medium">
-              <Lock className="w-3 h-3" /> Acceso inmediato • Pago único • Disponible 24/7
+              <Lock className="w-3 h-3" /> Acceso inmediato • Disponible 24/7
             </div>
           </div>
         </div>
