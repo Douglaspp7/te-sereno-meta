@@ -291,13 +291,29 @@ function LoadingItem({ text, active }: { text: string; active: boolean }) {
 }
 
 function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState(15 * 60);
+  const DURATION = 15 * 60; // 15 minutes
+  const [timeLeft, setTimeLeft] = useState(DURATION);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
+    try {
+      const key = "mireto21:offer_deadline";
+      let deadline = Number(localStorage.getItem(key) || 0);
+      const now = Date.now();
+      if (!deadline || deadline < now) {
+        deadline = now + DURATION * 1000;
+        localStorage.setItem(key, String(deadline));
+      }
+      const tick = () => {
+        const left = Math.max(0, Math.floor((deadline - Date.now()) / 1000));
+        setTimeLeft(left);
+      };
+      tick();
+      const timer = setInterval(tick, 1000);
+      return () => clearInterval(timer);
+    } catch {
+      const timer = setInterval(() => setTimeLeft(p => (p > 0 ? p - 1 : 0)), 1000);
+      return () => clearInterval(timer);
+    }
   }, []);
 
   const hours = Math.floor(timeLeft / 3600);
