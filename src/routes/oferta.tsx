@@ -291,13 +291,29 @@ function LoadingItem({ text, active }: { text: string; active: boolean }) {
 }
 
 function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = useState(15 * 60);
+  const DURATION = 15 * 60; // 15 minutes
+  const [timeLeft, setTimeLeft] = useState(DURATION);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
+    try {
+      const key = "mireto21:offer_deadline";
+      let deadline = Number(localStorage.getItem(key) || 0);
+      const now = Date.now();
+      if (!deadline || deadline < now) {
+        deadline = now + DURATION * 1000;
+        localStorage.setItem(key, String(deadline));
+      }
+      const tick = () => {
+        const left = Math.max(0, Math.floor((deadline - Date.now()) / 1000));
+        setTimeLeft(left);
+      };
+      tick();
+      const timer = setInterval(tick, 1000);
+      return () => clearInterval(timer);
+    } catch {
+      const timer = setInterval(() => setTimeLeft(p => (p > 0 ? p - 1 : 0)), 1000);
+      return () => clearInterval(timer);
+    }
   }, []);
 
   const hours = Math.floor(timeLeft / 3600);
@@ -435,10 +451,18 @@ function VSLScreen() {
             <a 
               href="https://pay.hotmart.com/G106177128D" 
               onClick={() => trackEvent("InitiateCheckout", { metadata: { cta: "primary_top" } })}
-              className="block w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xl py-5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] text-center mb-4"
+              className="block w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xl py-5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] text-center mb-3"
             >
               Quiero Empezar Ahora
             </a>
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+                ✓ Garantía de 7 días
+              </span>
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white/80 bg-white/5 border border-white/15 px-2.5 py-1 rounded-full">
+                ✓ Pago único · Sin suscripción
+              </span>
+            </div>
             <p className="text-xs text-white/40 text-center flex items-center justify-center gap-1">
               <Lock className="w-3 h-3" /> Pago 100% seguro a través de Hotmart
             </p>
@@ -566,8 +590,16 @@ function VSLScreen() {
               </span>
             </a>
             
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
+                ✓ Garantía de 7 días
+              </span>
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-white/80 bg-white/5 border border-white/15 px-3 py-1 rounded-full">
+                ✓ Pago único · Sin suscripción
+              </span>
+            </div>
             <div className="flex items-center justify-center gap-2 text-white/50 text-xs font-medium">
-              <Lock className="w-3 h-3" /> Acceso inmediato • Pago único • Disponible 24/7
+              <Lock className="w-3 h-3" /> Acceso inmediato • Disponible 24/7
             </div>
           </div>
         </div>
@@ -576,9 +608,9 @@ function VSLScreen() {
           <h3 className="text-2xl font-bold text-center text-white mb-10">Más de 10,000 personas ya lo lograron</h3>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { name: "María S.", avatar: "https://randomuser.me/api/portraits/women/44.jpg", text: "Increíble. Perdí 4 kilos y nunca me sentí tan llena de energía. ¡Súper recomendado!" },
-              { name: "Laura G.", avatar: "https://randomuser.me/api/portraits/women/68.jpg", text: "Las recetas son súper fáciles de hacer y ricas. El grupo de apoyo es lo mejor." },
-              { name: "Ana P.", avatar: "https://randomuser.me/api/portraits/women/90.jpg", text: "Había intentado todo, pero estos 21 días me cambiaron la vida. Ya no sufro por la comida." }
+              { name: "María S.", avatar: "/testimonials/maria.jpg", text: "Increíble. Perdí 4 kilos y nunca me sentí tan llena de energía. ¡Súper recomendado!" },
+              { name: "Laura G.", avatar: "/testimonials/laura.jpg", text: "Las recetas son súper fáciles de hacer y ricas. El grupo de apoyo es lo mejor." },
+              { name: "Ana P.", avatar: "/testimonials/ana.jpg", text: "Había intentado todo, pero estos 21 días me cambiaron la vida. Ya no sufro por la comida." }
             ].map((testi, i) => (
               <div key={i} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col justify-between hover:bg-white/10 transition-colors duration-300">
                 <div>
