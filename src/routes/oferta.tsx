@@ -451,10 +451,18 @@ function VSLScreen() {
             <a 
               href="https://pay.hotmart.com/G106177128D" 
               onClick={() => trackEvent("InitiateCheckout", { metadata: { cta: "primary_top" } })}
-              className="block w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xl py-5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] text-center mb-4"
+              className="block w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xl py-5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] text-center mb-3"
             >
               Quiero Empezar Ahora
             </a>
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+                ✓ Garantía de 7 días
+              </span>
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white/80 bg-white/5 border border-white/15 px-2.5 py-1 rounded-full">
+                ✓ Pago único · Sin suscripción
+              </span>
+            </div>
             <p className="text-xs text-white/40 text-center flex items-center justify-center gap-1">
               <Lock className="w-3 h-3" /> Pago 100% seguro a través de Hotmart
             </p>
