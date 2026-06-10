@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect, useRef } from 'react'
-import { Star, CheckCircle2, ChevronRight, Play, Check, Lock, ChevronDown, Utensils, Leaf, PlayCircle, CalendarDays, Trophy, ListChecks, TrendingUp, Zap } from 'lucide-react'
+import { Star, CheckCircle2, ChevronRight, Play, Check, Lock, ChevronDown, Utensils, Leaf, PlayCircle, CalendarDays, Trophy, ListChecks, TrendingUp, Zap, Smartphone, Target, Sparkles, ShieldCheck, CreditCard, Clock, HeartHandshake } from 'lucide-react'
 import { trackEvent, captureUtmsFromUrl } from '@/lib/tracking'
 
 export const Route = createFileRoute('/oferta')({
