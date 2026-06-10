@@ -482,8 +482,9 @@ function VSLScreen() {
               {
                 img: "/quiz/box_1.png",
                 icon: Utensils,
-                title: "63 Recetas Premium",
-                desc: "Desayunos, almuerzos y cenas para los 21 días del programa."
+                title: "Recetas para 21 días",
+                desc: "Desayuno, almuerzo y cena fáciles, con ingredientes que ya tienes en casa."
+
               },
               {
                 img: "/quiz/box_2.png",
