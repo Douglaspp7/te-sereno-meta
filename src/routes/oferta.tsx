@@ -555,11 +555,11 @@ function VSLScreen() {
             
             <div className="space-y-4 mb-8 mt-4">
               {[
-                { name: "63 Recetas Premium", price: "US$29" },
-                { name: "21 Recetas de Té", price: "US$19" },
-                { name: "Biblioteca de Ejercicios", price: "US$27" },
-                { name: "Sistema de Recompensas", price: "US$17" },
-                { name: "Planificador de 21 Días", price: "US$37" }
+                { name: "Recetario de 21 días", price: "US$7" },
+                { name: "21 Tés Funcionales", price: "US$5" },
+                { name: "Biblioteca de Ejercicios", price: "US$6" },
+                { name: "Sistema de Recompensas", price: "US$4" },
+                { name: "Planificador de 21 Días", price: "US$6" }
               ].map((item, i) => (
                 <div key={i} className="flex items-center justify-between border-b border-white/10 pb-3">
                   <span className="text-white/80 font-medium">{item.name}</span>
@@ -570,15 +570,17 @@ function VSLScreen() {
 
             <div className="flex flex-col items-center justify-center border-t border-white/20 pt-8 mb-8">
               <div className="text-white/50 text-lg font-medium flex items-center gap-2 mb-2">
-                Valor Total: <span className="line-through decoration-red-500/70 decoration-2">US$129</span>
+                Si lo compraras por separado: <span className="line-through decoration-red-500/70 decoration-2">US$28</span>
               </div>
               <div className="flex items-end gap-3">
-                <span className="text-white/80 text-xl font-medium pb-2">Hoy destacado:</span>
+                <span className="text-white/80 text-xl font-medium pb-2">Hoy por solo:</span>
                 <div className="flex items-start gap-1">
                   <span className="text-6xl font-black text-emerald-400 drop-shadow-[0_0_30px_rgba(16,185,129,0.6)]">US$9</span>
                 </div>
               </div>
+              <p className="text-white/60 text-sm mt-3 text-center">Menos que un café de la semana ☕ · Pago único</p>
             </div>
+
 
             <a 
               href="https://pay.hotmart.com/G106177128D" 
