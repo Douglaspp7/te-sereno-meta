@@ -379,6 +379,39 @@ function PurchaseNotifications() {
   )
 }
 
+function CtaButton({ id, label = "Quiero comenzar ahora" }: { id: string; label?: string }) {
+  return (
+    <a
+      href="https://pay.hotmart.com/G106177128D"
+      onClick={() => trackEvent("InitiateCheckout", { metadata: { cta: id } })}
+      className="group relative block w-full bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-black font-extrabold text-lg md:text-xl py-5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_10px_40px_-10px_rgba(16,185,129,0.8)] text-center"
+    >
+      <span className="inline-flex items-center justify-center gap-2">
+        {label} <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+      </span>
+    </a>
+  );
+}
+
+function TrustBadges() {
+  const items = [
+    { icon: CreditCard, text: "Pago único" },
+    { icon: Zap, text: "Acceso inmediato" },
+    { icon: ShieldCheck, text: "Garantía de 7 días" },
+    { icon: Lock, text: "Compra segura · Hotmart" },
+  ];
+  return (
+    <div className="grid grid-cols-2 gap-2 mt-4">
+      {items.map((b, i) => (
+        <div key={i} className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+          <b.icon className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span className="text-[12px] font-semibold text-white/85 truncate">{b.text}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function VSLScreen() {
   const vsl75FiredRef = useRef(false);
 
@@ -394,30 +427,123 @@ function VSLScreen() {
     }
   };
 
+  const heroBullets = [
+    "Alimentación guiada",
+    "Rutinas simples desde casa",
+    "Lista de compras inteligente",
+    "Seguimiento diario",
+    "Recompensas por completar el reto",
+  ];
+
+  const steps = [
+    { icon: Smartphone, title: "Abre la aplicación", desc: "Cada mañana tendrás todo listo en tu celular." },
+    { icon: Target, title: "Completa la misión diaria", desc: "Pequeñas acciones simples, pensadas para tu día." },
+    { icon: Sparkles, title: "Construye hábitos en 21 días", desc: "Sin esfuerzo extra. Solo sigue el plan." },
+  ];
+
+  const includes = [
+    { icon: Smartphone, title: "Acceso completo a MiReto21", desc: "Tu app personal de 21 días, lista para usar." },
+    { icon: CalendarDays, title: "Plan guiado de 21 días", desc: "Te decimos exactamente qué hacer cada día." },
+    { icon: Utensils, title: "63 recetas premium", desc: "Desayuno, almuerzo y cena con ingredientes simples." },
+    { icon: Leaf, title: "Biblioteca de tés funcionales", desc: "21 recetas naturales para apoyar tu reto." },
+    { icon: ListChecks, title: "Lista de compras inteligente", desc: "Todo lo que necesitas, organizado por semana." },
+    { icon: Trophy, title: "Sistema de recompensas", desc: "Desbloquea contenido al avanzar." },
+    { icon: TrendingUp, title: "Seguimiento del progreso", desc: "Mira tu evolución día a día." },
+    { icon: Zap, title: "Actualizaciones futuras", desc: "Nuevas recetas y mejoras sin costo adicional." },
+  ];
+
+  const gallery = [
+    { src: "/mi_plan_real.webp", label: "Día 1 de 21" },
+    { src: "/recetas_real.webp", label: "Misiones diarias" },
+    { src: "/compras_real.webp", label: "Lista de compras" },
+    { src: "/recompensas_botao.png", label: "Recompensas" },
+    { src: "/progreso_real.webp", label: "Seguimiento" },
+    { src: "/ejercicios_real.webp", label: "Rutinas guiadas" },
+  ];
+
+  const forYou = [
+    "Has intentado comenzar muchas veces y abandonas rápido",
+    "Necesitas una guía paso a paso",
+    "No sabes por dónde empezar",
+    "Quieres crear hábitos más saludables",
+    "Prefieres usar tu celular como apoyo diario",
+  ];
+
   return (
     <div className="min-h-screen bg-black text-slate-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative">
       <CountdownTimer />
-      <PurchaseNotifications />
-      
-      <div className="bg-emerald-500 text-black text-center py-2 font-bold text-sm px-4">
-        +10.000 mujeres ya transformaron su cuerpo con MiReto21
-      </div>
-      
-      <div className="max-w-4xl mx-auto px-4 py-8 md:py-12">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
-            Pierde grasa en <span className="text-emerald-400">21 días</span> sin dietas extremas ni gimnasio
-          </h1>
-          <p className="text-base md:text-lg text-white/70 max-w-2xl mx-auto">
-            Mira el video y descubre el método que ayuda a miles de mujeres a construir hábitos saludables y ver resultados reales.
-          </p>
+
+      {/* ============ HERO ============ */}
+      <section className="relative px-4 pt-8 pb-12 md:pt-14 md:pb-20 overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.18),transparent_60%)]" />
         </div>
-        
-        <div className="relative w-full max-w-sm mx-auto aspect-[9/16] rounded-3xl overflow-hidden bg-black border border-emerald-500/30 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] mb-12">
-          <video 
-            src="/vsl2.mp4" 
+
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+          {/* Mockup */}
+          <div className="order-2 md:order-1 relative flex justify-center">
+            <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full" />
+            <img
+              src="/promocional.png"
+              alt="App MiReto21 — Reto de 21 días"
+              className="relative w-full max-w-xs md:max-w-sm rounded-3xl"
+            />
+            <div className="absolute -top-3 -right-2 md:top-2 md:right-4 bg-emerald-500 text-black font-extrabold text-xs px-4 py-2 rounded-full shadow-lg border border-emerald-300 rotate-3">
+              21 DÍAS
+            </div>
+          </div>
+
+          {/* Copy + CTA */}
+          <div className="order-1 md:order-2 text-center md:text-left">
+            <span className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300 mb-4">
+              <Sparkles className="w-3 h-3" /> Reto guiado de 21 días
+            </span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-[1.1] mb-4">
+              Tu único trabajo es <span className="text-emerald-400">abrir la app</span> cada día durante 21 días.
+            </h1>
+            <p className="text-base md:text-lg text-white/75 mb-6 max-w-xl mx-auto md:mx-0">
+              Nosotros te mostramos exactamente qué hacer: planes de alimentación, rutinas simples, lista de compras y pequeñas misiones diarias para crear hábitos saludables.
+            </p>
+
+            <ul className="grid grid-cols-1 gap-2 mb-7 max-w-md mx-auto md:mx-0">
+              {heroBullets.map((b, i) => (
+                <li key={i} className="flex items-center gap-2 text-white/90 text-sm md:text-base">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-emerald-400" strokeWidth={3} />
+                  </span>
+                  {b}
+                </li>
+              ))}
+            </ul>
+
+            <div className="max-w-md mx-auto md:mx-0 bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
+              <div className="flex items-end justify-center md:justify-start gap-2 mb-1">
+                <span className="text-white/60 text-sm pb-2">Hoy por solo</span>
+                <span className="text-5xl font-black text-emerald-400 leading-none drop-shadow-[0_0_20px_rgba(16,185,129,0.5)]">US$9</span>
+              </div>
+              <p className="text-xs text-emerald-300 font-bold text-center md:text-left mb-4">
+                Oferta especial por tiempo limitado
+              </p>
+              <CtaButton id="hero_primary" />
+              <TrustBadges />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ VIDEO ============ */}
+      <section className="px-4 py-12 md:py-16 bg-white/[0.02] border-y border-white/5">
+        <div className="max-w-3xl mx-auto text-center mb-6">
+          <h2 className="text-2xl md:text-4xl font-extrabold text-white">
+            Descubre cómo funciona <span className="text-emerald-400">MiReto21</span>
+          </h2>
+          <p className="text-white/60 text-sm md:text-base mt-2">Un vistazo rápido a tu reto de 21 días.</p>
+        </div>
+        <div className="relative w-full max-w-sm mx-auto aspect-[9/16] rounded-3xl overflow-hidden bg-black border border-emerald-500/30 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]">
+          <video
+            src="/vsl2.mp4"
             poster="/vsl2_poster.jpg"
-            controls 
+            controls
             autoPlay
             muted
             playsInline
@@ -429,234 +555,156 @@ function VSLScreen() {
             Tu navegador no soporta el elemento de video.
           </video>
         </div>
+      </section>
 
-
-        <div className="max-w-md mx-auto mb-20">
-          <div className="relative bg-gradient-to-b from-emerald-500/10 to-transparent border border-emerald-500/30 rounded-3xl p-8 backdrop-blur-sm flex flex-col justify-center shadow-2xl">
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50 rounded-t-3xl" />
-            <div className="text-center mb-6">
-              <h3 className="text-xl text-white/80 font-medium mb-4">Acceso Completo a MiReto21</h3>
-              
-              <img src="/promocional.png" alt="Aplicativo MiReto21" className="w-full max-w-xs mx-auto rounded-xl shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)] border border-emerald-500/20 mb-6" />
-
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <span className="text-5xl font-extrabold text-white">$9</span>
-                <span className="text-xl text-white/60 mt-2">USD</span>
+      {/* ============ ASÍ FUNCIONA ============ */}
+      <section className="px-4 py-14 md:py-20">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-4xl font-extrabold text-white">Así funciona</h2>
+            <p className="text-white/60 mt-2">Tres pasos. Cada día.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5">
+            {steps.map((s, i) => (
+              <div key={i} className="relative bg-gradient-to-b from-white/[0.06] to-transparent border border-white/10 rounded-3xl p-6 hover:border-emerald-500/30 transition-colors">
+                <div className="absolute -top-3 -left-3 w-9 h-9 rounded-2xl bg-emerald-500 text-black font-extrabold flex items-center justify-center shadow-lg">
+                  {i + 1}
+                </div>
+                <s.icon className="w-8 h-8 text-emerald-400 mb-4" />
+                <h3 className="text-lg font-bold text-white mb-2">{s.title}</h3>
+                <p className="text-white/65 text-sm">{s.desc}</p>
               </div>
-              <p className="text-emerald-400 text-sm font-bold bg-emerald-400/10 inline-block px-3 py-1 rounded-full">
-                Oferta especial única
-              </p>
-            </div>
-            
-            <a 
-              href="https://pay.hotmart.com/G106177128D" 
-              onClick={() => trackEvent("InitiateCheckout", { metadata: { cta: "primary_top" } })}
-              className="block w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xl py-5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] text-center mb-3"
-            >
-              Quiero Empezar Ahora
-            </a>
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full">
-                ✓ Garantía de 7 días
-              </span>
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white/80 bg-white/5 border border-white/15 px-2.5 py-1 rounded-full">
-                ✓ Pago único · Sin suscripción
-              </span>
-            </div>
-            <p className="text-xs text-white/40 text-center flex items-center justify-center gap-1">
-              <Lock className="w-3 h-3" /> Pago 100% seguro a través de Hotmart
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ TODO LO QUE RECIBIRÁS ============ */}
+      <section className="px-4 py-14 md:py-20 bg-white/[0.02] border-y border-white/5">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-4xl font-extrabold text-white">Todo lo que recibirás</h2>
+            <p className="text-white/60 mt-2">Acceso completo, listo para usar hoy mismo.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {includes.map((it, i) => (
+              <div key={i} className="group bg-gradient-to-b from-white/[0.06] to-transparent border border-white/10 rounded-2xl p-5 hover:border-emerald-500/40 hover:-translate-y-1 transition-all">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mb-4 group-hover:bg-emerald-500/25 transition-colors">
+                  <it.icon className="w-5 h-5 text-emerald-400" />
+                </div>
+                <h3 className="font-bold text-white mb-1">{it.title}</h3>
+                <p className="text-white/60 text-sm">{it.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ ASÍ SE VE TU RETO ============ */}
+      <section className="px-4 py-14 md:py-20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10 max-w-2xl mx-auto">
+            <h2 className="text-2xl md:text-4xl font-extrabold text-white">Así se ve tu reto</h2>
+            <p className="text-white/70 mt-3 text-base">
+              No necesitas adivinar qué hacer. <span className="text-emerald-400 font-semibold">MiReto21 organiza cada paso por ti.</span>
             </p>
           </div>
-        </div>
-
-        {/* Nueva Sección de Value Stacking */}
-        <div className="mb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 drop-shadow-lg">
-              🎁 Todo lo que recibirás hoy
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            {[
-              {
-                img: "/quiz/box_1.png",
-                icon: Utensils,
-                title: "Recetas para 21 días",
-                desc: "Desayuno, almuerzo y cena fáciles, con ingredientes que ya tienes en casa."
-
-              },
-              {
-                img: "/quiz/box_2.png",
-                icon: Leaf,
-                title: "21 Tés Funcionales",
-                desc: "Una receta diferente cada día para complementar tu rutina saludable."
-              },
-              {
-                img: "/quiz/box_3.png",
-                icon: PlayCircle,
-                title: "Biblioteca de Ejercicios",
-                desc: "Vídeos guiados para principiantes y nivel intermedio."
-              },
-              {
-                img: "/quiz/box_4.png",
-                icon: CalendarDays,
-                title: "Plan Diario de 21 Días",
-                desc: "Sabrás exactamente qué hacer cada día."
-              },
-              {
-                img: "/quiz/box_5.png",
-                icon: Trophy,
-                title: "Sistema de Recompensas",
-                desc: "Desbloquea contenido especial conforme avances."
-              },
-              {
-                img: "/quiz/box_6.png",
-                icon: ListChecks,
-                title: "Lista Inteligente de Compras",
-                desc: "Todos los ingredientes organizados para cada semana."
-              },
-              {
-                img: "/quiz/box_7.png",
-                icon: TrendingUp,
-                title: "Seguimiento de Progreso",
-                desc: "Monitorea tu avance durante los 21 días."
-              },
-              {
-                img: "/quiz/box_8.png",
-                icon: Zap,
-                title: "Acceso Inmediato",
-                desc: "Disponible desde tu móvil, tablet o computadora."
-              }
-            ].map((box, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:bg-white/10 hover:border-emerald-500/30 hover:-translate-y-2 transition-all duration-300 group flex flex-col">
-                <div className="relative aspect-[4/3] w-full overflow-hidden">
-                  <img src={box.img} alt={box.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-sm text-black text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg border border-emerald-400">
-                    ⭐ Incluido
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-3 left-3 w-10 h-10 bg-black/50 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
-                    <box.icon className="w-5 h-5 text-emerald-400" />
-                  </div>
-                </div>
-                <div className="p-6 flex flex-col flex-1">
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">{box.title}</h3>
-                  <p className="text-white/70 text-sm flex-1">{box.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="max-w-2xl mx-auto bg-gradient-to-b from-white/10 to-transparent border border-white/20 rounded-3xl p-8 md:p-12 backdrop-blur-lg shadow-2xl relative">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-500 text-black font-extrabold px-6 py-2 rounded-full text-sm tracking-wide shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-300">
-              VALOR TOTAL INCLUIDO
-            </div>
-            
-            <div className="space-y-4 mb-8 mt-4">
-              {[
-                { name: "Recetario de 21 días", price: "US$7" },
-                { name: "21 Tés Funcionales", price: "US$5" },
-                { name: "Biblioteca de Ejercicios", price: "US$6" },
-                { name: "Sistema de Recompensas", price: "US$4" },
-                { name: "Planificador de 21 Días", price: "US$6" }
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <span className="text-white/80 font-medium">{item.name}</span>
-                  <span className="text-emerald-400 font-bold">{item.price}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col items-center justify-center border-t border-white/20 pt-8 mb-8">
-              <div className="text-white/50 text-lg font-medium flex items-center gap-2 mb-2">
-                Si lo compraras por separado: <span className="line-through decoration-red-500/70 decoration-2">US$28</span>
-              </div>
-              <div className="flex items-end gap-3">
-                <span className="text-white/80 text-xl font-medium pb-2">Hoy por solo:</span>
-                <div className="flex items-start gap-1">
-                  <span className="text-6xl font-black text-emerald-400 drop-shadow-[0_0_30px_rgba(16,185,129,0.6)]">US$9</span>
-                </div>
-              </div>
-              <p className="text-white/60 text-sm mt-3 text-center">Menos que un café de la semana ☕ · Pago único</p>
-            </div>
-
-
-            <a 
-              href="https://pay.hotmart.com/G106177128D" 
-              onClick={() => trackEvent("InitiateCheckout", { metadata: { cta: "value_stack" } })}
-              className="group relative flex items-center justify-center w-full bg-gradient-to-r from-emerald-600 to-emerald-400 hover:from-emerald-500 hover:to-emerald-300 text-black font-extrabold text-2xl py-6 rounded-2xl transition-all hover:scale-[1.03] active:scale-[0.98] shadow-[0_0_50px_-10px_rgba(16,185,129,0.8)] border border-emerald-300/50 mb-4 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-              <span className="relative z-10 flex items-center gap-3">
-                QUIERO ACCEDER AHORA <ChevronRight className="w-7 h-7 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </a>
-            
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
-              <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
-                ✓ Garantía de 7 días
-              </span>
-              <span className="inline-flex items-center gap-1 text-xs font-bold text-white/80 bg-white/5 border border-white/15 px-3 py-1 rounded-full">
-                ✓ Pago único · Sin suscripción
-              </span>
-            </div>
-            <div className="flex items-center justify-center gap-2 text-white/50 text-xs font-medium">
-              <Lock className="w-3 h-3" /> Acceso inmediato • Disponible 24/7
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-20">
-          <h3 className="text-2xl font-bold text-center text-white mb-10">Más de 10,000 personas ya lo lograron</h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { name: "María S.", avatar: "/testimonials/maria.jpg", text: "Increíble. Perdí 4 kilos y nunca me sentí tan llena de energía. ¡Súper recomendado!" },
-              { name: "Laura G.", avatar: "/testimonials/laura.jpg", text: "Las recetas son súper fáciles de hacer y ricas. El grupo de apoyo es lo mejor." },
-              { name: "Ana P.", avatar: "/testimonials/ana.jpg", text: "Había intentado todo, pero estos 21 días me cambiaron la vida. Ya no sufro por la comida." }
-            ].map((testi, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col justify-between hover:bg-white/10 transition-colors duration-300">
-                <div>
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-amber-500 text-amber-500" />)}
-                  </div>
-                  <p className="text-white/90 text-sm italic mb-6 leading-relaxed">"{testi.text}"</p>
-                </div>
-                <div className="flex items-center gap-3 border-t border-white/10 pt-4">
-                  <img src={testi.avatar} alt={testi.name} className="w-10 h-10 rounded-full border border-emerald-500/50 object-cover" />
-                  <div>
-                    <div className="font-bold text-white text-sm flex items-center gap-1">
-                      {testi.name} <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                    </div>
-                    <div className="text-white/40 text-xs">Compradora verificada</div>
-                  </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {gallery.map((g, i) => (
+              <div key={i} className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] aspect-[3/4] group">
+                <img src={g.src} alt={g.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-3">
+                  <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">{g.label}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
+      </section>
 
-        <div className="mb-20 max-w-2xl mx-auto">
-          <h3 className="text-2xl font-bold text-center text-white mb-10">Preguntas Frecuentes</h3>
-          <div className="space-y-4">
+      {/* ============ ¿ES PARA TI? ============ */}
+      <section className="px-4 py-14 md:py-20 bg-white/[0.02] border-y border-white/5">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-4xl font-extrabold text-white">¿Es para ti?</h2>
+            <p className="text-white/60 mt-2">MiReto21 es ideal si:</p>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {forYou.map((t, i) => (
+              <div key={i} className="flex items-start gap-3 bg-gradient-to-b from-white/[0.06] to-transparent border border-white/10 rounded-2xl p-4">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5 shrink-0" />
+                <span className="text-white/85 text-sm leading-relaxed">{t}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ GARANTÍA ============ */}
+      <section className="px-4 py-14 md:py-20">
+        <div className="max-w-3xl mx-auto bg-gradient-to-b from-emerald-500/10 to-transparent border border-emerald-500/30 rounded-3xl p-8 md:p-10 text-center relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl" />
+          <div className="relative">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500/15 border-2 border-emerald-500/40 mb-6">
+              <ShieldCheck className="w-10 h-10 text-emerald-400" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Prueba MiReto21 sin riesgo</h2>
+            <p className="text-white/75 text-base md:text-lg max-w-xl mx-auto">
+              Si consideras que MiReto21 no es para ti, podrás solicitar el reembolso dentro del período establecido por Hotmart.
+            </p>
+            <div className="mt-6 inline-flex items-center gap-2 bg-white/5 border border-white/15 rounded-full px-4 py-2 text-sm font-bold text-emerald-300">
+              <HeartHandshake className="w-4 h-4" /> 7 días de garantía total
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ CTA FINAL ============ */}
+      <section className="px-4 py-16 md:py-24">
+        <div className="max-w-xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-3">
+            Tu reto de <span className="text-emerald-400">21 días</span> comienza hoy
+          </h2>
+          <p className="text-white/70 text-base md:text-lg mb-8">
+            Todo lo que necesitas ya está listo dentro de la aplicación.
+          </p>
+
+          <div className="bg-gradient-to-b from-white/[0.06] to-transparent border border-white/15 rounded-3xl p-6 md:p-8 backdrop-blur-sm">
+            <div className="flex items-end justify-center gap-2 mb-1">
+              <span className="text-white/60 text-sm pb-2">Hoy por solo</span>
+              <span className="text-6xl font-black text-emerald-400 leading-none drop-shadow-[0_0_25px_rgba(16,185,129,0.6)]">US$9</span>
+            </div>
+            <p className="text-xs text-emerald-300 font-bold mb-6">Pago único · Acceso inmediato</p>
+            <CtaButton id="final_cta" />
+            <TrustBadges />
+          </div>
+        </div>
+      </section>
+
+      {/* ============ FAQ ============ */}
+      <section className="px-4 pb-20">
+        <div className="max-w-2xl mx-auto">
+          <h3 className="text-2xl font-bold text-center text-white mb-8">Preguntas frecuentes</h3>
+          <div className="space-y-3">
             {[
-              { q: "¿Es un pago único o una suscripción mensual?", a: "Es un pago único. Tendrás acceso al programa completo sin cargos ocultos." },
-              { q: "¿Necesito equipo especial para los ejercicios?", a: "No, todos los ejercicios están diseñados para hacerse en casa con tu propio peso corporal." },
-              { q: "¿Sirve para mí si tengo poco tiempo?", a: "¡Sí! El programa está diseñado para personas ocupadas. Todo toma menos de 30 minutos al día." }
+              { q: "¿Es un pago único o una suscripción?", a: "Es un pago único de US$9. Sin cargos recurrentes ni cobros ocultos." },
+              { q: "¿Cómo recibo el acceso?", a: "El acceso es inmediato. Después del pago recibirás un correo con tus datos para entrar a la app." },
+              { q: "¿Necesito equipo para los ejercicios?", a: "No. Las rutinas son simples y se hacen en casa, sin equipo." },
+              { q: "¿Y si no funciona para mí?", a: "Tienes 7 días de garantía a través de Hotmart. Si no es para ti, te devolvemos tu dinero." },
             ].map((faq, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 group cursor-pointer hover:bg-white/10 transition-colors">
-                <h4 className="font-bold text-white flex items-center justify-between">
+              <details key={i} className="group bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/[0.07] transition-colors">
+                <summary className="font-bold text-white flex items-center justify-between cursor-pointer list-none">
                   {faq.q}
-                  <ChevronDown className="w-5 h-5 text-emerald-500 opacity-50 group-hover:opacity-100 transition-opacity" />
-                </h4>
-                <p className="text-white/60 text-sm mt-3">{faq.a}</p>
-              </div>
+                  <ChevronDown className="w-5 h-5 text-emerald-400 group-open:rotate-180 transition-transform" />
+                </summary>
+                <p className="text-white/65 text-sm mt-3 leading-relaxed">{faq.a}</p>
+              </details>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      <footer className="border-t border-white/10 bg-black/50 py-12 px-4 text-center">
+      <footer className="border-t border-white/10 bg-black/50 py-10 px-4 text-center">
         <p className="text-white/40 text-sm mb-4">
           © {new Date().getFullYear()} MiReto21. Todos los derechos reservados.
         </p>
@@ -670,5 +718,6 @@ function VSLScreen() {
         </p>
       </footer>
     </div>
-  )
+  );
 }
+
