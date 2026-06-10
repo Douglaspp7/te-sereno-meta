@@ -384,16 +384,16 @@ function VSLScreen() {
       <PurchaseNotifications />
       
       <div className="bg-emerald-500 text-black text-center py-2 font-bold text-sm px-4">
-        ¡Tu plan personalizado ha sido generado con éxito!
+        +10.000 mujeres ya transformaron su cuerpo con MiReto21
       </div>
       
-      <div className="max-w-4xl mx-auto px-4 py-12 md:py-16">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-            Tienes un <span className="text-emerald-400">excelente potencial</span> para lograr cambios reales.
+      <div className="max-w-4xl mx-auto px-4 py-8 md:py-12">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
+            Pierde grasa en <span className="text-emerald-400">21 días</span> sin dietas extremas ni gimnasio
           </h1>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto">
-            Basándonos en tus respuestas, creemos que un plan estructurado de 21 días puede ayudarte a crear hábitos saludables y sostenibles.
+          <p className="text-base md:text-lg text-white/70 max-w-2xl mx-auto">
+            Mira el video y descubre el método que ayuda a miles de mujeres a construir hábitos saludables y ver resultados reales.
           </p>
         </div>
         
